@@ -1,0 +1,13 @@
+This role will install, enable and start de munge daemon with a specified key file.
+
+Preparations:
+- Create a key and place it in files:
+
+  dd if=/dev/random bs=1 count=1024 > files/name.key
+
+  ( or use genkey.sh script )
+
+- Specify key name in vars/main.yml
+
+( !!! The key will be copied to /etc/munge/munge.key on the destination servers )
+

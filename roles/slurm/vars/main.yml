@@ -1,0 +1,62 @@
+---
+packages:
+  - libcgroup
+  - libcgroup-devel
+  - libcgroup-tools
+  - libcgroup-pam
+  - hdf5
+  - hdf5-devel
+  - hdf5-mpich
+  - hdf5-mpich-devel
+  - hdf5-mpich-static
+  - hdf5-openmpi
+  - hdf5-openmpi-devel
+  - hdf5-openmpi-static
+  - man2html
+  - lua
+  - lua-devel
+  - munge-devel
+  - openssl
+  - openssl-devel
+  - pam-devel
+  - numactl-devel
+  - readline-devel
+  - ncurses-devel
+  - gtk2-devel
+  - python-firewall
+
+#Source prefix
+slurm_prefix: slurm-17.11.7
+
+#Source archive ext 
+slurm_archive: tar.bz2
+
+#Install desination (prefix) on destination machine
+install_dest: /opt/slurm-17.11.7
+
+#sysconfdir slurm.conf directory
+sysconfdir: /etc
+
+#Link location where install destination is linked to and configuration and script files are pointed at
+slurm_linkdir: /opt/slurm
+
+#Slurm common user and group id
+slurm_uid: 992
+slurm_gid: 992
+
+# 
+# slurm.conf configuration file: a template with partition name and node configuration as variables
+#
+slurm_conf_template: slurm.conf.j2
+slurm_partition_name: debug
+slurm_control_machine: test-control
+#slurm_backup_controller: ct1
+
+# The following information can be obtained by running slurmd -C on the node! 
+#
+# NB It is adviced to reduce the amount of memory for the OS
+#
+compute_nodes:
+  - { NodeName: Node-01, CPUs: 16, Boards: 1, SocketsPerBoard: 16, CoresPerSocket: 1, ThreadsPerCore: 1, RealMemory: 48300 }
+  - { NodeName: Node-02, CPUs: 16, Boards: 1, SocketsPerBoard: 16, CoresPerSocket: 1, ThreadsPerCore: 1, RealMemory: 48300 }
+

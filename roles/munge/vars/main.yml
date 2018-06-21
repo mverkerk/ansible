@@ -1,0 +1,14 @@
+---
+packages: 
+  - munge
+  - munge-devel
+  - munge-libs
+
+#
+# Generate munge.key file: 
+#
+# dd if=/dev/random bs=1 count=1024 > files/munge.key
+#
+keyfile: test.key
+
+

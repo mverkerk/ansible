@@ -1,0 +1,243 @@
+---
+# Preparations
+- name: "Install slurm depended packages"
+  yum:
+    name: "{{ item }}"
+    state: latest  
+  with_items: "{{ packages }}"
+
+# Compilation & Installing
+- name: Check for slurm installation @ {{ install_dest }}
+  stat: path={{ install_dest }}
+  register: slurm_installed
+
+- name: "Copy and extract the slurm src package, configure, make and install slurm and make link"
+  block:
+    - unarchive:
+        src: "files/{{ slurm_prefix }}.{{ slurm_archive }}"
+        dest: /tmp
+    - command: ./configure --prefix={{ install_dest }} --sysconfdir={{ sysconfdir }}
+      args:
+        chdir: /tmp/{{ slurm_prefix }}
+    - make:
+        chdir: /tmp/{{ slurm_prefix }}
+    - make:
+        chdir: /tmp/{{ slurm_prefix }}
+        target: install
+        become: yes
+    - file:
+        src: "{{ install_dest }}"
+        dest: "{{ slurm_linkdir }}"
+        state: link
+  when: not slurm_installed.stat.exists
+ 
+# Configuring Slurm man files
+- name: "Install man-db package"
+  yum:
+    name: man-db
+    state: latest
+      
+- name: "Set slurm MANDATORY_MANPATH"
+  lineinfile:
+    path: /etc/man_db.conf
+    regexp: 'MANDATORY_MANPATH                       /opt/slurm/share/man'
+    insertafter: '^MANDATORY_MANPATH'
+    line: 'MANDATORY_MANPATH                       /opt/slurm/share/man'
+    state: present
+
+- name: "Set slurm bin MANPATH_MAP"
+  lineinfile:
+    path: /etc/man_db.conf
+    regexp: 'MANPATH_MAP     /opt/slurm/bin          /opt/slurm/share/man'
+    insertafter: '^MANPATH_MAP'
+    line: 'MANPATH_MAP     /opt/slurm/bin          /opt/slurm/share/man'
+    state: present
+    
+- name: "Set slurm sbin MANPATH_MAP"
+  lineinfile:
+    path: /etc/man_db.conf
+    regexp: 'MANPATH_MAP     /opt/slurm/sbin         /opt/slurm/share/man'
+    insertafter: '^MANPATH_MAP'
+    line: 'MANPATH_MAP     /opt/slurm/sbin         /opt/slurm/share/man'
+    state: present
+
+- name: "Set slurm MANDB_MAP"
+  lineinfile:
+    path: /etc/man_db.conf
+    regexp: 'MANDB_MAP       /opt/slurm/share/man    /var/cache/man/slurm'
+    insertafter: '^MANDB_MAP'
+    line: 'MANDB_MAP       /opt/slurm/share/man    /var/cache/man/slurm'
+    state: present    
+
+- name: "Run mandb to reconfigure man databases"
+  command: mandb
+
+# Set Slurm PATHs (create file in profile.d)
+- name: "Create profile.d files with PATH info"
+  template: 
+    src: slurm.sh.j2
+    dest: /etc/profile.d/slurm.sh
+    owner: root
+    group: root
+    mode: 0644 
+
+- name: "Make link for csh users"
+  file:
+    src: /etc/profile.d/slurm.sh
+    dest: /etc/profile.d/slurm.csh
+    state: link
+
+# Create ld.so.conf Slurm configuration
+- name: "Create Slurm library configuration file"
+  template: 
+    src: slurm.ld.conf.j2
+    dest: /etc/ld.so.conf.d/slurm.conf
+    owner: root
+    group: root
+    mode: 0644
+
+- name: "Run ldconfig"
+  command: ldconfig
+
+# Create slurm user and group
+- name: "Create slurm group"
+  group:
+    name: slurm
+    gid: "{{ slurm_gid }}"
+    state: present
+
+- name: "Create slurm user"
+  user:
+    name: slurm
+    uid: "{{ slurm_uid }}"
+    group: slurm
+    create_home: no
+    home: "{{ slurm_linkdir }}"
+    shell: /sbin/nologin
+    state: present
+
+# Provide configuration file
+#
+# Please edit the configuration template in the templates folder and specify Nodes in variable file!
+#
+- name: "Copy slurm.conf configuration file"
+  template:
+    src: "{{ slurm_conf_template }}"
+    dest: /etc/slurm.conf
+    owner: slurm
+    group: slurm
+    mode: 0644
+
+#
+# Create spool, log and run directories
+#
+- name: "Create spool, log and run directories"
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: slurm
+    group: slurm
+    mode: 0755
+  with_items:
+    - /var/spool/slurmd
+    - /var/spool/slurm-state
+    - /var/spool/slurmctld
+    - /var/log/slurm
+    - /var/run/slurm
+
+# Create run folder at boot
+- name: "Create slurm.conf in /etc/tmpfiles.d"
+  template:
+    src: slurm.conf.tmp.j2
+    dest: /etc/tmpfiles.d/slurm.conf
+    owner: root
+    group: root
+    mode: 0644
+
+# Initialize log files
+- name: "Initialize / touch log files"
+  file: 
+    path: "{{ item }}"
+    state: touch
+    owner: slurm
+    group: slurm
+    mode: 0600
+  with_items:
+    - /var/log/slurm/slurmctld.log
+    - /var/log/slurm/slurmd.log
+    - /var/log/slurm/slurm_jobacct.log
+    - /var/log/slurm/slurm_jobcomp.log
+
+#
+# Create cgroup.conf
+#
+- name: "Create cgroup.conf"
+  template:
+    src: cgroup.conf.j2
+    dest: /etc/cgroup.conf
+    owner: root
+    group: root
+    mode: 0644
+
+#
+# Create slurm logrotate config
+# 
+- name: "Create logrotate slurm.conf"
+  template:
+    src: slurm.logrotate.j2
+    dest: /etc/logrotate.d/slurm
+    owner: root
+    group: root
+    mode: 0644
+
+#
+# Apply Firewall Rules
+#
+- name: "Check if there is a firewalld.service installed"
+  stat: path=/lib/systemd/system/firewalld.service
+  register: firewalld_available
+
+- name: "Add nodes to trusted zone"
+  firewalld:
+    zone: trusted
+    permanent: true
+    source: "{{ item.NodeName }}"
+    state: enabled
+  with_items: "{{ compute_nodes }}"
+  when: firewalld_available.stat.exists
+    
+#
+# Create systemd services
+#  
+
+# Create slurmd.service 
+- name: "Create slurmd.service in /lib/systemd/system"
+  template:
+    src: slurmd.service.j2
+    dest: /lib/systemd/system/slurmd.service
+    owner: root
+    group: root
+    mode: 0644
+
+# Create slurmctld.service
+- name: "Create slurmctld.service in /lib/systemd/system"
+  template:
+    src: slurmctld.service.j2
+    dest: /lib/systemd/system/slurmctld.service
+    owner: root
+    group: root
+    mode: 0644
+
+#
+# Reload daemons, reload, enable and restart services
+#
+- name: "Reload daemons, enable and restart services"
+  systemd:
+    daemon_reload: yes
+    name: "{{ item }}"
+    enabled: yes
+    state: started
+  with_items:
+    - cgconfig
+    - slurmctld
+    - slurmd

@@ -1,0 +1,11 @@
+#
+# munge keys
+#
+files/*.key
+
+#
+# Temporary files
+#
+*.swp
+*.bak
+

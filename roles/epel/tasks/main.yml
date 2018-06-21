@@ -1,0 +1,5 @@
+---
+- name: Install RPM to include Centos EPEL repository
+  yum:
+    name: "{{ packagename }}"
+    state: latest

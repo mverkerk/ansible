@@ -1,0 +1,26 @@
+---
+- name: "Install munge packages"
+  yum:
+    name: "{{ item }}"
+    state: latest  
+  with_items: "{{ packages }}"
+
+- name: "Copy munge key file"
+  copy:
+    src: files/{{ keyfile }}
+    dest: /etc/munge/munge.key
+    owner: munge
+    group: munge
+    mode: 0400
+
+- name: "Enable munge service"
+  systemd:
+    name: munge
+    enabled: yes
+
+- name: "Start munge service"
+  systemd:
+    name: munge
+    state: started
+
+

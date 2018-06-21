@@ -1,0 +1,29 @@
+---
+#
+# Specify hosts (in host variable), remote user and 'slurm_config_file' variable:
+#
+# ansible-playbook -e "slurm_config_file=slurm.test.conf host=test" -u root -i hosts update-config-and-restart-slurm.yml
+#
+- hosts: '{{ host }}'
+  vars:
+    slurm_config_file: slurm.conf
+  tasks:
+  - debug: msg="Host is {{ ansible_fqdn }}"
+  - name: "Copy {{ slurm_config_file }} to all nodes"
+    copy:
+      src: "{{ slurm_config_file }}"
+      dest: /etc/slurm.conf
+      owner: slurm
+      group: slurm
+      mode: 0644
+
+  - name: Restart slurmd service
+    service: 
+      name: slurmd
+      state: restarted
+  
+  - name: Restart slurmctld service
+    service:
+      name: slurmctld
+      state: restarted
+
