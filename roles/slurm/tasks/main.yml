@@ -180,6 +180,17 @@
     mode: 0644
 
 #
+# Create cgroup_allowed_devices_file.conf
+#
+- name: "Create cgroup_allowed_devices_file.conf"
+  template:
+    src: cgroup_allowed_devices_file.conf.j2
+    dest: /etc/cgroup_allowed_devices_file.conf
+    owner: root
+    group: root
+    mode: 0644
+
+#
 # Create slurm logrotate config
 # 
 - name: "Create logrotate slurm.conf"
