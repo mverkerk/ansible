@@ -227,6 +227,7 @@
     owner: root
     group: root
     mode: 0644
+  when: (ansible_hostname ==  slurm_control_machine) or (ansible_hostname == slurm_backup_controller)
 
 #
 # Reload daemons, reload, enable and restart services
@@ -239,5 +240,6 @@
     state: started
   with_items:
     - cgconfig
-    - slurmctld
     - slurmd
+    - slurmctld
+  when: not ( item == "slurmctld" and not ( (ansible_hostname ==  slurm_control_machine) or (ansible_hostname == slurm_backup_controller) ) )
