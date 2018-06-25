@@ -24,7 +24,7 @@
     - make:
         chdir: /tmp/{{ slurm_prefix }}
         target: install
-        become: yes
+      become: yes
     - file:
         src: "{{ install_dest }}"
         dest: "{{ slurm_linkdir }}"
