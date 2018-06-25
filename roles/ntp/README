@@ -1,0 +1,3 @@
+Ansible NTP Daemon configuration (based on CentOS 7.3 config template).
+- configure the server pool from variable
+- install, enable and start ntpd daemon

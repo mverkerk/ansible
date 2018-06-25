@@ -1,0 +1,24 @@
+---
+- name: "Install ntp packages"
+  yum:
+    name: "{{ item }}"
+    state: latest  
+  with_items: "{{ packages }}"
+
+- name: "Create NTP configuration file"
+  template:
+    src: ntp.conf.j2
+    dest: /etc/ntp.conf
+    owner: root
+    group: root
+    mode: 0644
+
+- name: "Enable ntp service"
+  systemd:
+    name: ntpd 
+    enabled: yes
+
+- name: "Start ntp service"
+  systemd:
+    name: ntpd
+    state: started
