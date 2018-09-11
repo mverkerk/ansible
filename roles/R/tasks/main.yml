@@ -1,0 +1,108 @@
+---
+# Preparations
+- name: "Install R depended packages"
+  yum:
+    name: "{{ item }}"
+    state: latest
+  with_items: "{{ packages }}"
+
+# Compilation & Installing
+- name: Check for R installation @ {{ r_install_dest }}
+  stat: path={{ r_install_dest }}/{{ r_prefix }}
+  register: r_installed
+
+- name: "Copy and extract the R src package, configure, make and install R and make link"
+  block:
+    - unarchive:
+        src: "files/{{ r_prefix }}.{{ r_archive }}"
+        dest: /tmp
+    - command: ./configure --prefix={{ r_install_dest }}/{{ r_prefix }} 
+      args:
+        chdir: /tmp/{{ r_prefix }}
+    - make:
+        chdir: /tmp/{{ r_prefix }}
+    - make:
+        chdir: /tmp/{{ r_prefix }}
+        target: install
+      become: yes
+    - file:
+        src: "{{ r_install_dest }}/{{ r_prefix }}"
+        dest: "{{ r_linkdir }}"
+        state: link
+  when: not r_installed.stat.exists
+ 
+# Configuring Slurm man files
+- name: "Install man-db package"
+  yum:
+    name: man-db
+    state: latest
+      
+- name: "Set R MANDATORY_MANPATH"
+  lineinfile:
+    path: /etc/man_db.conf
+    regexp: 'MANDATORY_MANPATH                       /opt/software/R/share/man'
+    insertafter: '^MANDATORY_MANPATH'
+    line: 'MANDATORY_MANPATH                       /opt/software/R/share/man'
+    state: present
+
+- name: "Set R bin MANPATH_MAP"
+  lineinfile:
+    path: /etc/man_db.conf
+    regexp: 'MANPATH_MAP     /opt/software/R/bin          /opt/software/R/bin/man'
+    insertafter: '^MANPATH_MAP'
+    line: 'MANPATH_MAP     /opt/software/R/bin          /opt/software/R/bin/man'
+    state: present
+    
+- name: "Run mandb to reconfigure man databases"
+  command: mandb
+
+# Set Slurm PATHs (create file in profile.d)
+- name: "Create profile.d files with PATH info"
+  template: 
+    src: r.sh.j2
+    dest: /etc/profile.d/r.sh
+    owner: root
+    group: root
+    mode: 0644 
+
+- name: "Make link for csh users"
+  file:
+    src: /etc/profile.d/r.sh
+    dest: /etc/profile.d/r.csh
+    state: link
+
+# Install normal R packages
+#
+#- name: "Check that the {{ playbook_dir }}/{{ r_packages }} file exists"
+#  stat:
+#    path: "{{ playbook_dir }}/{{ r_packages }}"
+#  register: r_packages_filename
+#
+#- block: 
+#  - name: "Copy {{ playbook_dir }}/{{ r_packages }} to server"
+#    copy:
+#      src: "{{ playbook_dir }}/{{ r_packages }}"
+#      dest: "/tmp/{{ r_packages }}"
+#  - name: "Install normal R packages"
+#    command: echo "load(/tmp/{{ r_packages }});for (count in 1:length(installedpackages)) install.packages(installedpackages[count], repos="{{ r_rpos }}" );" | {{ r_linkdir }}/bin/R --no-save > /tmp/r_packages.log;
+#  when: r_packages is defined
+    
+# Install Bioconductor R and CRAN packages from provided rda file containing "installedpackages"
+#
+#- name: "Check that the {{ playbook_dir }}/{{ r_bioclite_packages }} file exists"
+#  stat:
+#    path: "{{ playbook_dir }}/{{ r_bioclite_packages }}"
+#  register: r_bioclite_packages_filename
+
+- block: 
+  - name: "Copy {{ r_packages }} to server"
+    copy:
+      src: "{{ playbook_dir }}/{{ r_packages }}"
+      dest: "/tmp/{{ r_packages }}"
+  - name: "Install cran / bioclite packages" 
+    command: Rscript -e 'source("https://bioconductor.org/biocLite.R");load("/tmp/{{ r_packages }}");biocLite({{ r_packages_var }}, type="source");'
+    register: instpack
+#  - debug: msg="{{ instpack.stdout }}"
+#  - debug: msg="{{ instpack.stderr }}"
+  when: r_packages is defined
+
