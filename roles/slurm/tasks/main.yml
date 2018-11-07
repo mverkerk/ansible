@@ -2,9 +2,8 @@
 # Preparations
 - name: "Install slurm depended packages"
   yum:
-    name: "{{ item }}"
+    name: "{{ packages }}"
     state: latest  
-  with_items: "{{ packages }}"
 
 # Compilation & Installing
 - name: Check for slurm installation @ {{ install_dest }}
