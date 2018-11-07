@@ -1,9 +1,8 @@
 ---
 - name: "Install munge packages"
   yum:
-    name: "{{ item }}"
+    name: "{{ packages }}"
     state: latest  
-  with_items: "{{ packages }}"
 
 - name: "Copy munge key file"
   copy:
