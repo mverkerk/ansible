@@ -2,9 +2,8 @@
 # Preparations
 - name: "Install R depended packages"
   yum:
-    name: "{{ item }}"
+    name: "{{ packages }}"
     state: latest
-  with_items: "{{ packages }}"
 
 # Compilation & Installing
 - name: Check for R installation @ {{ r_install_dest }}
@@ -102,7 +101,9 @@
   - name: "Install cran / bioclite packages" 
     command: Rscript -e 'source("https://bioconductor.org/biocLite.R");load("/tmp/{{ r_packages }}");biocLite({{ r_packages_var }}, type="source");'
     register: instpack
-#  - debug: msg="{{ instpack.stdout }}"
-#  - debug: msg="{{ instpack.stderr }}"
+#- debug: msg="{{ instpack.stdout }}"
+#- debug: msg="{{ instpack.stderr }}"
+  - copy: content={{ instpack.stdout }} dest=/tmp/r_instpack.stdout
+  - copy: content={{ instpack.stderr }} dest=/tmp/r_instpack.stderr
   when: r_packages is defined
 
