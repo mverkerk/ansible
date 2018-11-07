@@ -1,9 +1,8 @@
 ---
 - name: "Install ntp packages"
   yum:
-    name: "{{ item }}"
+    name: "{{ packages }}"
     state: latest  
-  with_items: "{{ packages }}"
 
 - name: "Create NTP configuration file"
   template:
