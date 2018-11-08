@@ -8,8 +8,10 @@ r_archive: tar.gz
 #Install desination (prefix) on destination machine
 r_install_dest: /opt
 
-#Link location where install destination is linked to and configuration and script files are pointed at
+#Link location where install destination is linked to and configuration and script files are pointed at 
 r_linkdir: /opt/R
+#Do the link (for safe installations)
+r_dolink: true 
 
 #Location of R repositories
 r_rpos: "https://cran.ma.imperial.ac.uk"

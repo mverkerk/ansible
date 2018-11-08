@@ -28,6 +28,7 @@
         src: "{{ r_install_dest }}/{{ r_prefix }}"
         dest: "{{ r_linkdir }}"
         state: link
+      when: r_dolink
   when: not r_installed.stat.exists
  
 # Configuring Slurm man files
@@ -70,40 +71,24 @@
     dest: /etc/profile.d/r.csh
     state: link
 
-# Install normal R packages
-#
-#- name: "Check that the {{ playbook_dir }}/{{ r_packages }} file exists"
-#  stat:
-#    path: "{{ playbook_dir }}/{{ r_packages }}"
-#  register: r_packages_filename
-#
-#- block: 
-#  - name: "Copy {{ playbook_dir }}/{{ r_packages }} to server"
-#    copy:
-#      src: "{{ playbook_dir }}/{{ r_packages }}"
-#      dest: "/tmp/{{ r_packages }}"
-#  - name: "Install normal R packages"
-#    command: echo "load(/tmp/{{ r_packages }});for (count in 1:length(installedpackages)) install.packages(installedpackages[count], repos="{{ r_rpos }}" );" | {{ r_linkdir }}/bin/R --no-save > /tmp/r_packages.log;
-#  when: r_packages is defined
-    
 # Install Bioconductor R and CRAN packages from provided rda file containing "installedpackages"
 #
 #- name: "Check that the {{ playbook_dir }}/{{ r_bioclite_packages }} file exists"
 #  stat:
 #    path: "{{ playbook_dir }}/{{ r_bioclite_packages }}"
 #  register: r_bioclite_packages_filename
-
 - block: 
   - name: "Copy {{ r_packages }} to server"
     copy:
       src: "{{ playbook_dir }}/{{ r_packages }}"
       dest: "/tmp/{{ r_packages }}"
   - name: "Install cran / bioclite packages" 
-    command: Rscript -e 'source("https://bioconductor.org/biocLite.R");load("/tmp/{{ r_packages }}");biocLite({{ r_packages_var }}, type="source");'
+    command: "{{ r_install_dest }}/{{ r_prefix}}/bin/Rscript -e 'source(\"https://bioconductor.org/biocLite.R\");load(\"/tmp/{{ r_packages }}\");biocLite({{ r_packages_var }}, type=\"source\");'"
     register: instpack
-#- debug: msg="{{ instpack.stdout }}"
-#- debug: msg="{{ instpack.stderr }}"
   - copy: content={{ instpack.stdout }} dest=/tmp/r_instpack.stdout
   - copy: content={{ instpack.stderr }} dest=/tmp/r_instpack.stderr
   when: r_packages is defined
 
+#
+# 2do Install packages from source
+#
