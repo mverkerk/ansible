@@ -15,7 +15,7 @@
     - unarchive:
         src: "files/{{ r_prefix }}.{{ r_archive }}"
         dest: /tmp
-    - command: ./configure --prefix={{ r_install_dest }}/{{ r_prefix }} 
+    - command: "./configure --prefix={{ r_install_dest }}/{{ r_prefix }} {{ r_configure_flags | join(' ') }}"
       args:
         chdir: /tmp/{{ r_prefix }}
     - make:
@@ -83,12 +83,36 @@
       src: "{{ playbook_dir }}/{{ r_packages }}"
       dest: "/tmp/{{ r_packages }}"
   - name: "Install cran / bioclite packages" 
-    command: "{{ r_install_dest }}/{{ r_prefix}}/bin/Rscript -e 'source(\"https://bioconductor.org/biocLite.R\");load(\"/tmp/{{ r_packages }}\");biocLite({{ r_packages_var }}, type=\"source\");'"
-    register: instpack
+    command: "{{ r_install_dest }}/{{ r_prefix}}/bin/Rscript -e 'source(install.packages(\"BiocManager\");load(\"/tmp/{{ r_packages }}\");BiocManager::install(pkgs={{ r_packages_var }})'"
+#    command: "{{ r_install_dest }}/{{ r_prefix}}/bin/Rscript -e 'source(\"https://bioconductor.org/biocLite.R\");load(\"/tmp/{{ r_packages }}\");biocLite({{ r_packages_var }}, type=\"source\");'"
+     register: instpack
   - copy: content={{ instpack.stdout }} dest=/tmp/r_instpack.stdout
   - copy: content={{ instpack.stderr }} dest=/tmp/r_instpack.stderr
   when: r_packages is defined
 
 #
-# 2do Install packages from source
+# Install github packages with devtools ( https://cran.r-project.org/web/packages/devtools/index.html )
 #
+- block:
+  - name: "Install required package 'devtools' from github"
+    command: "{{ r_install_dest }}/{{ r_prefix }}/bin/Rscript -e 'install.packages(\"devtools\", repos=\"{{ r_rpos }}\");'"
+  - name: "Install in r_github_packages specified packages"
+    command: "{{ r_install_dest }}/{{ r_prefix }}/bin/Rscript -e 'require(\"devtools\");devtools::install_github(\"{{ item }}\");'"      
+    loop: "{{ r_github_packages }}"
+    register: instgithub
+  - copy: content={{ instgithub.stdout }} dest=/tmp/r_instgithub.stdout
+  - copy: content={{ instgithub.stderr }} dest=/tmp/r_instgithub.stderr
+  when: r_github_packages is defined
+
+#
+# Install packages from source 
+#
+- block:
+  - name: "Install in r_source_packages specified packages"
+    command: "{{ r_install_dest }}/{{ r_prefix }}/bin/Rscript -e 'install.packages(\"{{ item }}\"), repos=NULL, method=\"libcurl\");'"
+    loop: "{{ r_source_packages }}"
+    register: instsource
+  - copy: content={{ instsource.stdout }} dest=/tmp/r_instsource.stdout
+  - copy: content={{ instsource.stderr }} dest=/tmp/r_instsource.stderr
+  when: r_source_packages is defined
+
