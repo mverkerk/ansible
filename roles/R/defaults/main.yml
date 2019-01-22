@@ -1,9 +1,15 @@
 ---
 #Source prefix
-r_prefix: R-3.5.1 
+r_prefix: R-3.5.2 
 
 #Source archive ext 
 r_archive: tar.gz
+
+#Configure flags (2do: add in tasks - when needed!) add empty list as default ([])
+r_configure_flags:
+ - "--with-x=yes"
+ - "--with-cairo=yes"
+ - "--with-libpng=yes"
 
 #Install desination (prefix) on destination machine
 r_install_dest: /opt
@@ -22,7 +28,13 @@ r_packages: r_packages.rda
 #Variable name of packages in packages file
 r_packages_var: pkgs
 
-#Slurm common user and group id
+#List with github identifications for - make sure deps are arranged!
+#r_github_packages:
+
+#List with web locations of source packages (outside CRAN / Bioconductor) - make sure deps are arranged!
+#r_source_packages:
+
+#R common user and group id
 r_uid: root
 r_gid: root
 
