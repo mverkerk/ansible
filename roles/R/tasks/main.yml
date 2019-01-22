@@ -84,8 +84,7 @@
       dest: "/tmp/{{ r_packages }}"
   - name: "Install cran / bioclite packages" 
     command: "{{ r_install_dest }}/{{ r_prefix}}/bin/Rscript -e 'source(install.packages(\"BiocManager\");load(\"/tmp/{{ r_packages }}\");BiocManager::install(pkgs={{ r_packages_var }})'"
-#    command: "{{ r_install_dest }}/{{ r_prefix}}/bin/Rscript -e 'source(\"https://bioconductor.org/biocLite.R\");load(\"/tmp/{{ r_packages }}\");biocLite({{ r_packages_var }}, type=\"source\");'"
-     register: instpack
+    register: instpack
   - copy: content={{ instpack.stdout }} dest=/tmp/r_instpack.stdout
   - copy: content={{ instpack.stderr }} dest=/tmp/r_instpack.stderr
   when: r_packages is defined
