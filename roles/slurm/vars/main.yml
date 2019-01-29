@@ -26,13 +26,13 @@ packages:
   - python-firewall
 
 #Source prefix
-slurm_prefix: slurm-17.11.8
+slurm_prefix: slurm-18.08.4
 
 #Source archive ext 
 slurm_archive: tar.bz2
 
 #Install desination (prefix) on destination machine
-install_dest: /opt/slurm-17.11.8
+install_dest: /opt/slurm-18.08.4
 
 #sysconfdir slurm.conf directory
 sysconfdir: /etc
