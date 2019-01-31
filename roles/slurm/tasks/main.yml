@@ -207,14 +207,14 @@
   stat: path=/lib/systemd/system/firewalld.service
   register: firewalld_available
 
-- name: "Add nodes to trusted zone"
-  firewalld:
-    zone: trusted
-    permanent: true
-    source: "{{ item.NodeName }}"
-    state: enabled
-  with_items: "{{ compute_nodes }}"
-  when: firewalld_available.stat.exists
+- block:
+  - name: "Add server segment to firewall's trusted zone"
+    firewalld:
+      zone: trusted
+      permanent: true
+      source: "{{ firewalld_trusted_zone }}"
+      state: enabled
+  when: firewalld_available.stat.exists and ( firewalld_trusted_zone is defined ) 
     
 #
 # Create systemd services

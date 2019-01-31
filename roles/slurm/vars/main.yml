@@ -52,6 +52,8 @@ slurm_conf_template: slurm.conf.j2
 #slurm_control_machine: test-control
 #slurm_backup_controller: ct1
 
+#firewalld_trusted_zone: 10.223.26.0/16
+
 # The following information can be obtained by running slurmd -C on the node! 
 #
 # NB It is adviced to reduce the amount of memory for the OS
