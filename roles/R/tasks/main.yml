@@ -96,8 +96,6 @@
     register: instgithub
     loop: "{{ r_github_packages }}"
   - copy: content={{ instgithub.results }} dest=/tmp/r_instgithub.results  
-    #  - copy: content={{ instgithub.stdout }} dest=/tmp/r_instgithub.stdout
-    #  - copy: content={{ instgithub.stderr }} dest=/tmp/r_instgithub.stderr
   when: r_github_packages is defined
 
 #
@@ -107,10 +105,8 @@
 #
 - block:
   - name: "Install source only packages"
-    command: "{{ r_install_dest }}/{{ r_prefix }}/bin/Rscript -e 'install.packages(\"{{ item }}\"), repos=NULL, method=\"libcurl\");'"
-    loop: "{{ r_source_packages }}"
+    command: "{{ r_install_dest }}/{{ r_prefix }}/bin/Rscript -e 'install.packages(\"{{ item }}\", repos=NULL, method=\"libcurl\");'"
     register: instsource
-  - copy: content={{ instsource.stdout }} dest=/tmp/r_instsource.stdout
-  - copy: content={{ instsource.stderr }} dest=/tmp/r_instsource.stderr
+    loop: "{{ r_source_packages }}"
+  - copy: content={{ instsource.results }} dest=/tmp/r_instsource.results
   when: r_source_packages is defined
-
