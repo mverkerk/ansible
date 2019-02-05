@@ -1,0 +1,3 @@
+Configure AD authentication on a Centos 7 host.
+- configure kerberos
+- configure pam stack

@@ -1,0 +1,13 @@
+---
+#
+# Configuration file - from template
+#
+krb5_config_file: /etc/krb5.conf          #Destination
+krb5_template_file: krb5.conf.j2          #Template file
+
+#Realm Config
+realm_name: EXAMPLE.COM
+kdc_hostname: KDC
+kdc_port: 88
+admin_hostname: ADMIN
+admin_port: 749

@@ -1,0 +1,5 @@
+---
+packages: 
+  - krb5-libs
+  - krb5-workstation
+  - pam_krb5
