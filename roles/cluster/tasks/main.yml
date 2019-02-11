@@ -1,0 +1,58 @@
+---
+- name: "Install packages"
+  yum:
+    name: "{{ packages }}"
+    state: latest
+  when: packages is defined
+
+- name: "Install man-db package"
+  yum:
+    name: man-db
+    state: latest
+      
+- block:
+  - name: "Set MANDATORY_MANPATHs"
+    lineinfile:
+      path: "{{ man_db_path }}"
+      regexp: 'MANDATORY_MANPATH                       {{ item }}'
+      insertafter: '^MANDATORY_MANPATH'
+      line: 'MANDATORY_MANPATH                       {{ item }}'
+      state: present
+    loop: "{{ mandatory_manpaths }}"
+  when: mandatory_manpaths is defined
+
+- block:
+  - name: "Set bin MANPATH_MAPs"
+    lineinfile:
+      path: "{{ man_db_path }}"
+      regexp: 'MANPATH_MAP     {{ item.bin }}          {{ item.man }}'
+      insertafter: '^MANPATH_MAP'
+      line: 'MANPATH_MAP     {{ item.bin }}          {{ item.man }}'
+      state: present
+    loop: "{{ manpath_maps }}"
+  when: manpath_maps is defined
+    
+- name: "Run mandb to reconfigure man databases"
+  command: mandb
+
+# Set PATHs (create file in profile.d)
+- block:       
+  - name: "Create profile.d files with PATH info"
+    template: 
+      src: path.sh.j2
+      dest: "{{ profile_d_path }}/{{ item.name }}.sh"
+      owner: root
+      group: root
+      mode: 0644 
+    loop: "{{ paths }}"
+  when: paths is defined
+
+- block: 
+  - name: "Make link for csh users"
+    file:
+      src: "{{ profile_d_path }}/{{ item.name }}.sh"
+      dest: "{{ profile_d_path }}/{{ item.name }}.csh"
+      state: link
+    loop: "{{ paths }}"
+  when: paths is defined
+

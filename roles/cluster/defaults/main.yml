@@ -1,0 +1,28 @@
+---
+# Default settings
+
+#
+# Packages
+#
+#packages: 
+#  - java-1.8.0-openjdk.x86_64
+
+#
+# Manual Settings
+#
+man_db_path: /etc/man_db.conf
+
+#mandatory_manpaths:
+#- /opt/software/R/share/man
+
+#manpath_maps:
+#- { bin: /opt/software/tools/bin, man: /opt/software/tools/man }
+
+
+#
+# PATH Settings
+#
+profile_d_path: /etc/profile.d
+
+#paths:
+#- { name: tools, location: /opt/software/tools/bin }
