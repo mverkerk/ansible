@@ -40,17 +40,17 @@
 - name: "Set R MANDATORY_MANPATH"
   lineinfile:
     path: /etc/man_db.conf
-    regexp: 'MANDATORY_MANPATH                       /opt/software/R/share/man'
+    regexp: 'MANDATORY_MANPATH                       {{ r_linkdir }}/share/man'
     insertafter: '^MANDATORY_MANPATH'
-    line: 'MANDATORY_MANPATH                       /opt/software/R/share/man'
+    line: 'MANDATORY_MANPATH                       {{ r_linkdir }}/share/man'
     state: present
 
 - name: "Set R bin MANPATH_MAP"
   lineinfile:
     path: /etc/man_db.conf
-    regexp: 'MANPATH_MAP     /opt/software/R/bin          /opt/software/R/bin/man'
+    regexp: 'MANPATH_MAP     {{ r_linkdir }}/bin          {{ r_linkdir }}/share/man'
     insertafter: '^MANPATH_MAP'
-    line: 'MANPATH_MAP     /opt/software/R/bin          /opt/software/R/bin/man'
+    line: 'MANPATH_MAP     {{ r_linkdir }}/bin          {{ r_linkdir }}/share/man'
     state: present
     
 - name: "Run mandb to reconfigure man databases"
