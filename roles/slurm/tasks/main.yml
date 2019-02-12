@@ -39,33 +39,33 @@
 - name: "Set slurm MANDATORY_MANPATH"
   lineinfile:
     path: /etc/man_db.conf
-    regexp: 'MANDATORY_MANPATH                       /opt/slurm/share/man'
+    regexp: 'MANDATORY_MANPATH                       {{ slurm_linkdir }}/share/man'
     insertafter: '^MANDATORY_MANPATH'
-    line: 'MANDATORY_MANPATH                       /opt/slurm/share/man'
+    line: 'MANDATORY_MANPATH                       {{ slurm_linkdir }}/share/man'
     state: present
 
 - name: "Set slurm bin MANPATH_MAP"
   lineinfile:
     path: /etc/man_db.conf
-    regexp: 'MANPATH_MAP     /opt/slurm/bin          /opt/slurm/share/man'
+    regexp: 'MANPATH_MAP     {{ slurm_linkdir }}/bin          {{ slurm_linkdir }}/share/man'
     insertafter: '^MANPATH_MAP'
-    line: 'MANPATH_MAP     /opt/slurm/bin          /opt/slurm/share/man'
+    line: 'MANPATH_MAP     {{ slurm_linkdir }}/bin          {{ slurm_linkdir }}/share/man'
     state: present
     
 - name: "Set slurm sbin MANPATH_MAP"
   lineinfile:
     path: /etc/man_db.conf
-    regexp: 'MANPATH_MAP     /opt/slurm/sbin         /opt/slurm/share/man'
+    regexp: 'MANPATH_MAP     {{ slurm_linkdir }}/sbin         {{ slurm_linkdir }}/share/man'
     insertafter: '^MANPATH_MAP'
-    line: 'MANPATH_MAP     /opt/slurm/sbin         /opt/slurm/share/man'
+    line: 'MANPATH_MAP     {{ slurm_linkdir }}/sbin         {{ slurm_linkdir }}/share/man'
     state: present
 
 - name: "Set slurm MANDB_MAP"
   lineinfile:
     path: /etc/man_db.conf
-    regexp: 'MANDB_MAP       /opt/slurm/share/man    /var/cache/man/slurm'
+    regexp: 'MANDB_MAP       {{ slurm_linkdir }}/share/man    /var/cache/man/slurm'
     insertafter: '^MANDB_MAP'
-    line: 'MANDB_MAP       /opt/slurm/share/man    /var/cache/man/slurm'
+    line: 'MANDB_MAP       {{ slurm_linkdir }}/share/man    /var/cache/man/slurm'
     state: present    
 
 - name: "Run mandb to reconfigure man databases"
