@@ -1,0 +1,97 @@
+---
+# Preparations
+- name: "Install Perl depended packages"
+  yum:
+    name: "{{ packages }}"
+    state: latest
+
+# Compilation & Installing
+- name: Check for Perl installation @ {{ perl_install_dest }}
+  stat: path={{ perl_install_dest }}/{{ perl_prefix }}
+  register: perl_installed
+
+- name: "Copy and extract the Perl src package, configure, make and install Perl and make a link"
+  block:
+    - unarchive:
+        src: "files/{{ perl_prefix }}.{{ perl_archive }}"
+        dest: /tmp
+    - command: "./Configure -des -Dprefix={{ perl_install_dest }}/{{ perl_prefix }} {{ perl_configure_flags | join(' ') }}"
+      args:
+        chdir: /tmp/{{ perl_prefix }}
+    - make:
+        chdir: /tmp/{{ perl_prefix }}
+    - make:
+        chdir: /tmp/{{ perl_prefix }}
+        target: test
+      ignore_errors: yes
+      register: perltest
+    - copy: content={{ perltest }} dest=/tmp/{{ perl_prefix }}-make-test.log
+    - make:
+        chdir: /tmp/{{ perl_prefix }}
+        target: install
+      become: yes
+    - file:
+        src: "{{ perl_install_dest }}/{{ perl_prefix }}"
+        dest: "{{ perl_linkdir }}"
+        state: link
+      when: perl_dolink
+  when: not perl_installed.stat.exists
+ 
+# Configuring Perl man directories
+     
+- name: "Set perl MANDATORY_MANPATH"
+  lineinfile:
+    path: /etc/man_db.conf
+    regexp: 'MANDATORY_MANPATH                       {{ perl_linkdir }}/share/man'
+    insertafter: '^MANDATORY_MANPATH'
+    line: 'MANDATORY_MANPATH                       {{ perl_linkdir }}/share/man'
+    state: present
+
+- name: "Set perl bin MANPATH_MAP"
+  lineinfile:
+    path: /etc/man_db.conf
+    regexp: 'MANPATH_MAP     {{ perl_linkdir }}/bin          {{ perl_linkdir }}/share/man'
+    insertafter: '^MANPATH_MAP'
+    line: 'MANPATH_MAP     {{ perl_linkdir }}/bin          {{ perl_linkdir }}/share/man'
+    state: present
+    
+- name: "Run mandb to reconfigure man databases"
+  command: mandb
+
+# Set Perl settings with file in profile.d)
+- name: "Create profile.d files with PATH info"
+  template: 
+    src: perl.sh.j2
+    dest: /etc/profile.d/perl.sh
+    owner: root
+    group: root
+    mode: 0644 
+
+- name: "Make link for csh users"
+  file:
+    src: /etc/profile.d/perl.sh
+    dest: /etc/profile.d/perl.csh
+    state: link
+
+- name: "Install CPANM"
+  command: "{{ perl_linkdir }}/bin/cpan install App::cpanminus"
+  args: 
+    creates: "{{ perl_linkdir }}/bin/cpanm"
+  environment:
+    PERL_MM_USE_DEFAULT: 1
+
+- name: "Install OS packages for additional perl modules"
+  yum:
+    name: "{{ perl_packages_os_dependencies }}"
+    state: latest
+
+- block:
+  - name: "Install additional Perl modules"
+    cpanm:
+      executable: "{{ perl_linkdir }}/bin/cpanm"
+      name: "{{ item }}"
+    loop: "{{ perl_packages }}"
+    ignore_errors: yes
+    register: instperlpackages
+  - copy: content={{ instperlpackages }} dest=/tmp/{{ perl_prefix }}-inst-packages.log
+  when: perl_packages is defined
