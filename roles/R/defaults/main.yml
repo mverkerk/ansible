@@ -10,6 +10,7 @@ r_configure_flags:
  - "--with-x=yes"
  - "--with-cairo=yes"
  - "--with-libpng=yes"
+ - "--enable-R-shlib"
 
 #Install desination (prefix) on destination machine
 r_install_dest: /opt
