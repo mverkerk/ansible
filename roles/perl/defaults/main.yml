@@ -11,6 +11,9 @@ perl_configure_flags: []
 #Install desination (prefix) on destination machine
 perl_install_dest: /opt/software/versions
 
+#One instalation (provide host name) - in cluster situations with central nfs storage of software / tools
+#perl_one_installation: host1
+
 #Link location where install destination is linked to and configuration and script files are pointed at 
 perl_linkdir: /opt/software/perl
 
@@ -36,4 +39,5 @@ perl_perl5lib:
 #Common user and group id
 r_uid: root
 r_gid: root
+
 
