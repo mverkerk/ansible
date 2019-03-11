@@ -201,6 +201,17 @@
     mode: 0644
 
 #
+# Add nodes to /etc/hosts
+#
+- name: "Update /etc/hosts file"
+  lineinfile:
+    dest: /etc/hosts
+    regexp: "^{{ item.IP }}"
+    line: "{{ item.IP }} {{ item.NodeName }}"
+    state: present
+  loop: "{{ compute_nodes }}"
+
+#
 # Apply Firewall Rules
 #
 - name: "Check if there is a firewalld.service installed"
