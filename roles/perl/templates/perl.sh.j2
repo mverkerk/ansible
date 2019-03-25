@@ -1,2 +1,3 @@
 pathmunge {{ perl_linkdir }}/bin before
 PERL5LIB=${PERL5LIB}:{{ perl_linkdir }}/lib:{{ perl_perl5lib | join(':') }}
+export PERL5LIB
