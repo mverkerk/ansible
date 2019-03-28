@@ -31,7 +31,7 @@
       when: r_dolink
   when: not r_installed.stat.exists
  
-# Configuring Slurm man files
+# Configuring R man files
 - name: "Install man-db package"
   yum:
     name: man-db
@@ -70,6 +70,13 @@
     src: /etc/profile.d/r.sh
     dest: /etc/profile.d/r.csh
     state: link
+
+# Preparations
+- name: "Install R package depended OS packages"
+  yum:
+    name: "{{ r_os_packages }}"
+    state: latest
+  when: r_os_packages is defined
 
 # Install Bioconductor R and CRAN packages from provided rda file containing "pkgs" variable
 - block: 
