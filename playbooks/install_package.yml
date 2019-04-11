@@ -1,0 +1,20 @@
+---
+#
+# Specify hosts (in host variable), remote user and 'package' variable:
+#
+# ansible-playbook -e "package=shadow-utils-4.1.5.1-24.el7.x86_64.rpm host=test" install_package.yml
+# 
+- hosts: '{{ host }}'
+  remote_user: root
+  vars:
+    package: shadow-utils-4.1.5.1-24.el7.x86_64.rpm
+  tasks:
+    - name: "Copy {{ package }} to remote /tmp.."
+      copy:
+        src: "{{ package }}"
+        dest: "/tmp/{{ package }}"
+    - name: "Install {{ package }}"
+      yum:
+        allow_downgrade: yes
+        name: "/tmp/{{ package }}"
+        state: present
