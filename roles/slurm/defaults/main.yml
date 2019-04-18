@@ -1,0 +1,38 @@
+---
+#Source prefix
+slurm_prefix: slurm-18.08.7
+
+#Source archive ext 
+slurm_archive: tar.bz2
+
+#Install desination (prefix) on destination machine
+install_dest: /opt/slurm-18.08.7
+
+#sysconfdir slurm.conf directory
+sysconfdir: /etc
+
+#Link location where install destination is linked to and configuration and script files are pointed at
+slurm_linkdir: /opt/slurm
+
+#Slurm common user and group id
+slurm_uid: 992
+slurm_gid: 992
+
+# 
+# slurm.conf configuration file: a template with partition name and node configuration as variables
+#
+slurm_conf_template: slurm.conf.j2
+#slurm_partition_name: debug
+#slurm_control_machine: test-control
+#slurm_backup_controller: ct1
+
+#firewalld_trusted_zone: 10.223.26.0/16
+
+# The following information can be obtained by running slurmd -C on the node + IP adresses! 
+#
+# NB It is adviced to reduce the amount of memory for the OS
+#
+#compute_nodes:
+#  - { NodeName: Node-01, IP: 192.168.0.1, CPUs: 16, Boards: 1, SocketsPerBoard: 16, CoresPerSocket: 1, ThreadsPerCore: 1, RealMemory: 48300 }
+#  - { NodeName: Node-02, IP: 192.168.0.2, CPUs: 16, Boards: 1, SocketsPerBoard: 16, CoresPerSocket: 1, ThreadsPerCore: 1, RealMemory: 48300 }
+
