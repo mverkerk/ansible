@@ -127,6 +127,15 @@
     group: slurm
     mode: 0644
 
+- name: "Copy slurmdbd.conf configuration fole"
+  template:
+    src: "{{ slurm_dbd_conf_template }}"
+    dest: /etc/slurmdbd.conf
+    owner: slurm
+    group: slurm
+    mode: 0644
+  when: ( ansible_hostname == slurm_dbd_machine )
+
 #
 # Create spool, log and run directories
 #
@@ -252,17 +261,47 @@
     mode: 0644
   when: (ansible_hostname ==  slurm_control_machine) or (ansible_hostname == slurm_backup_controller)
 
+ # Create slurmdbd.service
+- name: "Create slurmdbd.service in /lib/systemd/system"
+  template:
+    src: slurmdbd.service.j2
+    dest: /lib/systemd/system/slurmdbd.service
+    owner: root
+    group: root
+    mode: 0644
+  when: ( ansible_hostname == slurm_dbd_machine )
+
 #
 # Reload daemons, reload, enable and restart services
 #
-- name: "Reload daemons, enable and restart services"
+- name: "Reload cgconfig daemon"
   systemd:
     daemon_reload: yes
-    name: "{{ item }}"
+    name: cgconfig
     enabled: yes
     state: started
-  with_items:
-    - cgconfig
-    - slurmd
-    - slurmctld
-  when: not ( item == "slurmctld" and not ( (ansible_hostname ==  slurm_control_machine) or (ansible_hostname == slurm_backup_controller) ) )
+
+- name: "Reload slurmd daemon"
+  systemd:
+    daemon_reload: yes
+    name: slurmd
+    enabled: yes
+    state: started
+    
+- name: "Reload slurmctld daemon"
+  systemd:
+    daemon_reload: yes   
+    name: slurmctld
+    enabled: yes
+    state: started
+  when: ( (ansible_hostname ==  slurm_control_machine) or (ansible_hostname == slurm_backup_controller) ) 
+
+- name: "Reload slurmdbd daemon"
+  systemd:
+    daemon_reload: yes
+    name: slurmdbd
+    enabled: yes
+    state: started
+  when: ansible_hostname == slurm_dbd_machine
+
+

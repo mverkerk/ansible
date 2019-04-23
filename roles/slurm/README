@@ -4,14 +4,15 @@ Tested with:
 
 * Preparations
 
-Before applaying this role, look at the variables and templates (* are important):
+Before applaying this role, look at the variables and templates ( * are required ):
 
-vars/main.yml:
+defaults/main.yml:
  - Specify installation location
  - Link location (used for configuration files)
  - Config filename (in template folder)
  - Partition name 
  - Controller name *
+ - DBD name 
  - Backup controller name (optional)
  - Compute node information *
 
@@ -22,6 +23,8 @@ templates/
   slurm.logrotate.j2
   slurm.conf.j2 *   <- The slurm configuration file - can also be specified in variables (slurm_conf_template)
   slurmctld.service.j2  
+  slurmdbd.conf.j2  <- The DBD daemon config file - can also be specified in variables (slurm
+  slurmdbd.service.j2  
   slurm.ld.conf.j2
   slurm.sh.j2
 

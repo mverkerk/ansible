@@ -26,6 +26,11 @@ slurm_conf_template: slurm.conf.j2
 #slurm_control_machine: test-control
 #slurm_backup_controller: ct1
 
+slurm_dbd_conf_template: slurmdbd.conf.j2
+#slurm_dbd_machine: test-control
+#slurm_dbd_storagepass: user 
+#slurm_dbd_storageuser: password
+
 #firewalld_trusted_zone: 10.223.26.0/16
 
 # The following information can be obtained by running slurmd -C on the node + IP adresses! 
