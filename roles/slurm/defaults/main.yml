@@ -28,8 +28,8 @@ slurm_conf_template: slurm.conf.j2
 
 slurm_dbd_conf_template: slurmdbd.conf.j2
 #slurm_dbd_machine: test-control
-#slurm_dbd_storagepass: user 
-#slurm_dbd_storageuser: password
+#slurm_dbd_storageuser: user 
+#slurm_dbd_storagepass: password
 
 #firewalld_trusted_zone: 10.223.26.0/16
 
