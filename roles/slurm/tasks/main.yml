@@ -236,6 +236,7 @@
       state: enabled
   - name: "Reload firewall daemon"
     command: "firewall-cmd --reload"
+    ignore_errors: yes               # <- in case service is not currently running
   when: firewalld_available.stat.exists and ( firewalld_trusted_zone is defined ) 
     
 #
