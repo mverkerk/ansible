@@ -105,7 +105,7 @@ AccountingStorageHost={{ slurm_dbd_machine }}
 AccountingStorageType=accounting_storage/slurmdbd
 AccountingStorageUser=slurm
 AccountingStoreJobComment=YES
-AccountingStorageEnforce=limits
+AccountingStorageEnforce={{ accounting_storage_enforce }}
 {% else %}
 AccountingStorageType=accounting_storage/none
 AccountingStoreJobComment=YES
