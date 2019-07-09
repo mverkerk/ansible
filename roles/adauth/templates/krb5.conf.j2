@@ -18,10 +18,14 @@ includedir /etc/krb5.conf.d/
 
 [realms]
 {{ realm_name|upper() }} = {
-  kdc = {{ kdc_hostname|upper() }}.{{ realm_name|upper()}}:{{ kdc_port }}
-  admin_server = {{ admin_hostname|upper() }}.{{ realm_name|upper() }}:{{ admin_port }}
+  {% for item in kdcs %}
+    kdc = {{ item.hostname|upper() }}.{{ realm_name|upper() }}:{{ item.port }}
+  {% endfor %}
+  {% for item in admins %}
+    admin_server = {{ item.hostname|upper() }}.{{ realm_name|upper() }}:{{ item.port }}
+  {% endfor %}
 }
 
 [domain_realm]
  {{ realm_name|lower() }} = {{ realm_name|upper() }}
- .{{ realm_name|lower() }} = {{realm_name|upper() }}
+ .{{ realm_name|lower() }} = {{ realm_name|upper() }}

@@ -23,8 +23,9 @@
     group: root
     mode: 0644
 
-- name: "Configure system authentication resources"
-  command: "authconfig --enablekrb5 --krb5kdc={{ kdc_hostname|upper() }}.{{ realm_name|upper()}}:{{ kdc_port }} --krb5adminserver={{ admin_hostname|upper() }}.{{ realm_name|upper() }}:{{ admin_port }} --krb5realm={{ realm_name|upper() }} --update"
+# name: "Configure system authentication resources"
+# command: "authconfig --enablekrb5 --krb5kdc={{ kdc_hostname|upper() }}.{{ realm_name|upper()}}:{{ kdc_port }} --krb5adminserver={{ admin_hostname|upper() }}.{{ realm_name|upper() }}:{{ admin_port }} --krb5realm={{ realm_name|upper() }} --update"
+# command: "authconfig --enablekrb5 --krb5kdc={{ kdcs.hostname|upper() }}.{{ realm_name|upper() }}:{{ kdcs.port }} 
 
 - name:  "Enable pam mkhomedir"
   command: "authconfig --enablemkhomedir --update"

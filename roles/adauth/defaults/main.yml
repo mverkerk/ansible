@@ -7,7 +7,7 @@ krb5_template_file: krb5.conf.j2          #Template file
 
 #Realm Config
 realm_name: EXAMPLE.COM
-kdc_hostname: KDC
-kdc_port: 88
-admin_hostname: ADMIN
-admin_port: 749
+kdcs:
+  - { hostname: KDC, port: 88 }
+admins:
+  - { hostname: ADMIN, port: 749 }
