@@ -1,0 +1,51 @@
+---
+#Source prefix
+perl_prefix: Python-2.7.16
+
+#Source archive ext 
+perl_archive: tgz
+
+#Configure flags add empty list as default ([])
+python_configure_flags_user: []
+
+#Install desination (prefix) on destination machine
+python_install_dest: /opt/software/versions
+
+#One instalation (provide host name) - in cluster situations with central nfs storage of software / tools
+#python_one_installation: host1
+
+#Link location where install destination is linked to and configuration and script files are pointed at 
+python_linkdir: /opt/software/python2
+
+#Do the link (for safe installations)
+python_dolink: true 
+
+#Name of profile.d file (without extension path and .sh/.csh)
+python_profile_d_file: python2
+
+#List of Python packages to be installed with pip (and their OS dependencies)
+#
+# In order to get a list of installed packages:
+# pip list | cut -d" " -f1 | tail -n +3
+#
+# empty list as default: []
+#
+python_packages_os_dependencies: []
+python_packages: []
+
+#
+#Python library locations
+#
+
+#Conf file (without .conf)
+python_lib_conf_file: python2
+
+#Lib location(s)
+python_lib:
+ - /opt/software/python2/lib
+
+#Common user and group id
+r_uid: root
+r_gid: root
+
+

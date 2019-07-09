@@ -1,0 +1,21 @@
+---
+packages:
+  - man-db
+  - ncurses
+  - ncurses-devel
+  - openssl
+  - openssl-devel
+  - sqlite
+  - sqlite-devel
+  - tcl
+  - tcl-devel
+  - tk
+  - tk-devel
+  - valgrind
+  - valgrind-devel
+  - zlib
+  - zlib-devel
+
+python_configure_flags:
+  - "--enable-loadable-sqlite-extensions"
+  - "--with-ensurepip"

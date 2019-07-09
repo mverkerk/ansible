@@ -1,6 +1,6 @@
 Roles
 =====
-- R	       R statistical package
+- R	   R statistical package
 - adauth   AD authentication 
 - build    build packages
 - cluster  Generic cluster settings ( paths / man_db.conf / packages )
@@ -8,4 +8,5 @@ Roles
 - munge    Munge Authentication Service configuration
 - ntp      Network Time Protocal configuration
 - perl     Perl + CPAN packages
+- python   Python programming language
 - slurm    Simple Linux Utility for Resource Management configuration
