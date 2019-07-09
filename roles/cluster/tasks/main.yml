@@ -56,3 +56,13 @@
     loop: "{{ paths }}"
   when: paths is defined
 
+# Set security settings in limits.d 
+- block:
+  - name: "Create nofile.conf in /etc/security/limits.d"
+    template:
+      src: nofile.conf.j2
+      dest: "/etc/security/limits.d/nofile.conf"
+      owner: root
+      group: root
+      mode: 0640
+  when: nofile_soft is defined and nofile_hard is defined

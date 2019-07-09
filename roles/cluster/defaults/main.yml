@@ -26,3 +26,10 @@ profile_d_path: /etc/profile.d
 
 #paths:
 #- { name: tools, location: /opt/software/tools/bin }
+
+#
+# limits.d
+#
+#Max nr of files
+#nofile_soft: 1024
+#nofile_hard: 1024
