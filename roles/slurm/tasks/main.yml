@@ -303,6 +303,19 @@
     state: started
   when: ansible_hostname == slurm_dbd_machine
 
+- name: "Initialize database account"
+  mysql_user:
+    name: "{{ slurm_dbd_storageuser }}"
+    password: "{{ slurm_dbd_storagepass }}"
+    host: localhost
+    state: present
+  mysql_user:
+    name: "{{ slurm_dbd_storageuser }}"
+    password: "{{ slurm_dbd_storagepass }}"
+    host: "{{ item.NodeName }}"
+  loop: "{{ compute_nodes }}"
+  when: ( ( ansible_hostname == slurm_dbd_machine ) and slurm_dbd_init )  
+
 - name: "Add cluster to accounting"
   command: "{{ slurm_linkdir }}/bin/sacctmgr add cluster {{ slurm_cluster_name }}"
   when: ( ( ansible_hostname == slurm_dbd_machine ) and slurm_add_cluster_to_accounting )
