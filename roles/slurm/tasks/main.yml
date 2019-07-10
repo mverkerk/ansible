@@ -288,14 +288,6 @@
     name: slurmd
     enabled: yes
     state: started
-    
-- name: "Reload slurmctld daemon"
-  systemd:
-    daemon_reload: yes   
-    name: slurmctld
-    enabled: yes
-    state: started
-  when: ( (ansible_hostname ==  slurm_control_machine) or (ansible_hostname == slurm_backup_controller) ) 
 
 - name: "Reload slurmdbd daemon"
   systemd:
@@ -305,4 +297,10 @@
     state: started
   when: ansible_hostname == slurm_dbd_machine
 
-
+- name: "Reload slurmctld daemon"
+  systemd:
+    daemon_reload: yes   
+    name: slurmctld
+    enabled: yes
+    state: started
+  when: ( (ansible_hostname ==  slurm_control_machine) or (ansible_hostname == slurm_backup_controller) ) 
