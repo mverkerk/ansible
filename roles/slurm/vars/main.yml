@@ -24,3 +24,8 @@ packages:
   - ncurses-devel
   - gtk2-devel
   - python-firewall
+
+db_packages:
+  - mariadb
+  - mariadb-server
+  - mariadb-devel

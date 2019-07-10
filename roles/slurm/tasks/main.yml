@@ -5,6 +5,12 @@
     name: "{{ packages }}"
     state: latest  
 
+- name: "Install slurm database packages"
+  yum:
+    name: "{{ db_packages }}"
+    state: latest
+  when: ( ansible_hostname == slurm_dbd_machine )
+
 # Compilation & Installing
 - name: Check for slurm installation @ {{ install_dest }}
   stat: path={{ install_dest }}
@@ -296,6 +302,10 @@
     enabled: yes
     state: started
   when: ansible_hostname == slurm_dbd_machine
+
+- name: "Add cluster to accounting"
+  command: "{{ slurm_linkdir }}/bin/sacctmgr add cluster {{ slurm_cluster_name }}"
+  when: ( ( ansible_hostname == slurm_dbd_machine ) and slurm_add_cluster_to_accounting )
 
 - name: "Reload slurmctld daemon"
   systemd:
