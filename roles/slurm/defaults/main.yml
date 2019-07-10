@@ -1,12 +1,12 @@
 ---
 #Source prefix
-slurm_prefix: slurm-18.08.7
+slurm_prefix: slurm-19.05.0
 
 #Source archive ext 
 slurm_archive: tar.bz2
 
 #Install desination (prefix) on destination machine
-install_dest: /opt/slurm-18.08.7
+install_dest: /opt/slurm-19.05.0
 
 #sysconfdir slurm.conf directory
 sysconfdir: /etc
@@ -31,6 +31,7 @@ slurm_dbd_conf_template: slurmdbd.conf.j2
 #slurm_dbd_storageuser: user 
 #slurm_dbd_storagepass: password
 #slurm_accounting_storage_enforce: limits
+#slurm_add_cluster_to_accounting: yes         # Run 'sacctmgr add cluster "clustername"'
 
 #firewalld_trusted_zone: 10.223.26.0/16
 
