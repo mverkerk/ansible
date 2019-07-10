@@ -25,7 +25,13 @@ packages:
   - gtk2-devel
   - python-firewall
 
+#
+# This role is configured for mysql or mariadb databases
+#
 db_packages:
   - mariadb
   - mariadb-server
   - mariadb-devel
+  - MySQL-python
+
+db_daemon_name: mariadb
