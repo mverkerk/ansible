@@ -303,14 +303,6 @@
     enabled: yes
     state: started
 
-- name: "Reload slurmdbd daemon"
-  systemd:
-    daemon_reload: yes
-    name: slurmdbd
-    enabled: yes
-    state: started
-  when: ansible_hostname == slurm_dbd_machine
-
 - name: "Initialize database account"
   block:
   - name: "Create slurm@localhost db account"
@@ -320,7 +312,7 @@
       host: localhost
       priv: 'slurm_acct_db.*:ALL,GRANT'
       state: present
-  - name: "Create slurm@slurm_nodes database accounts"
+  - name: "Create slurm@slurm_nodes db accounts"
     mysql_user:
       name: "{{ slurm_dbd_storageuser }}"
       password: "{{ slurm_dbd_storagepass }}"
@@ -330,8 +322,16 @@
     loop: "{{ compute_nodes }}"
   when: ( ( ansible_hostname == slurm_dbd_machine ) and slurm_dbd_init )  
 
+- name: "Reload slurmdbd daemon"
+  systemd:
+    daemon_reload: yes
+    name: slurmdbd
+    enabled: yes
+    state: started
+  when: ansible_hostname == slurm_dbd_machine
+
 - name: "Add cluster to accounting"
-  command: "{{ slurm_linkdir }}/bin/sacctmgr add cluster {{ slurm_cluster_name }}"
+  command: "{{ slurm_linkdir }}/bin/sacctmgr -i add cluster {{ slurm_cluster_name }}"
   when: ( ( ansible_hostname == slurm_dbd_machine ) and slurm_add_cluster_to_accounting )
 
 - name: "Reload slurmctld daemon"
@@ -340,4 +340,4 @@
     name: slurmctld
     enabled: yes
     state: started
-  when: ( (ansible_hostname ==  slurm_control_machine) or (ansible_hostname == slurm_backup_controller) ) 
+  when: ( ( ansible_hostname == slurm_control_machine ) or ( ansible_hostname == slurm_backup_controller ) ) 
