@@ -62,7 +62,9 @@ SchedulerType=sched/backfill
 SelectType=select/cons_res
 SelectTypeParameters=CR_Core_Memory
 FastSchedule=1
-DefMemPerCPU=4096
+{% if slurm_defmempercpu is defined %}
+DefMemPerCPU={{ slurm_defmempercpu }}
+{% endif %}
 #EnforcePartLimits=NO 
 #DisableRootJobs=NO 
 #FirstJobId=1 
