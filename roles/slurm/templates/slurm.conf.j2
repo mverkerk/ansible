@@ -2,11 +2,15 @@
 # Put this file on all nodes of your cluster.
 # See the slurm.conf man page for more information.
 #
+{# Jinja2 Macro's #}
+{# Conditional Parameter macro that shows only when parameter is defined #}
+{% macro cp(key, value) -%}
+    {% if value is defined %}{{ key }}={{ value }}{% endif %}
+{%- endmacro %}
+{# End of macro's #}
 Clustername={{ slurm_cluster_name }}
 ControlMachine={{ slurm_control_machine }}
-{% if slurm_backup_controller is defined %}
-BackupController={{ slurm_backup_controller }}
-{% endif %}
+{{ cp('BackupController', slurm_backup_controller) }}
 # 
 SlurmUser=slurm
 SlurmctldPort=6817
@@ -62,27 +66,27 @@ SchedulerType=sched/backfill
 SelectType=select/cons_res
 SelectTypeParameters=CR_Core_Memory
 FastSchedule=1
-{% if slurm_defmempercpu is defined %}
-DefMemPerCPU={{ slurm_defmempercpu }}
-{% endif %}
+{{ cp('DefMemPerCPU', slurm_defmempercpu) }}
 #EnforcePartLimits=NO 
 #DisableRootJobs=NO 
 #FirstJobId=1 
 #SchedulerTimeSlice=30 
 #
 # JOB PRIORITY 
-#PriorityFlags= 
-#PriorityType=priority/basic 
-#PriorityDecayHalfLife= 
-#PriorityCalcPeriod= 
-#PriorityFavorSmall= 
-#PriorityMaxAge= 
-#PriorityUsageResetPeriod= 
-#PriorityWeightAge= 
-#PriorityWeightFairshare= 
-#PriorityWeightJobSize= 
-#PriorityWeightPartition= 
-#PriorityWeightQOS= 
+{{ cp('PriorityType', slurm_priority_type) }}
+{{ cp('PriorityDecayHalfLife', slurm_priority_decay_half_life) }}
+{{ cp('PriorityCalcPeriod', slurm_priority_calc_period) }}
+{{ cp('PriorityUsageResetPeriod', slurm_priority_usage_reset_period) }}
+{{ cp('PriorityFavorSmall', slurm_priority_favor_small) }}
+{{ cp('PriorityMaxAge', slurm_priority_max_age) }}
+{{ cp('PriorityWeightAge', slurm_priority_weight_age) }}
+{{ cp('PriorityWeightAssoc', slurm_priority_weight_assoc) }}
+{{ cp('PriorityWeightFairshare', slurm_priority_weight_fairshare) }}
+{{ cp('PriorityWeightJobSize', slurm_priority_weight_job_size) }}
+{{ cp('PriorityWeightPartition',slurm_priority_weight_partition) }}
+{{ cp('PriorityWeightQOS', slurm_priority_weight_qos) }}
+{{ cp('PriorityWeightTRES', slurm_priority_weight_tres) }}
+{{ cp('PriorityFlags', slurm_priority_flags) }}
 #
 # LOGGING & DEBUGGING
 SlurmctldDebug=3
