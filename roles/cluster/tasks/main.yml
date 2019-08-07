@@ -66,3 +66,19 @@
       group: root
       mode: 0640
   when: nofile_soft is defined and nofile_hard is defined
+
+# Copy script with numeric user environent variable
+- block:
+  - name: Copy numeric_user.sh to cluster
+    copy:
+      src: files/numeric_user.sh
+      dest: "{{ profile_d_path }}/numeric_user.sh"
+      owner: root
+      group: root
+      mode: u=rwx,g=rwx,o=rx
+  - name: Link csh version
+    file:
+      src: "{{ profile_d_path }}/numeric_user.sh"
+      dest: "{{ profile_d_path }}/numeric_user.csh"
+      state: link
+  when: numeric_user
