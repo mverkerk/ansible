@@ -33,3 +33,8 @@ profile_d_path: /etc/profile.d
 #Max nr of files
 #nofile_soft: 1024
 #nofile_hard: 1024
+
+#
+# Various FLAGS
+#
+#numeric_user: true
