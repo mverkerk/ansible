@@ -31,6 +31,8 @@ slurm_conf_template: slurm.conf.j2
 #slurm_control_machine: test-control
 #slurm_backup_controller: ct1
 
+#slurm_update_hosts_file: true
+
 #
 # Accounting
 # 

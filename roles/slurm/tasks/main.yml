@@ -226,13 +226,15 @@
 #
 # Add nodes to /etc/hosts
 #
-- name: "Update /etc/hosts file"
-  lineinfile:
-    dest: /etc/hosts
-    regexp: "^{{ item.IP }}"
-    line: "{{ item.IP }} {{ item.NodeName }}"
-    state: present
-  loop: "{{ compute_nodes }}"
+- block:
+  - name: "Update /etc/hosts file"
+    lineinfile:
+      dest: /etc/hosts
+      regexp: "^{{ item.IP }}"
+      line: "{{ item.IP }} {{ item.NodeName }}"
+      state: present
+    loop: "{{ compute_nodes }}"
+  when: slurm_update_hosts_file
 
 #
 # Apply Firewall Rules
@@ -274,7 +276,7 @@
     owner: root
     group: root
     mode: 0644
-  when: (ansible_hostname ==  slurm_control_machine) or (ansible_hostname == slurm_backup_controller)
+  when: (ansible_hostname ==  slurm_control_machine) or (slurm_backup_controller is defined and ansible_hostname == slurm_backup_controller)
 
  # Create slurmdbd.service
 - name: "Create slurmdbd.service in /lib/systemd/system"
@@ -340,4 +342,4 @@
     name: slurmctld
     enabled: yes
     state: started
-  when: ( ( ansible_hostname == slurm_control_machine ) or ( ansible_hostname == slurm_backup_controller ) ) 
+  when: ( ( ansible_hostname == slurm_control_machine ) or ( slurm_backup_controller is defined and ansible_hostname == slurm_backup_controller ) ) 
