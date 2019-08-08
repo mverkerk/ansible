@@ -9,7 +9,7 @@
   yum:
     name: "{{ db_packages }}"
     state: latest
-  when: ( ansible_hostname == slurm_dbd_machine )
+  when: ( inventory_hostname == slurm_dbd_machine )
 
 - name: "Make sure database daemon is running"
   systemd:
@@ -17,7 +17,7 @@
     name: "{{ db_daemon_name }}"
     enabled: yes
     state: started
-  when: ( ansible_hostname == slurm_dbd_machine )
+  when: ( inventory_hostname == slurm_dbd_machine )
 
 # Compilation & Installing
 - name: Check for slurm installation @ {{ install_dest }}
@@ -148,7 +148,7 @@
     owner: slurm
     group: slurm
     mode: 0644
-  when: ( ansible_hostname == slurm_dbd_machine )
+  when: ( inventory_hostname == slurm_dbd_machine )
 
 #
 # Create spool, log and run directories
@@ -276,7 +276,7 @@
     owner: root
     group: root
     mode: 0644
-  when: (ansible_hostname ==  slurm_control_machine) or (slurm_backup_controller is defined and ansible_hostname == slurm_backup_controller)
+  when: (inventory_hostname ==  slurm_control_machine) or (slurm_backup_controller is defined and inventory_hostname == slurm_backup_controller)
 
  # Create slurmdbd.service
 - name: "Create slurmdbd.service in /lib/systemd/system"
@@ -286,7 +286,7 @@
     owner: root
     group: root
     mode: 0644
-  when: ( ansible_hostname == slurm_dbd_machine )
+  when: ( inventory_hostname == slurm_dbd_machine )
 
 #
 # Reload daemons, reload, enable and restart services
@@ -322,7 +322,7 @@
       priv: 'slurm_acct_db.*:ALL,GRANT'
       state: present
     loop: "{{ compute_nodes }}"
-  when: ( ( ansible_hostname == slurm_dbd_machine ) and slurm_dbd_init )  
+  when: ( ( inventory_hostname == slurm_dbd_machine ) and slurm_dbd_init )  
 
 - name: "Reload slurmdbd daemon"
   systemd:
@@ -330,11 +330,11 @@
     name: slurmdbd
     enabled: yes
     state: started
-  when: ansible_hostname == slurm_dbd_machine
+  when: ( inventory_hostname == slurm_dbd_machine )
 
 - name: "Add cluster to accounting"
   command: "{{ slurm_linkdir }}/bin/sacctmgr -i add cluster {{ slurm_cluster_name }}"
-  when: ( ( ansible_hostname == slurm_dbd_machine ) and slurm_add_cluster_to_accounting )
+  when: ( ( inventory_hostname == slurm_dbd_machine ) and slurm_add_cluster_to_accounting )
 
 - name: "Reload slurmctld daemon"
   systemd:
@@ -342,4 +342,4 @@
     name: slurmctld
     enabled: yes
     state: started
-  when: ( ( ansible_hostname == slurm_control_machine ) or ( slurm_backup_controller is defined and ansible_hostname == slurm_backup_controller ) ) 
+  when: ( ( inventory_hostname == slurm_control_machine ) or ( slurm_backup_controller is defined and inventory_hostname == slurm_backup_controller ) ) 
