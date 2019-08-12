@@ -41,7 +41,7 @@ slurm_dbd_conf_template: slurmdbd.conf.j2
 #slurm_dbd_storageuser: user 
 #slurm_dbd_storagepass: password
 #slurm_accounting_storage_enforce: limits
-#slurm_add_cluster_to_accounting: yes         # Run 'sacctmgr add cluster "clustername"'
+#slurm_add_cluster_to_accounting: true        # Run 'sacctmgr add cluster "clustername"'
 #slurm_dbd_init: yes                          # Create DB and account
 
 #
