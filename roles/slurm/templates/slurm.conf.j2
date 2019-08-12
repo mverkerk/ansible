@@ -158,12 +158,12 @@ AccountingStoreJobComment=YES
 
 # 
 # COMPUTE NODES 
-{% for item in compute_nodes %}
+{% for item in slurm_compute_nodes %}
 NodeName={{ item.NodeName }} CPUs={{ item.CPUs }} Boards={{ item.Boards }} SocketsPerBoard={{ item.SocketsPerBoard }} CoresPerSocket={{ item.CoresPerSocket }} ThreadsPerCore={{ item.ThreadsPerCore }} RealMemory={{ item.RealMemory }}
 {% endfor %}
 
 # Partitions
 #
-{% for item in partitions %}
+{% for item in slurm_partitions %}
 PartitionName={{ item.PartitionName }} Nodes={{ item.Nodes }} Default={{ item.Default }} MaxTime={{ item.MaxTime }} State={{ item.State }}
 {% endfor %}

@@ -233,7 +233,7 @@
       regexp: "^{{ item.IP }}"
       line: "{{ item.IP }} {{ item.NodeName }}"
       state: present
-    loop: "{{ compute_nodes }}"
+    loop: "{{ slurm_compute_nodes }}"
   when: slurm_update_hosts_file
 
 #
@@ -297,6 +297,7 @@
     name: cgconfig
     enabled: yes
     state: started
+  when: inventory_hostname in slurm_partitions | join("|")
 
 - name: "Reload slurmd daemon"
   systemd:
@@ -304,6 +305,7 @@
     name: slurmd
     enabled: yes
     state: started
+  when: inventory_hostname in slurm_partitions | join("|")
 
 - name: "Initialize database account"
   block:
@@ -321,7 +323,7 @@
       host: "{{ item.NodeName }}"
       priv: 'slurm_acct_db.*:ALL,GRANT'
       state: present
-    loop: "{{ compute_nodes }}"
+    loop: "{{ slurm_compute_nodes }}"
   when: ( ( inventory_hostname == slurm_dbd_machine ) and slurm_dbd_init )  
 
 - name: "Reload slurmdbd daemon"
