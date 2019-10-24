@@ -31,6 +31,8 @@ slurm_conf_template: slurm.conf.j2
 #slurm_control_machine: test-control
 #slurm_backup_controller: ct1
 
+#slurm_update_hosts_file: true
+
 #
 # Accounting
 # 
@@ -39,7 +41,7 @@ slurm_dbd_conf_template: slurmdbd.conf.j2
 #slurm_dbd_storageuser: user 
 #slurm_dbd_storagepass: password
 #slurm_accounting_storage_enforce: limits
-#slurm_add_cluster_to_accounting: yes         # Run 'sacctmgr add cluster "clustername"'
+#slurm_add_cluster_to_accounting: true        # Run 'sacctmgr add cluster "clustername"'
 #slurm_dbd_init: yes                          # Create DB and account
 
 #
@@ -74,9 +76,9 @@ slurm_priority_type: priority/basic               # either priority/basic / prio
 #
 # NB It is adviced to reduce the amount of memory for the OS
 #
-#compute_nodes:
+#slurm_compute_nodes:
 #  - { NodeName: Node-01, IP: 192.168.0.1, CPUs: 16, Boards: 1, SocketsPerBoard: 16, CoresPerSocket: 1, ThreadsPerCore: 1, RealMemory: 48300 }
 #  - { NodeName: Node-02, IP: 192.168.0.2, CPUs: 16, Boards: 1, SocketsPerBoard: 16, CoresPerSocket: 1, ThreadsPerCore: 1, RealMemory: 48300 }
-#partitions
+#slurm_partitions
 #  - { PartitionName: debug, Nodes: "Node-01,Node-02", Default: YES, Maxtime: INFINITE, State=: UP }
 
