@@ -2,3 +2,8 @@ This role will compile, install and configure Perl and install specified CPAN pa
 
 - Link Perl source file in files
 - Alter vars/main.yml or set vars in playbook
+
+In order to get a list of installed packages:
+
+ perldoc perllocal   <- this will start less/more a file generated in /tmp 
+ cat /tmp/the_gen_file  | grep -v "*" | sed  '/^$/d' | cut -c42- | sort
