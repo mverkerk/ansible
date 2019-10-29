@@ -89,7 +89,7 @@
 
 #Make sure we are working with the newest version of seuptools / pip / virtualenv
 - name: "Update pip"
-  command: "{{ python_linkdir }}/bin/pip install --upgrade pip"
+  command: "{{ python_linkdir }}/bin/{{ python_pip }} install --upgrade pip"
 - name: "Install setuptools and virtualenv"
   command: "{{ python_linkdir }}/bin/pip install setuptools virtualenv"
 

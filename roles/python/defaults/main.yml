@@ -23,6 +23,9 @@ python_dolink: true
 #Name of profile.d file (without extension path and .sh/.csh)
 python_profile_d_file: python2
 
+#Name of pip tool - usually pip or pipx, where x is the python major version nr
+python_pip: pip3
+
 #List of Python packages to be installed with pip (and their OS dependencies)
 #
 # In order to get a list of installed packages:
