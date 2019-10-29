@@ -1,5 +1,7 @@
 ---
 packages:
+  - libffi
+  - libffi-devel
   - man-db
   - ncurses
   - ncurses-devel
