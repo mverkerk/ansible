@@ -24,7 +24,10 @@ packages:
   - ncurses-devel
   - gtk2-devel
   - python-firewall
+  - hwloc
   - hwloc-devel
+  - hwlocs-libs
+  - hwloc-plugins
 
 #
 # This role is configured for mysql or mariadb databases
