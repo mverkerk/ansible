@@ -4,10 +4,11 @@
 # Authentication info
 AuthType=auth/munge
 # slurmDBD info
-DbdAddr={{ slurm_dbd_machine }}
+#DbdAddr={{ slurm_dbd_machine }}
 DbdHost={{ slurm_dbd_machine }}
 #DbdPort=6819
 SlurmUser=slurm
+#PluginDir=
 DebugLevel=4
 LogFile=/var/log/slurm/slurmdbd.log
 PidFile=/var/run/slurm/slurmdbd.pid

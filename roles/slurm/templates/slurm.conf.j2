@@ -93,14 +93,12 @@ SlurmctldDebug=3
 SlurmctldLogFile=/var/log/slurm/slurmctld.log
 SlurmdDebug=3
 SlurmdLogFile=/var/log/slurm/slurmd.log
-JobAcctGatherFrequency=30
-JobAcctGatherType=jobacct_gather/none
 
 #JobCompHost=
-JobCompLoc=/var/log/slurm/slurm_jobcomp.log
+#JobCompLoc=/var/log/slurm/slurm_jobcomp.log
 #JobCompPass=
 #JobCompPort=
-JobCompType=jobcomp/filetxt
+#JobCompType=jobcomp/filetxt
 #JobCompUser=
 #JobContainerType=job_container/none 
 
@@ -109,12 +107,15 @@ JobCompType=jobcomp/filetxt
 {% if slurm_dbd_machine is defined %}
 AccountingStorageHost={{ slurm_dbd_machine }}
 AccountingStorageType=accounting_storage/slurmdbd
-AccountingStorageUser=slurm
+#AccountingStorageUser=slurm
 AccountingStoreJobComment=YES
 AccountingStorageEnforce={{ slurm_accounting_storage_enforce }}
+JobAcctGatherType=jobacct_gather/linux
+JobAcctGatherFrequency=30
 {% else %}
 AccountingStorageType=accounting_storage/none
 AccountingStoreJobComment=YES
+JobAcctGatherType=jobacct_gather/none
 {% endif %}
  
 # 
