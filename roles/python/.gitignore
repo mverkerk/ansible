@@ -3,6 +3,7 @@
 #
 files/*.tar.bz2
 files/*.tar.gz
+files/*.tar.xz
 
 #
 # Temporary files
