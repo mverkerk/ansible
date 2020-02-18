@@ -3,4 +3,5 @@ dependencies:
   - { role: epel }
   - { role: build }
   - { role: munge }
-  - { role: ntp }
+#  - { role: ntp } # Deprecated in CENTOS8
+  - { role: chrony }
