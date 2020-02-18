@@ -7,3 +7,9 @@ In order to get a list of installed packages:
 
  perldoc perllocal   <- this will start less/more a file generated in /tmp 
  cat /tmp/the_gen_file  | grep -v "*" | sed  '/^$/d' | cut -c42- | sort
+
+ or
+
+ for l in `cpan -l | cut -f1`;do echo "     - \"${l}\"" >> perl.list;done
+  
+  ^- I needed to sort | uniq the output file..
