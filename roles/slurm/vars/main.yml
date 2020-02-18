@@ -1,7 +1,7 @@
 ---
 packages:
   - libcgroup
-  - libcgroup-devel
+#  - libcgroup-devel
   - libcgroup-tools
   - libcgroup-pam
   - hdf5
@@ -23,10 +23,11 @@ packages:
   - readline-devel
   - ncurses-devel
   - gtk2-devel
-  - python-firewall
+#  - python-firewall
   - hwloc
   - hwloc-devel
-  - hwlocs-libs
+#  - hwlocs-libs
+  - hwloc-libs
   - hwloc-plugins
 
 #
@@ -36,6 +37,7 @@ db_packages:
   - mariadb
   - mariadb-server
   - mariadb-devel
-  - MySQL-python
+  - python3-PyMySQL
+#  - MySQL-python
 
 db_daemon_name: mariadb
