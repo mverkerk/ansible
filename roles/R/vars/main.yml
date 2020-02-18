@@ -12,12 +12,14 @@ packages:
   - libicu-devel
   - tcl-devel
   - tk-devel
-  - tclx-devel
-  - tclx
+#  - tclx-devel
+#  - tclx
   - tk
   - libjpeg-turbo
   - libjpeg-turbo-devel
-  - libssh2-devel
+#  - libssh2-devel
+  - libssh
+  - libssh-devel
   - libtiff
   - libtiff-devel
   - libpng
