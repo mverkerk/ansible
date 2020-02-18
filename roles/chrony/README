@@ -1,0 +1,3 @@
+Ansible chrony Daemon configuration (NTP replacement RHEL/CENTOS8) based on CentOS 8 config template).
+- configure the server pool from variable
+- install, enable and start chronyd daemon
