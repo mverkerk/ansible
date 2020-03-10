@@ -1,9 +1,9 @@
 ---
 #Source prefix
-perl_prefix: Python-2.7.16
+python_prefix: Python-2.7.16
 
 #Source archive ext 
-perl_archive: tgz
+python_archive: tgz
 
 #Configure flags add empty list as default ([])
 python_configure_flags_user: []
