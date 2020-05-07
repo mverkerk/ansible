@@ -32,3 +32,6 @@ packages:
   - gcc-gfortran
   - libxml2
   - libxml2-devel
+  - pcre2
+  - pcre2-devel
+    
