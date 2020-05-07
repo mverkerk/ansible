@@ -1,6 +1,6 @@
 ---
 #Source prefix
-r_prefix: R-3.6.1
+r_prefix: R-4.0.0
 
 #Source archive ext 
 r_archive: tar.gz
@@ -11,6 +11,7 @@ r_configure_flags:
  - "--with-cairo=yes"
  - "--with-libpng=yes"
  - "--enable-R-shlib"
+ - "--enable-memory-profiling"
 
 #Install desination (prefix) on destination machine
 r_install_dest: /opt
@@ -32,8 +33,11 @@ r_packages: r_packages.rda
 #Variable name of packages in packages file
 r_packages_var: pkgs
 
-#List with github identifications for - make sure deps are arranged!
+#List with github identifications - make sure deps are arranged!
 #r_github_packages:
+
+#List with gitlab identifications - make sure deps!
+#r_gitlab_packages:
 
 #List with web locations of source packages (outside CRAN / Bioconductor) - make sure deps are arranged!
 #r_source_packages:

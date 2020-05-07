@@ -106,6 +106,20 @@
   when: r_github_packages is defined
 
 #
+# Install gitlab packages
+# Package list is defined in r_gitlab_packages variable.
+#
+- block:
+  - name: "Install 'devtools' package"
+    command: "{{ r_install_dest }}/{{ r_prefix }}/bin/Rscript -e 'install.packages(\"devtools\", repos=\"{{ r_rpos }}\");'"
+  - name: "Install gitlab packages"
+    command: "{{ r_install_dest }}/{{ r_prefix }}/bin/Rscript -e 'require(\"devtools\");devtools::install_gitlab(\"{{ item }}\");'"
+    register: instgitlab
+    loop: "{{ r_gitlab_packages }}"
+  - copy: content={{ instgitlab.results }} dest=/tmp/r_instgitlab.results
+  when: r_gitlab_packages is defined
+
+#
 # Install packages from source 
 #
 # Packages are defined in r_source_packages variable.
