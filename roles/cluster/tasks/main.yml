@@ -11,6 +11,15 @@
     state: latest
       
 - block:
+  - name: "Create MANDATORY_MANPATHs folder"
+    file:
+      path: "{{ item }}"
+      state: directory
+      owner: root
+      group: root
+      mode: 0775
+      recurse: yes
+    loop: "{{ mandatory_manpaths }}"
   - name: "Set MANDATORY_MANPATHs"
     lineinfile:
       path: "{{ man_db_path }}"
@@ -37,6 +46,15 @@
 
 # Set PATHs (create file in profile.d)
 - block:       
+  - name: "Create PATH folder"
+    file:
+      path: "{{ item.location }}"
+      state: directory
+      owner: root
+      group: root
+      mode: 0775
+      recurse: yes
+    loop: "{{ paths }}"
   - name: "Create profile.d files with PATH info"
     template: 
       src: path.sh.j2
@@ -81,4 +99,4 @@
       src: "{{ profile_d_path }}/numeric_user.sh"
       dest: "{{ profile_d_path }}/numeric_user.csh"
       state: link
-  when: numeric_user
+  when: numeric_user is defined and numeric_user
