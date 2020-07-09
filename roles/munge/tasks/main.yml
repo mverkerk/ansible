@@ -6,7 +6,7 @@
 
 - name: "Copy munge key file"
   copy:
-    src: files/{{ munge_keyfile }}
+    src: "{{ munge_keyfile }}"
     dest: /etc/munge/munge.key
     owner: munge
     group: munge
