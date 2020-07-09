@@ -1,6 +1,6 @@
 ---
 #Source prefix
-r_prefix: R-4.0.0
+r_prefix: R-4.0.2
 
 #Source archive ext 
 r_archive: tar.gz
@@ -27,11 +27,14 @@ r_rpos: "https://cran.ma.imperial.ac.uk"
 #OS Dependencies for packages (RPMs)
 #r_os_packages: []
 
+#List of bioconductor and CRAN packages
+#r_packages: []
+
 #Location of list of bioconductor packages ( expects in: playbook_dir ) - uses bioclite to install both CRAN and bioconductor packages
-r_packages: r_packages.rda 
+#r_rda_packages: r_packages.rda 
 
 #Variable name of packages in packages file
-r_packages_var: pkgs
+r_rda_packages_var: pkgs
 
 #List with github identifications - make sure deps are arranged!
 #r_github_packages:
