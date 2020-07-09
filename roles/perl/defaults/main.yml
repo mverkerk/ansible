@@ -1,12 +1,14 @@
 ---
 #Source prefix
-perl_prefix: perl-5.30.1 
+perl_prefix: perl-5.32.0
 
 #Source archive ext 
 perl_archive: tar.gz
 
 #Configure flags add empty list as default ([])
-perl_configure_flags: []
+perl_configure_flags:
+ - "-Accflags='-fPIC'"
+ - "-Dusethreads"
 
 #Install desination (prefix) on destination machine
 perl_install_dest: /opt/software/versions
