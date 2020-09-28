@@ -1,12 +1,11 @@
 ---
 - name: "Install packages"
-  yum:
-    name: "{{ packages }}"
+  dnf:
+    name: "{{ cluster_packages }}"
     state: latest
-  when: packages is defined
 
 - name: "Install man-db package"
-  yum:
+  dnf:
     name: man-db
     state: latest
       
