@@ -24,6 +24,9 @@ r_dolink: true
 #Location of R repositories
 r_rpos: "https://cran.ma.imperial.ac.uk"
 
+#One instalation (provide host name) - in cluster situations with central nfs storage of software / tools
+#r_one_installation: hostname
+
 #OS Dependencies for packages (RPMs)
 #r_os_packages: []
 

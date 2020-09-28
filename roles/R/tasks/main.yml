@@ -29,7 +29,7 @@
         dest: "{{ r_linkdir }}"
         state: link
       when: r_dolink
-  when: not r_installed.stat.exists
+  when: not r_installed.stat.exists and ( r_one_installation is not defined or inventory_hostname == r_one_installation )
  
 # Configuring R man files
 - name: "Install man-db package"
@@ -87,7 +87,7 @@
     register: instpack
     loop: "{{ r_packages }}"
   - copy: content={{ instpack.results }} dest=/tmp/r_instpack.results
-  when: r_packages is defined
+  when: r_packages is defined and ( r_one_installation is not defined or inventory_hostname == r_one_installation )
 
 # Install Bioconductor R and CRAN packages from provided rda file containing "pkgs" variable
 - block: 
@@ -100,7 +100,7 @@
     register: instpack_rda
   - copy: content={{ instpack_rda.stdout }} dest=/tmp/r_instpack_rda.stdout
   - copy: content={{ instpack_rda.stderr }} dest=/tmp/r_instpack_rda.stderr
-  when: r_rda_packages is defined
+  when: r_rda_packages is defined and ( r_one_installation is not defined or inventory_hostname == r_one_installation )
 
 #
 # Install github packages with devtools ( https://cran.r-project.org/web/packages/devtools/index.html )
@@ -114,7 +114,7 @@
     register: instgithub
     loop: "{{ r_github_packages }}"
   - copy: content={{ instgithub.results }} dest=/tmp/r_instgithub.results  
-  when: r_github_packages is defined
+  when: r_github_packages is defined and ( r_one_installation is not defined or inventory_hostname == r_one_installation )
 
 #
 # Install gitlab packages
@@ -128,7 +128,7 @@
     register: instgitlab
     loop: "{{ r_gitlab_packages }}"
   - copy: content={{ instgitlab.results }} dest=/tmp/r_instgitlab.results
-  when: r_gitlab_packages is defined
+  when: r_gitlab_packages is defined and ( r_one_installation is not defined or inventory_hostname == r_one_installation )
 
 #
 # Install packages from source 
@@ -141,4 +141,4 @@
     register: instsource
     loop: "{{ r_source_packages }}"
   - copy: content={{ instsource.results }} dest=/tmp/r_instsource.results
-  when: r_source_packages is defined
+  when: r_source_packages is defined and ( r_one_installation is not defined or inventory_hostname == r_one_installation )
