@@ -1,5 +1,5 @@
 ---
-packages: 
+build_packages: 
   - autoconf
   - automake
   - binutils

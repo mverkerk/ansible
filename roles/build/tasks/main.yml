@@ -1,5 +1,5 @@
 ---
 - name: "Install build packages"
   yum:
-    name: "{{ packages }}"
+    name: "{{ build_packages }}"
     state: latest  
