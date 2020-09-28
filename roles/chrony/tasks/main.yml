@@ -1,7 +1,7 @@
 ---
 - name: "Install chrony packages"
   yum:
-    name: "{{ packages }}"
+    name: "{{ chrony_packages }}"
     state: latest  
 
 - name: "Create chrony configuration file"
