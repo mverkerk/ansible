@@ -91,8 +91,9 @@
     command: "{{ r_install_dest }}/{{ r_prefix }}/bin/Rscript -e 'install.packages(\"BiocManager\", repos=\"{{ r_rpos }}\");'"
   - name: "Install R packages"
     command: "{{ r_install_dest }}/{{ r_prefix }}/bin/Rscript -e 'BiocManager::install(\"{{ item }}\");'"
-    register: instpack
     loop: "{{ r_packages }}"
+    ignore_errors: yes
+    register: instpack
   - copy: content={{ instpack.results }} dest=/tmp/r_instpack.results
   when: r_packages is defined and ( r_one_installation is not defined or inventory_hostname == r_one_installation )
 
@@ -104,6 +105,7 @@
       dest: "/tmp/{{ r_rda_packages }}"
   - name: "Install cran / bioconductor packages" 
     command: "{{ r_install_dest }}/{{ r_prefix}}/bin/Rscript -e 'install.packages(\"BiocManager\", repos=\"{{ r_rpos }}\");load(\"/tmp/{{ r_rda_packages }}\");BiocManager::install(pkgs={{ r_rda_packages_var }})'"
+    ignore_errors: yes
     register: instpack_rda
   - copy: content={{ instpack_rda.stdout }} dest=/tmp/r_instpack_rda.stdout
   - copy: content={{ instpack_rda.stderr }} dest=/tmp/r_instpack_rda.stderr
@@ -118,8 +120,9 @@
     command: "{{ r_install_dest }}/{{ r_prefix }}/bin/Rscript -e 'install.packages(\"devtools\", repos=\"{{ r_rpos }}\");'"
   - name: "Install github packages"
     command: "{{ r_install_dest }}/{{ r_prefix }}/bin/Rscript -e 'require(\"devtools\");devtools::install_github(\"{{ item }}\");'"      
-    register: instgithub
     loop: "{{ r_github_packages }}"
+    ignore_errors: yes
+    register: instgithub
   - copy: content={{ instgithub.results }} dest=/tmp/r_instgithub.results  
   when: r_github_packages is defined and ( r_one_installation is not defined or inventory_hostname == r_one_installation )
 
@@ -132,8 +135,9 @@
     command: "{{ r_install_dest }}/{{ r_prefix }}/bin/Rscript -e 'install.packages(\"devtools\", repos=\"{{ r_rpos }}\");'"
   - name: "Install gitlab packages"
     command: "{{ r_install_dest }}/{{ r_prefix }}/bin/Rscript -e 'require(\"devtools\");devtools::install_gitlab(\"{{ item }}\");'"
-    register: instgitlab
     loop: "{{ r_gitlab_packages }}"
+    ignore_errors: yes
+    register: instgitlab    
   - copy: content={{ instgitlab.results }} dest=/tmp/r_instgitlab.results
   when: r_gitlab_packages is defined and ( r_one_installation is not defined or inventory_hostname == r_one_installation )
 
@@ -145,7 +149,8 @@
 - block:
   - name: "Install source only packages"
     command: "{{ r_install_dest }}/{{ r_prefix }}/bin/Rscript -e 'install.packages(\"{{ item }}\", repos=NULL, method=\"libcurl\");'"
-    register: instsource
     loop: "{{ r_source_packages }}"
+    ignore_errors: yes
+    register: instsource    
   - copy: content={{ instsource.results }} dest=/tmp/r_instsource.results
   when: r_source_packages is defined and ( r_one_installation is not defined or inventory_hostname == r_one_installation )
