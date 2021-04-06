@@ -1,6 +1,6 @@
 ---
 #Source prefix
-r_prefix: R-4.0.2
+r_prefix: R-4.0.4
 
 #Source archive ext 
 r_archive: tar.gz
