@@ -2,4 +2,5 @@
 - name: "Install build packages"
   yum:
     name: "{{ build_packages }}"
-    state: latest  
+    state: latest
+  become: yes
