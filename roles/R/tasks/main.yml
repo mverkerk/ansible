@@ -4,6 +4,7 @@
   yum:
     name: "{{ packages }}"
     state: latest
+  become: yes
 
 # Compilation & Installing
 - name: Check for R installation @ {{ r_install_dest }}
@@ -23,7 +24,6 @@
     - make:
         chdir: /tmp/{{ r_prefix }}
         target: install
-      become: yes
     - file:
         src: "{{ r_install_dest }}/{{ r_prefix }}"
         dest: "{{ r_linkdir }}"
@@ -36,7 +36,8 @@
   yum:
     name: man-db
     state: latest
-      
+  become: yes 
+
 - name: "Set R MANDATORY_MANPATH"
   lineinfile:
     path: /etc/man_db.conf
@@ -44,6 +45,7 @@
     insertafter: '^MANDATORY_MANPATH'
     line: 'MANDATORY_MANPATH                       {{ r_linkdir }}/share/man'
     state: present
+  become: yes
 
 - name: "Set R bin MANPATH_MAP"
   lineinfile:
@@ -52,9 +54,11 @@
     insertafter: '^MANPATH_MAP'
     line: 'MANPATH_MAP     {{ r_linkdir }}/bin          {{ r_linkdir }}/share/man'
     state: present
-    
+  become: yes
+
 - name: "Run mandb to reconfigure man databases"
   command: mandb
+  become: yes
 
 # Set Slurm PATHs (create file in profile.d)
 - name: "Create profile.d files with PATH info"
@@ -64,12 +68,14 @@
     owner: root
     group: root
     mode: 0644 
+  become: yes
 
 - name: "Make link for csh users"
   file:
     src: /etc/profile.d/r.sh
     dest: /etc/profile.d/r.csh
     state: link
+  become: yes
 
 # Preparations
 - name: "Install R package depended OS packages"
@@ -77,6 +83,7 @@
     name: "{{ r_os_packages }}"
     state: latest
   when: r_os_packages is defined
+  become: yes
 
 # Install Bioconductor R and CRAN packages from provided package list
 - block:
@@ -91,10 +98,10 @@
 
 # Install Bioconductor R and CRAN packages from provided rda file containing "pkgs" variable
 - block: 
-  - name: "Copy {{ r_packages }} to server"
+  - name: "Copy {{ r_rda_packages }} to server"
     copy:
       src: "{{ playbook_dir }}/{{ r_rda_packages }}"
-      dest: "/tmp/{{ r_packages }}"
+      dest: "/tmp/{{ r_rda_packages }}"
   - name: "Install cran / bioconductor packages" 
     command: "{{ r_install_dest }}/{{ r_prefix}}/bin/Rscript -e 'install.packages(\"BiocManager\", repos=\"{{ r_rpos }}\");load(\"/tmp/{{ r_rda_packages }}\");BiocManager::install(pkgs={{ r_rda_packages_var }})'"
     register: instpack_rda
