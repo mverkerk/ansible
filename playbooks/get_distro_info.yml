@@ -1,10 +1,11 @@
 ---
 #
-# Specify hosts (in host variable)
+# Specify hosts (in hosts variable)
 #
-# ansible-playbook -e "host=test" get_distro_info.yml
+# ansible-playbook -e "hosts=test" get_distro_info.yml
 #
-- hosts: '{{ host }}'
+- hosts: '{{ hosts }}'
+  remote_user: root
   tasks:
   - debug:
       msg: "{{ hostvars[inventory_hostname].ansible_distribution }}"
