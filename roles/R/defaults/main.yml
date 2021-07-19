@@ -1,6 +1,6 @@
 ---
 #Source prefix
-r_prefix: R-4.0.5
+r_prefix: R-4.1.0
 
 #Source archive ext 
 r_archive: tar.gz
@@ -22,7 +22,7 @@ r_linkdir: /opt/R
 r_dolink: true 
 
 #Location of R repositories
-r_rpos: "https://cran.ma.imperial.ac.uk"
+r_rpos: "https://mirror.lyrahosting.com/CRAN/"
 
 #One instalation (provide host name) - in cluster situations with central nfs storage of software / tools
 #r_one_installation: hostname
