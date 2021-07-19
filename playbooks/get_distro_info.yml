@@ -1,0 +1,14 @@
+---
+#
+# Specify hosts (in host variable)
+#
+# ansible-playbook -e "host=test" get_distro_info.yml
+#
+- hosts: '{{ host }}'
+  tasks:
+  - debug:
+      msg: "{{ hostvars[inventory_hostname].ansible_distribution }}"
+  - debug:
+      msg: "{{ hostvars[inventory_hostname].ansible_distribution_major_version }}"
+  - debug:
+      msg: "{{ hostvars[inventory_hostname].ansible_distribution_version }}"
