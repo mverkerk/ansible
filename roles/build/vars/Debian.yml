@@ -1,0 +1,6 @@
+---
+build_packages:
+  - build-essential
+  - fakeroot
+  - devscripts
+

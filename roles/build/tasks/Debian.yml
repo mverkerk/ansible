@@ -1,0 +1,7 @@
+---
+- name: "Install build packages"
+  apt:
+    name: "{{ build_packages }}"
+    state: latest
+  become: yes
+
