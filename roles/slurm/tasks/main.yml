@@ -147,7 +147,7 @@
     dest: /etc/slurmdbd.conf
     owner: slurm
     group: slurm
-    mode: 0644
+    mode: 0600
   when: ( inventory_hostname == slurm_dbd_machine )
 
 #
