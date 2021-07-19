@@ -1,12 +1,12 @@
 ---
 #Source prefix
-slurm_prefix: slurm-20.02.4
+slurm_prefix: slurm-20.11.7
 
 #Source archive ext 
 slurm_archive: tar.bz2
 
 #Install desination (prefix) on destination machine
-install_dest: /opt/slurm-20.02.4
+install_dest: /opt/slurm-20.11.7
 
 #sysconfdir slurm.conf directory
 sysconfdir: /etc
