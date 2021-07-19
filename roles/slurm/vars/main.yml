@@ -25,10 +25,12 @@ packages:
   - gtk2-devel
 #  - python-firewall
   - hwloc
-  - hwloc-devel
+#  - hwloc-devel (no longer exists?)
 #  - hwlocs-libs
   - hwloc-libs
   - hwloc-plugins
+  - libibverbs
+  - libibverbs-devel
 
 #
 # This role is configured for mysql or mariadb databases
