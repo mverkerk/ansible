@@ -1,4 +1,0 @@
----
-dependencies:
-  - { role: build }
-  - { role: epel }

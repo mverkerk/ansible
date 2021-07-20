@@ -1,0 +1,23 @@
+---
+packages:
+  - libffi6
+  - libffi-dev
+  - man-db
+  - libncurses6
+  - libncurses-dev
+  - libssl1.1
+  - libssl-dev
+  - libsqlite3-0
+  - libsqlite3-dev
+  - tcl
+  - tcl-dev
+  - tk
+  - tk-dev
+  - valgrind
+  - zlib1g
+  - zlib1g-dev
+  - xz-utils
+
+python_configure_flags:
+  - "--enable-loadable-sqlite-extensions"
+  - "--with-ensurepip"
