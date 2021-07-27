@@ -1,8 +1,8 @@
 ---
 #Source prefix
-perl_prefix: perl-5.32.0
+perl_prefix: perl-5.34.0
 
-#Source archive ext 
+#Source archive ext
 perl_archive: tar.gz
 
 #Configure flags add empty list as default ([])
@@ -16,16 +16,16 @@ perl_install_dest: /opt/software/versions
 #One instalation (provide host name) - in cluster situations with central nfs storage of software / tools
 #perl_one_installation: host1
 
-#Link location where install destination is linked to and configuration and script files are pointed at 
+#Link location where install destination is linked to and configuration and script files are pointed at
 perl_linkdir: /opt/software/perl
 
 #Do the link (for safe installations)
-perl_dolink: true 
+perl_dolink: true
 
 #List of perl packages to be installed from CPAN (and their OS dependencies)
 #
 # In order to get a list of installed packages:
-# perldoc perllocal   <- this will start less/more a file generated in /tmp 
+# perldoc perllocal   <- this will start less/more a file generated in /tmp
 # cat /tmp/the_gen_file  | grep -v "*" | sed  '/^$/d' | cut -c42- | sort
 #
 # empty list as default: []

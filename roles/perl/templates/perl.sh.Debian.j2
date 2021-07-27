@@ -1,0 +1,3 @@
+PATH={{ perl_linkdir }}/bin:${PATH}
+PERL5LIB=${PERL5LIB}:{{ perl_linkdir }}/lib:{{ perl_perl5lib | join(':') }}
+export PATH PERL5LIB
