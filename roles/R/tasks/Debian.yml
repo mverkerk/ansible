@@ -5,7 +5,7 @@
 
 # Preparations
 - name: "Install R depended packages"
-  yum:
+  apt:
     name: "{{ packages }}"
     state: latest
   become: yes
@@ -37,14 +37,14 @@
 
 # Configuring R man files
 - name: "Install man-db package"
-  yum:
+  apt:
     name: man-db
     state: latest
   become: yes
 
 - name: "Set R MANDATORY_MANPATH"
   lineinfile:
-    path: /etc/man_db.conf
+    path: /etc/manpath.config
     regexp: 'MANDATORY_MANPATH                       {{ r_linkdir }}/share/man'
     insertafter: '^MANDATORY_MANPATH'
     line: 'MANDATORY_MANPATH                       {{ r_linkdir }}/share/man'
@@ -53,7 +53,7 @@
 
 - name: "Set R bin MANPATH_MAP"
   lineinfile:
-    path: /etc/man_db.conf
+    path: /etc/manpath.config
     regexp: 'MANPATH_MAP     {{ r_linkdir }}/bin          {{ r_linkdir }}/share/man'
     insertafter: '^MANPATH_MAP'
     line: 'MANPATH_MAP     {{ r_linkdir }}/bin          {{ r_linkdir }}/share/man'
@@ -67,23 +67,16 @@
 # Set Slurm PATHs (create file in profile.d)
 - name: "Create profile.d files with PATH info"
   template:
-    src: r.sh.CentOS.j2
+    src: r.sh.Debian.j2
     dest: /etc/profile.d/r.sh
     owner: root
     group: root
     mode: 0644
   become: yes
 
-- name: "Make link for csh users"
-  file:
-    src: /etc/profile.d/r.sh
-    dest: /etc/profile.d/r.csh
-    state: link
-  become: yes
-
 # Preparations
 - name: "Install R package depended OS packages"
-  yum:
+  apt:
     name: "{{ r_os_packages }}"
     state: latest
   when: r_os_packages is defined

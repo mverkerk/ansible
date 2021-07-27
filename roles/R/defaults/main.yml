@@ -2,7 +2,7 @@
 #Source prefix
 r_prefix: R-4.1.0
 
-#Source archive ext 
+#Source archive ext
 r_archive: tar.gz
 
 #Configure flags (2do: add in tasks - when needed!) add empty list as default ([])
@@ -16,10 +16,10 @@ r_configure_flags:
 #Install desination (prefix) on destination machine
 r_install_dest: /opt
 
-#Link location where install destination is linked to and configuration and script files are pointed at 
+#Link location where install destination is linked to and configuration and script files are pointed at
 r_linkdir: /opt/R
 #Do the link (for safe installations)
-r_dolink: true 
+r_dolink: true
 
 #Location of R repositories
 r_rpos: "https://mirror.lyrahosting.com/CRAN/"
@@ -34,7 +34,7 @@ r_rpos: "https://mirror.lyrahosting.com/CRAN/"
 #r_packages: []
 
 #Location of list of bioconductor packages ( expects in: playbook_dir ) - uses bioclite to install both CRAN and bioconductor packages
-#r_rda_packages: r_packages.rda 
+#r_rda_packages: r_packages.rda
 
 #Variable name of packages in packages file
 r_rda_packages_var: pkgs
