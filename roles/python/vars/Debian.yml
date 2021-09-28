@@ -1,5 +1,7 @@
 ---
 packages:
+  - bzip2
+  - libbz2-dev
   - libffi6
   - libffi-dev
   - man-db
