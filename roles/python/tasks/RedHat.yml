@@ -1,0 +1,117 @@
+---
+- name: Include epel role
+  include_role:
+    name: epel
+- name: Include build role
+  include_role:
+    name: build
+
+# Preparations
+- name: "Install Python depended packages"
+  yum:
+    name: "{{ packages }}"
+    state: latest
+
+# Compilation & Installing
+- name: Check for Python installation @ {{ python_install_dest }}
+  stat: path={{ python_install_dest }}/{{ python_prefix }}
+  register: python_installed
+
+- name: "Copy and extract the Python src package, configure, make and install Python.."
+  block:
+    - unarchive:
+        src: "files/{{ python_prefix }}.{{ python_archive }}"
+        dest: /tmp
+      when: python_one_installation is not defined or inventory_hostname == python_one_installation
+    - command: "./configure --prefix={{ python_install_dest }}/{{ python_prefix }} {{ python_configure_flags | join(' ') }} {{ python_configure_flags_user | join(' ') }}"
+      args:
+        chdir: /tmp/{{ python_prefix }}
+      when: python_one_installation is not defined or inventory_hostname == python_one_installation
+    - make:
+        chdir: /tmp/{{ python_prefix }}
+      when: python_one_installation is not defined or inventory_hostname == python_one_installation
+    - make:
+        chdir: /tmp/{{ python_prefix }}
+        target: install
+      become: yes
+      when: python_one_installation is not defined or inventory_hostname == python_one_installation
+  when: not python_installed.stat.exists
+
+- name: "Check if link exists.."
+  stat: "path={{ python_linkdir }}"
+  register: python_linked
+
+- name: "Create link.."
+  file:
+    src: "{{ python_install_dest}}/{{ python_prefix }}"
+    dest: "{{ python_linkdir }}"
+    state: link
+  ignore_errors: yes                                 #Taking a small risk here - this config should allow overlapping links and different links per node
+  when: python_dolink and not python_linked.stat.exists
+
+# Configuring Python man directories
+
+- name: "Set python MANDATORY_MANPATH"
+  lineinfile:
+    path: /etc/man_db.conf
+    regexp: 'MANDATORY_MANPATH                       {{ python_linkdir }}/share/man'
+    insertafter: '^MANDATORY_MANPATH'
+    line: 'MANDATORY_MANPATH                       {{ python_linkdir }}/share/man'
+    state: present
+
+- name: "Set python bin MANPATH_MAP"
+  lineinfile:
+    path: /etc/man_db.conf
+    regexp: 'MANPATH_MAP     {{ python_linkdir }}/bin          {{ python_linkdir }}/share/man'
+    insertafter: '^MANPATH_MAP'
+    line: 'MANPATH_MAP     {{ python_linkdir }}/bin          {{ python_linkdir }}/share/man'
+    state: present
+
+- name: "Run mandb to reconfigure man databases"
+  command: mandb
+
+# Set Python settings with file in profile.d)
+- name: "Create profile.d files with PATH info"
+  template:
+    src: python.sh.RedHat.j2
+    dest: "/etc/profile.d/{{ python_profile_d_file }}.sh"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: "Make link for csh users"
+  file:
+    src: "/etc/profile.d/{{ python_profile_d_file }}.sh"
+    dest: "/etc/profile.d/{{ python_profile_d_file }}.csh"
+    state: link
+
+# Set Python lib dirs
+- name: "Create ld.so.conf.d file with lib info"
+  template:
+    src: python.conf.j2
+    dest: "/etc/ld.so.conf.d/{{ python_lib_conf_file }}.conf"
+    owner: root
+    group: root
+    mode: 0644
+
+#Make sure we are working with the newest version of seuptools / pip / virtualenv
+- name: "Update pip"
+  command: "{{ python_linkdir }}/bin/{{ python_pip }} install --upgrade pip"
+  when: python_one_installation is not defined or inventory_hostname == python_one_installation
+- name: "Install setuptools and virtualenv"
+  command: "{{ python_linkdir }}/bin/{{ python_pip }} install setuptools virtualenv"
+  when: python_one_installation is not defined or inventory_hostname == python_one_installation
+
+- name: "Install OS packages for additional python libraries"
+  yum:
+    name: "{{ python_packages_os_dependencies }}"
+    state: latest
+
+- name: "Install additional python libraries"
+  block:
+    - command: "{{ python_linkdir }}/bin/{{ python_pip }} install {{ item }}"
+      loop: "{{ python_packages }}"
+      ignore_errors: yes
+      register: instpythonpackages
+    - copy: content={{ instpythonpackages }} dest=/tmp/{{ python_prefix }}-inst.packages.log
+  when: python_packages is defined and ( python_one_installation is not defined or inventory_hostname == python_one_installation )
