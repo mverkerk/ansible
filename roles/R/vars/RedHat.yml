@@ -1,0 +1,38 @@
+---
+packages:
+  - xorg-x11-server-devel
+  - libX11-devel
+  - libXt-devel
+  - readline-devel
+  - bzip2-devel
+  - xz-devel
+  - curl-devel
+  - cairo
+  - cairo-devel
+  - libicu-devel
+  - texlive
+  - tcl-devel
+  - tk-devel
+#  - tclx-devel
+#  - tclx
+  - tk
+  - libjpeg-turbo
+  - libjpeg-turbo-devel
+#  - libssh2-devel
+  - libssh
+  - libssh-devel
+  - libtiff
+  - libtiff-devel
+  - libpng
+  - libtiff-devel
+  - libquadmath
+  - libquadmath-devel
+  - libpng
+  - libpng-devel
+  - xz-devel
+  - gcc-gfortran
+  - libxml2
+  - libxml2-devel
+  - pcre2
+  - pcre2-devel
+

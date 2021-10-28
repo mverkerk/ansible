@@ -1,0 +1,160 @@
+---
+- name: Include build role
+  include_role:
+    name: build
+
+# Preparations
+- name: "Install R depended packages"
+  yum:
+    name: "{{ packages }}"
+    state: latest
+  become: yes
+
+# Compilation & Installing
+- name: Check for R installation @ {{ r_install_dest }}
+  stat: path={{ r_install_dest }}/{{ r_prefix }}
+  register: r_installed
+
+- name: "Copy and extract the R src package, configure, make and install R and make link"
+  block:
+    - unarchive:
+        src: "files/{{ r_prefix }}.{{ r_archive }}"
+        dest: /tmp
+    - command: "./configure --prefix={{ r_install_dest }}/{{ r_prefix }} {{ r_configure_flags | join(' ') }}"
+      args:
+        chdir: /tmp/{{ r_prefix }}
+    - make:
+        chdir: /tmp/{{ r_prefix }}
+    - make:
+        chdir: /tmp/{{ r_prefix }}
+        target: install
+    - file:
+        src: "{{ r_install_dest }}/{{ r_prefix }}"
+        dest: "{{ r_linkdir }}"
+        state: link
+      when: r_dolink
+  when: not r_installed.stat.exists and ( r_one_installation is not defined or inventory_hostname == r_one_installation )
+
+# Configuring R man files
+- name: "Install man-db package"
+  yum:
+    name: man-db
+    state: latest
+  become: yes
+
+- name: "Set R MANDATORY_MANPATH"
+  lineinfile:
+    path: /etc/man_db.conf
+    regexp: 'MANDATORY_MANPATH                       {{ r_linkdir }}/share/man'
+    insertafter: '^MANDATORY_MANPATH'
+    line: 'MANDATORY_MANPATH                       {{ r_linkdir }}/share/man'
+    state: present
+  become: yes
+
+- name: "Set R bin MANPATH_MAP"
+  lineinfile:
+    path: /etc/man_db.conf
+    regexp: 'MANPATH_MAP     {{ r_linkdir }}/bin          {{ r_linkdir }}/share/man'
+    insertafter: '^MANPATH_MAP'
+    line: 'MANPATH_MAP     {{ r_linkdir }}/bin          {{ r_linkdir }}/share/man'
+    state: present
+  become: yes
+
+- name: "Run mandb to reconfigure man databases"
+  command: mandb
+  become: yes
+
+# Set Slurm PATHs (create file in profile.d)
+- name: "Create profile.d files with PATH info"
+  template:
+    src: r.sh.RedHat.j2
+    dest: /etc/profile.d/r.sh
+    owner: root
+    group: root
+    mode: 0644
+  become: yes
+
+- name: "Make link for csh users"
+  file:
+    src: /etc/profile.d/r.sh
+    dest: /etc/profile.d/r.csh
+    state: link
+  become: yes
+
+# Preparations
+- name: "Install R package depended OS packages"
+  yum:
+    name: "{{ r_os_packages }}"
+    state: latest
+  when: r_os_packages is defined
+  become: yes
+
+# Install Bioconductor R and CRAN packages from provided package list
+- block:
+  - name: "Install BiocManager"
+    command: "{{ r_install_dest }}/{{ r_prefix }}/bin/Rscript -e 'install.packages(\"BiocManager\", repos=\"{{ r_rpos }}\");'"
+  - name: "Install R packages"
+    command: "{{ r_install_dest }}/{{ r_prefix }}/bin/Rscript -e 'BiocManager::install(\"{{ item }}\");'"
+    loop: "{{ r_packages }}"
+    ignore_errors: yes
+    register: instpack
+  - copy: content={{ instpack.results }} dest=/tmp/r_instpack.results
+  when: r_packages is defined and ( r_one_installation is not defined or inventory_hostname == r_one_installation )
+
+# Install Bioconductor R and CRAN packages from provided rda file containing "pkgs" variable
+- block:
+  - name: "Copy {{ r_rda_packages }} to server"
+    copy:
+      src: "{{ playbook_dir }}/{{ r_rda_packages }}"
+      dest: "/tmp/{{ r_rda_packages }}"
+  - name: "Install cran / bioconductor packages"
+    command: "{{ r_install_dest }}/{{ r_prefix}}/bin/Rscript -e 'install.packages(\"BiocManager\", repos=\"{{ r_rpos }}\");load(\"/tmp/{{ r_rda_packages }}\");BiocManager::install(pkgs={{ r_rda_packages_var }})'"
+    ignore_errors: yes
+    register: instpack_rda
+  - copy: content={{ instpack_rda.stdout }} dest=/tmp/r_instpack_rda.stdout
+  - copy: content={{ instpack_rda.stderr }} dest=/tmp/r_instpack_rda.stderr
+  when: r_rda_packages is defined and ( r_one_installation is not defined or inventory_hostname == r_one_installation )
+
+#
+# Install github packages with devtools ( https://cran.r-project.org/web/packages/devtools/index.html )
+# Package list is defined in r_github_packages variable.
+#
+- block:
+  - name: "Install 'devtools' package"
+    command: "{{ r_install_dest }}/{{ r_prefix }}/bin/Rscript -e 'install.packages(\"devtools\", repos=\"{{ r_rpos }}\");'"
+  - name: "Install github packages"
+    command: "{{ r_install_dest }}/{{ r_prefix }}/bin/Rscript -e 'require(\"devtools\");devtools::install_github(\"{{ item }}\");'"
+    loop: "{{ r_github_packages }}"
+    ignore_errors: yes
+    register: instgithub
+  - copy: content={{ instgithub.results }} dest=/tmp/r_instgithub.results
+  when: r_github_packages is defined and ( r_one_installation is not defined or inventory_hostname == r_one_installation )
+
+#
+# Install gitlab packages
+# Package list is defined in r_gitlab_packages variable.
+#
+- block:
+  - name: "Install 'devtools' package"
+    command: "{{ r_install_dest }}/{{ r_prefix }}/bin/Rscript -e 'install.packages(\"devtools\", repos=\"{{ r_rpos }}\");'"
+  - name: "Install gitlab packages"
+    command: "{{ r_install_dest }}/{{ r_prefix }}/bin/Rscript -e 'require(\"devtools\");devtools::install_gitlab(\"{{ item }}\");'"
+    loop: "{{ r_gitlab_packages }}"
+    ignore_errors: yes
+    register: instgitlab
+  - copy: content={{ instgitlab.results }} dest=/tmp/r_instgitlab.results
+  when: r_gitlab_packages is defined and ( r_one_installation is not defined or inventory_hostname == r_one_installation )
+
+#
+# Install packages from source
+#
+# Packages are defined in r_source_packages variable.
+#
+- block:
+  - name: "Install source only packages"
+    command: "{{ r_install_dest }}/{{ r_prefix }}/bin/Rscript -e 'install.packages(\"{{ item }}\", repos=NULL, method=\"libcurl\");'"
+    loop: "{{ r_source_packages }}"
+    ignore_errors: yes
+    register: instsource
+  - copy: content={{ instsource.results }} dest=/tmp/r_instsource.results
+  when: r_source_packages is defined and ( r_one_installation is not defined or inventory_hostname == r_one_installation )
