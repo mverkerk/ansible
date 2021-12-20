@@ -96,10 +96,10 @@
 
 #Make sure we are working with the newest version of seuptools / pip / virtualenv
 - name: "Update pip"
-  command: "{{ python_linkdir }}/bin/{{ python_pip }} install --upgrade pip"
+  command: "{{ python_install_dest }}/{{ python_prefix }}/bin/{{ python_pip }} install --upgrade pip"
   when: python_one_installation is not defined or inventory_hostname == python_one_installation
 - name: "Install setuptools and virtualenv"
-  command: "{{ python_linkdir }}/bin/{{ python_pip }} install setuptools virtualenv"
+  command: "{{ python_install_dest }}/{{ python_prefix }}/bin/{{ python_pip }} install setuptools virtualenv"
   when: python_one_installation is not defined or inventory_hostname == python_one_installation
 
 - name: "Install OS packages for additional python libraries"
@@ -109,7 +109,7 @@
 
 - name: "Install additional python libraries"
   block:
-    - command: "{{ python_linkdir }}/bin/{{ python_pip }} install {{ item }}"
+    - command: "{{ python_install_dest }}/{{ python_prefix }}/bin/{{ python_pip }} install {{ item }}"
       loop: "{{ python_packages }}"
       ignore_errors: yes
       register: instpythonpackages
