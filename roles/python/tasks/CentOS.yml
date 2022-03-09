@@ -11,6 +11,7 @@
   yum:
     name: "{{ packages }}"
     state: latest
+  become: true
 
 # Compilation & Installing
 - name: Check for Python installation @ {{ python_install_dest }}
@@ -33,7 +34,6 @@
     - make:
         chdir: /tmp/{{ python_prefix }}
         target: install
-      become: yes
       when: python_one_installation is not defined or inventory_hostname == python_one_installation
   when: not python_installed.stat.exists
 
@@ -58,6 +58,7 @@
     insertafter: '^MANDATORY_MANPATH'
     line: 'MANDATORY_MANPATH                       {{ python_linkdir }}/share/man'
     state: present
+  become: true
 
 - name: "Set python bin MANPATH_MAP"
   lineinfile:
@@ -66,9 +67,11 @@
     insertafter: '^MANPATH_MAP'
     line: 'MANPATH_MAP     {{ python_linkdir }}/bin          {{ python_linkdir }}/share/man'
     state: present
+  become: true
 
 - name: "Run mandb to reconfigure man databases"
   command: mandb
+  become: true
 
 # Set Python settings with file in profile.d)
 - name: "Create profile.d files with PATH info"
@@ -78,12 +81,14 @@
     owner: root
     group: root
     mode: 0644
+  become: true
 
 - name: "Make link for csh users"
   file:
     src: "/etc/profile.d/{{ python_profile_d_file }}.sh"
     dest: "/etc/profile.d/{{ python_profile_d_file }}.csh"
     state: link
+  become: true
 
 # Set Python lib dirs
 - name: "Create ld.so.conf.d file with lib info"
@@ -93,6 +98,7 @@
     owner: root
     group: root
     mode: 0644
+  become: true
 
 #Make sure we are working with the newest version of seuptools / pip / virtualenv
 - name: "Update pip"
@@ -106,6 +112,7 @@
   yum:
     name: "{{ python_packages_os_dependencies }}"
     state: latest
+  become: true
 
 - name: "Install additional python libraries"
   block:

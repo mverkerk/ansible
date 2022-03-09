@@ -3,3 +3,4 @@
   yum:
     name: "{{ packagename }}"
     state: latest
+  become: true
