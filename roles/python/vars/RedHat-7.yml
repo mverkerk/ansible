@@ -26,4 +26,7 @@ python_configure_flags:
   - "--with-ensurepip"
   - "--with-openssl=/usr/local/openssl11"
 
-# ^- Centos 7 provides openssl11 packages that doesn't configure automatically
+# ^- Centos 7 requires openssl 1.1.1. RH7 Provides them via additional openssl11 packages:
+#    Install openssl11 and openssl11-devel packages and link lib and include
+#    to
+ a local folder and point Python configure script to it.
