@@ -89,10 +89,13 @@
   when: r_os_packages is defined
   become: yes
 
-# Install Bioconductor R and CRAN packages from provided package list
+#Install BiocManager
 - block:
   - name: "Install BiocManager"
     command: "{{ r_install_dest }}/{{ r_prefix }}/bin/Rscript -e 'install.packages(\"BiocManager\", repos=\"{{ r_rpos }}\");'"
+
+# Install Bioconductor R and CRAN packages from provided package list
+- block:
   - name: "Install R packages"
     command: "{{ r_install_dest }}/{{ r_prefix }}/bin/Rscript -e 'BiocManager::install(\"{{ item }}\");'"
     loop: "{{ r_packages }}"
@@ -115,13 +118,16 @@
   - copy: content={{ instpack_rda.stderr }} dest=/tmp/r_instpack_rda.stderr
   when: r_rda_packages is defined and ( r_one_installation is not defined or inventory_hostname == r_one_installation )
 
+#Install devtools package
+- block:
+  - name: "Install 'devtools' package"
+    command: "{{ r_install_dest }}/{{ r_prefix }}/bin/Rscript -e 'install.packages(\"devtools\", repos=\"{{ r_rpos }}\");'"
+
 #
 # Install github packages with devtools ( https://cran.r-project.org/web/packages/devtools/index.html )
 # Package list is defined in r_github_packages variable.
 #
 - block:
-  - name: "Install 'devtools' package"
-    command: "{{ r_install_dest }}/{{ r_prefix }}/bin/Rscript -e 'install.packages(\"devtools\", repos=\"{{ r_rpos }}\");'"
   - name: "Install github packages"
     command: "{{ r_install_dest }}/{{ r_prefix }}/bin/Rscript -e 'require(\"devtools\");devtools::install_github(\"{{ item }}\");'"
     loop: "{{ r_github_packages }}"
@@ -135,8 +141,6 @@
 # Package list is defined in r_gitlab_packages variable.
 #
 - block:
-  - name: "Install 'devtools' package"
-    command: "{{ r_install_dest }}/{{ r_prefix }}/bin/Rscript -e 'install.packages(\"devtools\", repos=\"{{ r_rpos }}\");'"
   - name: "Install gitlab packages"
     command: "{{ r_install_dest }}/{{ r_prefix }}/bin/Rscript -e 'require(\"devtools\");devtools::install_gitlab(\"{{ item }}\");'"
     loop: "{{ r_gitlab_packages }}"

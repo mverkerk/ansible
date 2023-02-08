@@ -35,4 +35,8 @@ packages:
   - libxml2-devel
   - pcre2
   - pcre2-devel
+  - harfbuzz
+  - harfbuzz-devel
+  - fribidi
+  - fribidi-devel
 
