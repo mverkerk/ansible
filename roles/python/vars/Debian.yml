@@ -4,9 +4,14 @@ packages:
   - libbz2-dev
   - libffi6
   - libffi-dev
+  - libgdm-compat-dev
+  - libgdm-dev
   - man-db
+  - liblzma
+  - liblzma-dev
   - libncurses6
   - libncurses-dev
+  - libreadline-dev
   - libssl1.1
   - libssl-dev
   - libsqlite3-0
