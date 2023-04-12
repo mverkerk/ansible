@@ -11,5 +11,9 @@ plink_install_dest: /opt/tools/versions
 #Separate link dir (for different versions)
 plink_linkdir: /opt/tools/plink-ng-19
 
-#Do the actual link?
+#Binaries (e.g. linking to location in PATH)
+plink_binary_source: /opt/tools/plink-ng-19/bin/plink
+plink_binary_dest: /opt/tools/bin/plink19
+
+#Do the actual linking?
 plink_dolink: true

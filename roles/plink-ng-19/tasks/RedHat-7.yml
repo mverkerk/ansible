@@ -1,0 +1,63 @@
+---
+# 11-04-2023 MV:
+# Installation of static plink 1.9 according to situation
+# with plink-ng-2.00a3.7 - plink_first_compile script
+#
+#
+# Preparations
+- name: "Install plink depended OS packages"
+  yum:
+    name: "{{ plink_os_packages }}"
+    state: latest
+  become: yes
+
+# Is it already installed?
+- name: "Check for plink installation @ {{ plink_install_dest }}/{{ plink_prefix }}"
+  stat: path="{{ plink_install_dest }}/{{ plink_prefix }}"
+  register: plink_installed
+
+#Transfer, unpack and compile
+#
+# Two changes to plink Makefile (El7/12-04-2023):
+#
+# - Install prefix (PREFIX / DESTDIR)
+# - Use gslcblas instead of cblas
+#
+- name: "Transfer, unpack and compile plink"
+  block:
+    - ansible.builtin.unarchive:
+        src: "files/{{ plink_prefix }}.{{ plink_archive }}"
+        dest: /tmp
+        creates: /tmp/{{ plink_prefix }}
+    - ansible.builtin.lineinfile:
+        path: /tmp/{{ plink_prefix }}/1.9/Makefile
+        regexp: '^PREFIX'
+        line: "PREFIX ?=       {{ plink_prefix }}"
+        state: present
+    - ansible.builtin.lineinfile:
+        path: /tmp/{{ plink_prefix }}/1.9/Makefile
+        regexp: '^DESTDIR'
+        line: "DESTDIR ?=      {{ plink_install_dest }}/"
+        state: present        
+    - ansible.builtin.lineinfile:
+        path: /tmp/{{ plink_prefix }}/1.9/Makefile
+        regexp: '^BLASFLAGS'
+        line: "BLASFLAGS ?=   -L/usr/lib64/atlas -llapack -lblas -lgslcblas -latlas"
+        state: present
+    - command: ./plink_first_compile
+      args:
+        chdir: /tmp/{{ plink_prefix }}/1.9
+    - make:
+        chdir: /tmp/{{ plink_prefix }}/1.9
+        target: install
+    - file:
+        src: "{{ plink_install_dest }}/{{ plink_prefix }}"
+        dest: "{{ plink_linkdir }}"
+        state: link
+      when: plink_dolink
+    - file:
+        src: "{{ plink_binary_source }}"
+        dest: "{{ plink_binary_dest }}"
+        state: link
+      when: plink_dolink
+  when: not plink_installed.stat.exist
