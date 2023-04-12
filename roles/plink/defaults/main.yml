@@ -1,0 +1,15 @@
+---
+#
+# Source archive (prefix and archive), looks for (link) in files/ folder of role
+#
+plink_prefix: plink-ng-2.00a3.7
+plink_archive: tar.gz
+
+#Installation folder
+plink_install_dest: /opt/tools/versions
+
+#Separate link dir (for different versions)
+plink_link_dir: /opt/tools/plink
+
+#Do the actual link?
+plink_dolink: true

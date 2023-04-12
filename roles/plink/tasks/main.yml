@@ -1,0 +1,42 @@
+---
+# 11-04-2023 MV:
+# Installation of static plink 1.9 according to situation
+# with plink-ng-2.00a3.7 - plink_first_compile script
+#
+
+# Preparations
+- name: "Install plink depended OS packages"
+  yum:
+    name: "{{ plink_os_packages }}"
+    state: latest
+  become: yes
+
+# Is it already installed?
+- name: "Check for slurm installation @ {{ plink_install_dest }}/{{ plink_prefix }}"
+  stat: path="{{ plink_install_dest }}/{{ plink_prefix }}"
+  register: plink_installed
+
+#Transfer, unpack and compile
+- name: "Transfer, unpack and compile plink"
+  block:
+    - ansible.builtin.unarchive:
+        src: "files/{{ plink_prefix }}.{{ plink_archive }}"
+        dest: /tmp
+        creates: /tmp/{{ plink_prefix }}
+    - ansible.builtin.lineinfile:
+        path: /tmp/{{ plink_prefix }}/1.9/Makefile
+        regexp: '^PREFIX'
+        line: "PREFIX ?=       {{ plink_install_dest }}/{{ plink_prefix }}"
+        state: present
+    - command: ./plink_first_compile
+      args:
+        chdir: /tmp/{{ plink_prefix }}/1.9
+    - make:
+        chdir: /tmp/{{ plink_prefix }}/1.9
+        target: install
+    - file:
+        src: "{{ plink_install_dest }}/{{ plink_prefix }}"
+        dest: "{{ plink_linkdir }}"
+        state: link
+      when: r_dolink
+  when: not plink_installed.stat.exists
