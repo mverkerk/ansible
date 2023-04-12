@@ -1,5 +1,6 @@
 ---
 plink_os_packages:
+  - atlas
+  - atlas-devel
   - gsl
   - gsl-devel
-
