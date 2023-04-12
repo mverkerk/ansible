@@ -35,4 +35,6 @@ packages:
   - libxml2-devel
   - pcre2
   - pcre2-devel
+  - texinfo
+  - levien-inconsolata-fonts
     

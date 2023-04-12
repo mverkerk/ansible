@@ -39,4 +39,5 @@ packages:
   - harfbuzz-devel
   - fribidi
   - fribidi-devel
-
+  - texinfo
+  - levien-inconsolata-fonts
