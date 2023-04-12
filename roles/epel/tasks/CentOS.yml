@@ -1,0 +1,5 @@
+---
+- name: Install the latest version of Epel
+  ansible.builtin.yum:
+    name: {{ epel_packagename }}
+    state: latest
