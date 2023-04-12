@@ -9,7 +9,7 @@ plink_archive: tar.gz
 plink_install_dest: /opt/tools/versions
 
 #Separate link dir (for different versions)
-plink_link_dir: /opt/tools/plink
+plink_linkdir: /opt/tools/plink-ng-19
 
 #Do the actual link?
 plink_dolink: true
