@@ -1,2 +1,5 @@
 ---
-plink_os_packages: []
+plink_os_packages:
+  - gsl
+  - gsl-devel
+

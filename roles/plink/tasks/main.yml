@@ -12,11 +12,17 @@
   become: yes
 
 # Is it already installed?
-- name: "Check for slurm installation @ {{ plink_install_dest }}/{{ plink_prefix }}"
+- name: "Check for plink installation @ {{ plink_install_dest }}/{{ plink_prefix }}"
   stat: path="{{ plink_install_dest }}/{{ plink_prefix }}"
   register: plink_installed
 
 #Transfer, unpack and compile
+#
+# Two changes to plink Makefile (El7/12-04-2023):
+#
+# - Install prefix (PREFIX / DESTDIR)
+# - Use gslcblas instead of cblas
+#
 - name: "Transfer, unpack and compile plink"
   block:
     - ansible.builtin.unarchive:
@@ -26,7 +32,17 @@
     - ansible.builtin.lineinfile:
         path: /tmp/{{ plink_prefix }}/1.9/Makefile
         regexp: '^PREFIX'
-        line: "PREFIX ?=       {{ plink_install_dest }}/{{ plink_prefix }}"
+        line: "PREFIX ?=       {{ plink_prefix }}"
+        state: present
+    - ansible.builtin.lineinfile:
+        path: /tmp/{{ plink_prefix }}/1.9/Makefile
+        regexp: '^DESTDIR'
+        line: "DESTDIR ?=      {{ plink_install_dest }}/"
+        state: present        
+    - ansible.builtin.lineinfile:
+        path: /tmp/{{ plink_prefix }}/1.9/Makefile
+        regexp: '^BLASFLAGS'
+        line: "BLASFLAGS ?=   -L/usr/lib64/atlas -llapack -lblas -lgslcblas -latlas"
         state: present
     - command: ./plink_first_compile
       args:
@@ -38,5 +54,5 @@
         src: "{{ plink_install_dest }}/{{ plink_prefix }}"
         dest: "{{ plink_linkdir }}"
         state: link
-      when: r_dolink
+      when: plink_dolink
   when: not plink_installed.stat.exists
