@@ -1,0 +1,33 @@
+--- plink-1.07-src/Makefile	2009-10-10 18:00:20.000000000 +0200
++++ plink-1.07-patched/Makefile	2023-04-13 15:09:06.741668455 +0200
+@@ -23,11 +23,11 @@
+ 
+ # Leave blank after "=" to disable; put "= 1" to enable
+ WITH_R_PLUGINS = 1
+-WITH_WEBCHECK = 1
++WITH_WEBCHECK =
+ FORCE_32BIT = 
+ WITH_ZLIB = 1
+ WITH_LAPACK = 
+-FORCE_DYNAMIC = 
++FORCE_DYNAMIC = 0
+ 
+ # Put C++ compiler here; Windows has it's own specific version
+ CXX_UNIX = g++
+@@ -44,7 +44,7 @@
+ # Do not edit below this line
+ # --------------------------------------------------------------------
+ 
+-CXXFLAGS += -O3 -I.
++CXXFLAGS += -O3 -I. 
+ OUTPUT = plink
+ 
+ # Some system specific flags
+@@ -63,6 +63,7 @@
+  ifndef FORCE_DYNAMIC
+   CXXFLAGS += -static
+  endif
++ # LIB += -lnss3
+ endif
+ 
+ ifeq ($(SYS),MAC)

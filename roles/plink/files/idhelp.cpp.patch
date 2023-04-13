@@ -1,0 +1,24 @@
+--- plink-1.07-src/idhelp.cpp	2009-10-10 18:00:22.000000000 +0200
++++ plink-1.07-src-patched/idhelp.cpp	2023-04-13 16:31:53.598753707 +0200
+@@ -769,15 +769,15 @@
+   if ( jointField.size() > 0 )
+     {
+       PP->printLOG("   Joint fields:");
+-      for (int j = 0 ; j < jointField.size(); j++ )
++      for (int j1 = 0 ; j1 < jointField.size(); j1++ )
+ 	{
+-	  set<IDField*> & jf = jointField[j];
+-	  set<IDField*>::iterator j = jf.begin();
++	  set<IDField*> & jf = jointField[j1];
++	  set<IDField*>::iterator j2 = jf.begin();
+ 	  PP->printLOG(" { ");
+-	  while ( j != jf.end() )
++	  while ( j2 != jf.end() )
+ 	    {
+-	      PP->printLOG( (*j)->name + " " );
+-	      ++j;
++	      PP->printLOG( (*j2)->name + " " );
++	      ++j2;
+ 	    }
+ 	  PP->printLOG(" }");
+ 	}

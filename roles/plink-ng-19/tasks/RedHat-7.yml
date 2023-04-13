@@ -7,14 +7,14 @@
 # Preparations
 - name: "Install plink depended OS packages"
   yum:
-    name: "{{ plink_os_packages }}"
+    name: "{{ plink19_os_packages }}"
     state: latest
   become: yes
 
 # Is it already installed?
-- name: "Check for plink installation @ {{ plink_install_dest }}/{{ plink_prefix }}"
-  stat: path="{{ plink_install_dest }}/{{ plink_prefix }}"
-  register: plink_installed
+- name: "Check for plink installation @ {{ plink19_install_dest }}/{{ plink19_prefix }}/bin/plink"
+  stat: path="{{ plink19_install_dest }}/{{ plink19_prefix }}/bin/plink"
+  register: plink19_installed
 
 #Transfer, unpack and compile
 #
@@ -26,38 +26,38 @@
 - name: "Transfer, unpack and compile plink"
   block:
     - ansible.builtin.unarchive:
-        src: "files/{{ plink_prefix }}.{{ plink_archive }}"
+        src: "files/{{ plink19_prefix }}.{{ plink19_archive }}"
         dest: /tmp
-        creates: /tmp/{{ plink_prefix }}
+        creates: /tmp/{{ plink19_prefix }}
     - ansible.builtin.lineinfile:
-        path: /tmp/{{ plink_prefix }}/1.9/Makefile
+        path: /tmp/{{ plink19_prefix }}/1.9/Makefile
         regexp: '^PREFIX'
-        line: "PREFIX ?=       {{ plink_prefix }}"
+        line: "PREFIX ?=       {{ plink19_prefix }}"
         state: present
     - ansible.builtin.lineinfile:
-        path: /tmp/{{ plink_prefix }}/1.9/Makefile
+        path: /tmp/{{ plink19_prefix }}/1.9/Makefile
         regexp: '^DESTDIR'
-        line: "DESTDIR ?=      {{ plink_install_dest }}/"
+        line: "DESTDIR ?=      {{ plink19_install_dest }}/"
         state: present        
     - ansible.builtin.lineinfile:
-        path: /tmp/{{ plink_prefix }}/1.9/Makefile
+        path: /tmp/{{ plink19_prefix }}/1.9/Makefile
         regexp: '^BLASFLAGS'
         line: "BLASFLAGS ?=   -L/usr/lib64/atlas -llapack -lblas -lgslcblas -latlas"
         state: present
     - command: ./plink_first_compile
       args:
-        chdir: /tmp/{{ plink_prefix }}/1.9
+        chdir: /tmp/{{ plink19_prefix }}/1.9
     - make:
-        chdir: /tmp/{{ plink_prefix }}/1.9
+        chdir: /tmp/{{ plink19_prefix }}/1.9
         target: install
     - file:
-        src: "{{ plink_install_dest }}/{{ plink_prefix }}"
-        dest: "{{ plink_linkdir }}"
+        src: "{{ plink19_install_dest }}/{{ plink19_prefix }}"
+        dest: "{{ plink19_linkdir }}"
         state: link
-      when: plink_dolink
+      when: plink19_dolink
     - file:
-        src: "{{ plink_binary_source }}"
-        dest: "{{ plink_binary_dest }}"
+        src: "{{ plink19_binary_source }}"
+        dest: "{{ plink19_binary_dest }}"
         state: link
-      when: plink_dolink
-  when: not plink_installed.stat.exist
+      when: plink19_dolink
+  when: not plink19_installed.stat.exist

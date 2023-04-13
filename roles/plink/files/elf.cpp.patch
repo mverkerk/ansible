@@ -1,0 +1,25 @@
+--- plink-1.07-src/elf.cpp	2009-10-10 18:00:21.000000000 +0200
++++ plink-1.07-src-patched/elf.cpp	2023-04-13 16:21:11.509756603 +0200
+@@ -1175,10 +1175,10 @@
+ 	  << setw(8) << gcnt << " "
+ 	  << setw(8) << (double)cnt / (double)gcnt << "\n";
+ 
+-      map<int,int>::iterator i = chr_cnt.begin();
+-      while ( i != chr_cnt.end() )
++      map<int,int>::iterator i2 = chr_cnt.begin();
++      while ( i2 != chr_cnt.end() )
+ 	{
+-	  int c = i->first;
++	  int c = i2->first;
+ 	  int x = chr_cnt.find( c )->second;
+ 	  int y = chr_gcnt.find( c )->second;
+ 	  
+@@ -1189,7 +1189,7 @@
+ 	      << setw(8) << y << " "
+ 	      << setw(8) << (double)x / (double)y << "\n";
+ 	  
+-	  ++i;
++	  ++i2;
+ 	}
+       
+     }

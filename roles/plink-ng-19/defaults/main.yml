@@ -2,18 +2,18 @@
 #
 # Source archive (prefix and archive), looks for (link) in files/ folder of role
 #
-plink_prefix: plink-ng-2.00a3.7
-plink_archive: tar.gz
+plink19_prefix: plink-ng-2.00a3.7
+plink19_archive: tar.gz
 
 #Installation folder
-plink_install_dest: /opt/tools/versions
+plink19_install_dest: /opt/tools/versions
 
 #Separate link dir (for different versions)
-plink_linkdir: /opt/tools/plink-ng-19
+plink19_linkdir: /opt/tools/plink-ng-19
 
 #Binaries (e.g. linking to location in PATH)
-plink_binary_source: /opt/tools/plink-ng-19/bin/plink
-plink_binary_dest: /opt/tools/bin/plink19
+plink19_binary_source: /opt/tools/plink-ng-19/bin/plink
+plink19_binary_dest: /opt/tools/bin/plink19
 
 #Do the actual linking?
-plink_dolink: true
+plink19_dolink: true

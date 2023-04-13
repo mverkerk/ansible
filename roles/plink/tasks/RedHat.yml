@@ -1,0 +1,64 @@
+---
+# Plink 1.07 with 3 patches (Makefile, elf.cpp, idhelp.cpp, sets.cpp)
+#
+# Preparations
+- name: "Install plink depended OS packages"
+  yum:
+    name: "{{ plink_os_packages }}"
+    state: latest
+  become: yes
+
+# Is it already installed?
+- name: "Check for plink installation @ {{ plink_install_dest }}/{{ plink_prefix }}"
+  stat: path="{{ plink_install_dest }}/{{ plink_prefix }}"
+  register: plink_installed
+
+#Transfer, unpack and compile
+#
+# Two changes to plink Makefile (El7/12-04-2023):
+#
+# - Install prefix (PREFIX / DESTDIR)
+# - Use gslcblas instead of cblas
+#
+- name: "Transfer, unpack and compile plink"
+  block:
+    - ansible.builtin.unarchive:
+        src: "files/{{ plink_prefix }}.{{ plink_archive }}"
+        dest: /tmp
+        creates: /tmp/{{ plink_prefix }}
+    - ansible.posix.patch:
+        src: Makefile.patch
+        dest: /tmp/{{ plink_prefix }}/Makefile
+    - ansible.posix.patch:
+        src: elf.cpp.patch
+        dest: /tmp/{{ plink_prefix }}/elf.cpp        
+    - ansible.posix.patch:
+        src: idhelp.cpp.patch
+        dest: /tmp/{{ plink_prefix }}/idhelp.cpp        
+    - ansible.posix.patch:
+        src: sets.cpp.patch
+        dest: /tmp/{{ plink_prefix }}/sets.cpp
+    - community.general.make:
+        chdir: /tmp/{{ plink_prefix }}
+    - ansible.builtin.file:
+        path: "{{ plink_install_dest }}/{{ plink_prefix }}"
+        state: directory
+        recurse: true
+        owner: root
+        group: root
+    - ansible.builtin.copy:
+        src: /tmp/{{ plink_prefix }}/plink
+        dest: "{{ plink_install_dest }}/{{ plink_prefix }}/plink"
+        mode: '755'
+        remote_src: yes
+    - file:
+        src: "{{ plink_install_dest }}/{{ plink_prefix }}"
+        dest: "{{ plink_linkdir }}"
+        state: link
+      when: plink_dolink
+    - file:
+        src: "{{ plink_binary_source }}"
+        dest: "{{ plink_binary_dest }}"
+        state: link
+      when: plink_dolink
+  when: not plink_installed.stat.exists

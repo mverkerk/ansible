@@ -1,1 +1,18 @@
-RedHat.yml
+---
+build_packages:
+  - autoconf
+  - automake
+  - binutils
+  - bison
+  - flex
+  - gcc
+  - gcc-c++
+  - gettext
+  - libtool
+  - make
+  - patch
+  - pkgconfig
+  - redhat-rpm-config
+  - rpm-build
+  - rpm-sign
+

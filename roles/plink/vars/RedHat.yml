@@ -1,0 +1,4 @@
+---
+plink_os_packages:
+  - zlib
+  - zlib-devel

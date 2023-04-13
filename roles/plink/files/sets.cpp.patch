@@ -1,0 +1,19 @@
+--- plink-1.07-src/sets.cpp	2009-10-10 18:00:20.000000000 +0200
++++ plink-1.07-patched/sets.cpp	2015-02-26 14:30:08.993554041 +0100
+@@ -768,11 +768,11 @@
+       //////////////////////////////////////////////
+       // Reset original missing status
+ 
+-      vector<Individual*>::iterator i = PP->sample.begin();
+-      while ( i != PP->sample.end() )
++      vector<Individual*>::iterator vi = PP->sample.begin();
++      while ( vi != PP->sample.end() )
+ 	{
+-	  (*i)->missing = (*i)->flag;
+-	  ++i;
++	  (*vi)->missing = (*vi)->flag;
++	  ++vi;
+ 	}
+ 
+       ////////////////////////////////////////////////
+
