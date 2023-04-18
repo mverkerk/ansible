@@ -1,1 +1,1 @@
-This role will download and install cog-genomics's plink (v1).
+This role will install plink analysis toolkit.
