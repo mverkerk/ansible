@@ -13,19 +13,19 @@ includedir /etc/krb5.conf.d/
  forwardable = true
  rdns = false
  pkinit_anchors = /etc/pki/tls/certs/ca-bundle.crt
- default_realm = {{ realm_name|upper() }}
+ default_realm = {{ adauth_realm_name|upper() }}
  default_ccache_name = KEYRING:persistent:%{uid}
 
 [realms]
 {{ realm_name|upper() }} = {
-  {% for item in kdcs %}
-    kdc = {{ item.hostname|upper() }}.{{ realm_name|upper() }}:{{ item.port }}
+  {% for item in adauth_kdcs %}
+    kdc = {{ item.hostname|upper() }}.{{ adauth_realm_name|upper() }}:{{ item.port }}
   {% endfor %}
-  {% for item in admins %}
-    admin_server = {{ item.hostname|upper() }}.{{ realm_name|upper() }}:{{ item.port }}
+  {% for item in adauth_admins %}
+    admin_server = {{ item.hostname|upper() }}.{{ adauth_realm_name|upper() }}:{{ item.port }}
   {% endfor %}
 }
 
 [domain_realm]
- {{ realm_name|lower() }} = {{ realm_name|upper() }}
- .{{ realm_name|lower() }} = {{ realm_name|upper() }}
+ {{ adauth_realm_name|lower() }} = {{ adauth_realm_name|upper() }}
+ .{{ adauth_realm_name|lower() }} = {{ adauth_realm_name|upper() }}

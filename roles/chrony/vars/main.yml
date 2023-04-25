@@ -1,11 +1,11 @@
 ---
-chrony_packages: 
+chrony_packages:
 - chrony
 
 #
 # (Additional) ntp server(s)
 #
-ntp_servers: 
+chrony_ntp_servers:
   - "pool ntp.erasmusmc.nl iburst"
   - "pool 0.centos.pool.ntp.org iburst"
   - "pool 1.centos.pool.ntp.org iburst"

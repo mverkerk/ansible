@@ -1,11 +1,11 @@
 ---
-packages: 
+ntp_packages:
   - ntp
 
 #
 # (Additional) ntp server(s)
 #
-ntp_servers: 
+ntp_servers:
   - "server ntp.erasmusmc.nl iburst"
   - "server 0.centos.pool.ntp.org iburst"
   - "server 1.centos.pool.ntp.org iburst"

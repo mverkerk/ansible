@@ -6,7 +6,7 @@
 # Preparations
 - name: "Install R depended packages"
   yum:
-    name: "{{ packages }}"
+    name: "{{ r_packages }}"
     state: latest
   become: yes
 
@@ -40,7 +40,8 @@
       line: 'Map zi4.map'
       state: present
   - command: mktexlsr
-  - command: updmap-sys --force --syncwithtrees --quiet
+# The following line sometimes asks for confirmation (no options to disable this) - needs to be done manually!
+#  - command: updmap-sys --force --syncwithtrees --quiet
   become: yes
 
 # Compilation & Installing

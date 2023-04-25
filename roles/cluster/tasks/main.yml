@@ -8,7 +8,7 @@
   dnf:
     name: man-db
     state: latest
-      
+
 - block:
   - name: "Create MANDATORY_MANPATHs folder"
     file:
@@ -18,33 +18,33 @@
       group: root
       mode: 0775
       recurse: yes
-    loop: "{{ mandatory_manpaths }}"
+    loop: "{{ cluster_mandatory_manpaths }}"
   - name: "Set MANDATORY_MANPATHs"
     lineinfile:
-      path: "{{ man_db_path }}"
+      path: "{{ cluster_man_db_path }}"
       regexp: 'MANDATORY_MANPATH                       {{ item }}'
       insertafter: '^MANDATORY_MANPATH'
       line: 'MANDATORY_MANPATH                       {{ item }}'
       state: present
-    loop: "{{ mandatory_manpaths }}"
-  when: mandatory_manpaths is defined
+    loop: "{{ cluster_mandatory_manpaths }}"
+  when: cluster_mandatory_manpaths is defined
 
 - block:
   - name: "Set bin MANPATH_MAPs"
     lineinfile:
-      path: "{{ man_db_path }}"
+      path: "{{ cluster_man_db_path }}"
       regexp: 'MANPATH_MAP     {{ item.bin }}          {{ item.man }}'
       insertafter: '^MANPATH_MAP'
       line: 'MANPATH_MAP     {{ item.bin }}          {{ item.man }}'
       state: present
-    loop: "{{ manpath_maps }}"
-  when: manpath_maps is defined
-    
+    loop: "{{ cluster_manpath_maps }}"
+  when: cluster_manpath_maps is defined
+
 - name: "Run mandb to reconfigure man databases"
   command: mandb
 
 # Set PATHs (create file in profile.d)
-- block:       
+- block:
   - name: "Create PATH folder"
     file:
       path: "{{ item.location }}"
@@ -53,27 +53,27 @@
       group: root
       mode: 0775
       recurse: yes
-    loop: "{{ paths }}"
+    loop: "{{ cluster_paths }}"
   - name: "Create profile.d files with PATH info"
-    template: 
+    template:
       src: path.sh.j2
-      dest: "{{ profile_d_path }}/{{ item.name }}.sh"
+      dest: "{{ cluster_profile_d_path }}/{{ item.name }}.sh"
       owner: root
       group: root
-      mode: 0644 
-    loop: "{{ paths }}"
+      mode: 0644
+    loop: "{{ cluster_paths }}"
   when: paths is defined
 
-- block: 
+- block:
   - name: "Make link for csh users"
     file:
-      src: "{{ profile_d_path }}/{{ item.name }}.sh"
-      dest: "{{ profile_d_path }}/{{ item.name }}.csh"
+      src: "{{ cluster_profile_d_path }}/{{ item.name }}.sh"
+      dest: "{{ cluster_profile_d_path }}/{{ item.name }}.csh"
       state: link
-    loop: "{{ paths }}"
-  when: paths is defined
+    loop: "{{ cluster_paths }}"
+  when: cluster_paths is defined
 
-# Set security settings in limits.d 
+# Set security settings in limits.d
 - block:
   - name: "Create nofile.conf in /etc/security/limits.d"
     template:
@@ -82,20 +82,20 @@
       owner: root
       group: root
       mode: 0640
-  when: nofile_soft is defined and nofile_hard is defined
+  when: cluster_nofile_soft is defined and cluster_nofile_hard is defined
 
 # Copy script with numeric user environent variable
 - block:
   - name: Copy numeric_user.sh to cluster
     copy:
       src: files/numeric_user.sh
-      dest: "{{ profile_d_path }}/numeric_user.sh"
+      dest: "{{ cluster_profile_d_path }}/numeric_user.sh"
       owner: root
       group: root
       mode: u=rwx,g=rwx,o=rx
   - name: Link csh version
     file:
-      src: "{{ profile_d_path }}/numeric_user.sh"
-      dest: "{{ profile_d_path }}/numeric_user.csh"
+      src: "{{ cluster_profile_d_path }}/numeric_user.sh"
+      dest: "{{ cluster_profile_d_path }}/numeric_user.csh"
       state: link
-  when: numeric_user is defined and numeric_user
+  when: cluster_numeric_user is defined and cluster_numeric_user

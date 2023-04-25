@@ -1,5 +1,5 @@
 ---
-packages:
+r_packages:
   - xorg-x11-server-devel
   - libX11-devel
   - libXt-devel
@@ -37,4 +37,4 @@ packages:
   - pcre2-devel
   - texinfo
   - levien-inconsolata-fonts
-    
+
