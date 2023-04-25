@@ -2,12 +2,12 @@
 #
 # Configuration file - from template
 #
-krb5_config_file: /etc/krb5.conf          #Destination
-krb5_template_file: krb5.conf.j2          #Template file
+adauth_krb5_config_file: /etc/krb5.conf          #Destination
+adauth_krb5_template_file: krb5.conf.j2          #Template file
 
 #Realm Config
-realm_name: EXAMPLE.COM
-kdcs:
+adauth_realm_name: EXAMPLE.COM
+adauth_kdcs:
   - { hostname: KDC, port: 88 }
-admins:
+adauth_admins:
   - { hostname: ADMIN, port: 749 }
