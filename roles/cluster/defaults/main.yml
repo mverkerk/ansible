@@ -4,37 +4,37 @@
 #
 # Packages
 #
-#cluster_packages: 
+#cluster_packages:
 #  - java-1.8.0-openjdk.x86_64
 
 #
 # Manual Settings
 #
-man_db_path: /etc/man_db.conf
+cluster_man_db_path: /etc/man_db.conf
 
-#mandatory_manpaths:
+#cluster_mandatory_manpaths:
 #- /opt/software/R/share/man
 
-#manpath_maps:
+#cluster_manpath_maps:
 #- { bin: /opt/software/tools/bin, man: /opt/software/tools/man }
 
 
 #
 # PATH Settings
 #
-profile_d_path: /etc/profile.d
+cluster_profile_d_path: /etc/profile.d
 
-#paths:
+#cluster_paths:
 #- { name: tools, location: /opt/software/tools/bin }
 
 #
 # limits.d
 #
 #Max nr of files
-#nofile_soft: 1024
-#nofile_hard: 1024
+#cluster_nofile_soft: 1024
+#cluster_nofile_hard: 1024
 
 #
 # Various FLAGS
 #
-#numeric_user: true
+#cluster_numeric_user: true
