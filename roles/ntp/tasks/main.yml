@@ -1,8 +1,8 @@
 ---
 - name: "Install ntp packages"
   yum:
-    name: "{{ packages }}"
-    state: latest  
+    name: "{{ ntp_packages }}"
+    state: latest
 
 - name: "Create NTP configuration file"
   template:
@@ -14,7 +14,7 @@
 
 - name: "Enable ntp service"
   systemd:
-    name: ntpd 
+    name: ntpd
     enabled: yes
 
 - name: "Start ntp service"
