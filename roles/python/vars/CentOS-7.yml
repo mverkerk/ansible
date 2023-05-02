@@ -28,5 +28,4 @@ python_configure_flags:
 
 # ^- Centos 7 requires openssl 1.1.1. RH7 Provides them via additional openssl11 packages:
 #    Install openssl11 and openssl11-devel packages and link lib and include
-#    to
- a local folder and point Python configure script to it.
+#    to a local folder and point Python configure script to it.
