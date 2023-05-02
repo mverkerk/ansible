@@ -1,0 +1,27 @@
+---
+#
+# Source archive (prefix and archive), looks for (link) in files/ folder of role
+#
+htslib_prefix: htslib-1.17
+htslib_archive: tar.bz2
+
+#Installation folder
+htslib_install_dest: /opt/tools/versions
+
+#Separate link dir (for different versions)
+htslib_linkdir: /opt/tools/htslib
+
+#Additional configure script flags
+htslib_configure_flags_user: []
+
+#Where to link the binaries to
+htslib_binary_dest: /opt/tools/bin
+
+#Where to link the man files to
+htslib_man_dest: /opt/tools/man
+
+#Where to link the lib files to
+htslib_lib_dest: /opt/tools/lib
+
+#Do the actual linking?
+htslib_dolink: true

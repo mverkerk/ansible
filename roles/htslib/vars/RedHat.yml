@@ -1,0 +1,16 @@
+---
+htslib_os_packages:
+  - zlib
+  - zlib-devel
+  - bzip2
+  - bzip2-libs
+  - bzip2-devel
+  - xz
+  - xz-compat-libs
+  - xz-devel
+  - xz-libs
+  - libcurl
+  - libcurl-devel
+
+htslib_configure_flags:
+  - "--enable-libcurl"
