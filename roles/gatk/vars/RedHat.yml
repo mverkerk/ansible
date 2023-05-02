@@ -1,0 +1,4 @@
+---
+gatk_os_packages:
+  - java-17-openjdk
+

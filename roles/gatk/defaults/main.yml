@@ -1,0 +1,19 @@
+---
+#
+# Source archive (prefix and archive), looks for (link) in files/ folder of role
+#
+gatk_prefix: gatk-4.4.0.0
+gatk_archive: zip
+
+#Installation folder
+gatk_install_dest: /opt/tools/versions
+
+#Separate link dir (for different versions)
+gatk_linkdir: /opt/tools/gatk4
+
+#Binaries (e.g. linking to location in PATH)
+gatk_binary_source: /opt/tools/gatk4/gatk
+gatk_binary_dest: /opt/tools/bin/gatk
+
+#Do the actual linking?
+gatk_dolink: true

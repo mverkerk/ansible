@@ -1,0 +1,37 @@
+---
+# Preparations
+- name: "Install Gatk depended OS packages"
+  yum:
+    name: "{{ gatk_os_packages }}"
+    state: latest
+  become: yes
+
+# Is it already installed?
+- name: "Check for gatk installation @ {{ gatk_install_dest }}/{{ gatk_prefix }}"
+  stat: path="{{ gatk_install_dest }}/{{ gatk_prefix }}"
+  register: gatk_installed
+
+#Transfer, unpack and compile
+#
+# Applies Patch for 4.4.0.0 that specifies java binary
+#
+- name: "Transfer, unpack and compile gatk"
+  block:
+    - ansible.builtin.unarchive:
+        src: "files/{{ gatk_prefix }}.{{ gatk_archive }}"
+        dest: "{{ gatk_install_dest }}/"
+        creates: "{{ gatk_install_dest }}/{{ gatk_prefix }}"
+    - ansible.posix.patch:
+        src: gatk-4.4.0.0-jre.patch
+        dest: "{{ gatk_install_dest }}/{{ gatk_prefix }}/gatk"
+    - file:
+        src: "{{ gatk_install_dest }}/{{ gatk_prefix }}"
+        dest: "{{ gatk_linkdir }}"
+        state: link
+      when: gatk_dolink
+    - file:
+        src: "{{ gatk_binary_source }}"
+        dest: "{{ gatk_binary_dest }}"
+        state: link
+      when: gatk_dolink
+  when: not gatk_installed.stat.exists
