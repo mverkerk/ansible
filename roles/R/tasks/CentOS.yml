@@ -10,6 +10,40 @@
     state: latest
   become: yes
 
+# Setup inconsolata.sty
+- name: "Setup inconsolata.sty"
+  block:
+  - ansible.builtin.get_url:
+      url: "{{ inconsolata_url }}"
+      dest: /tmp/inconsolata.tds.zip
+      mode: '0700'
+  - ansible.builtin.file:
+      path: /tmp/inconsolata
+      state: directory
+      mode: '0755'
+  - ansible.builtin.unarchive:
+      src: /tmp/inconsolata.tds.zip
+      dest: /tmp/inconsolata
+      remote_src: yes
+  - ansible.builtin.copy:
+      src: /tmp/inconsolata/
+      dest: /usr/share/texmf
+      remote_src: yes
+  - command: mktexlsr
+  become: yes
+
+# Setup zi4.sty
+- name: "Setup zi4.map in updmap.cfg"
+  block:
+  - ansible.builtin.lineinfile:
+      path: /usr/share/texlive/texmf-dist/web2c/updmap.cfg
+      line: 'Map zi4.map'
+      state: present
+  - command: mktexlsr
+# The following line sometimes asks for confirmation (no options to disable this) - needs to be done manually!
+#  - command: updmap-sys --force --syncwithtrees --quiet
+  become: yes
+
 # Compilation & Installing
 - name: Check for R installation @ {{ r_install_dest }}
   stat: path={{ r_install_dest }}/{{ r_prefix }}

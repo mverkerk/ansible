@@ -35,6 +35,17 @@ r_packages:
   - libxml2-devel
   - pcre2
   - pcre2-devel
-  - texinfo
-  - levien-inconsolata-fonts
+  - harfbuzz
+  - harfbuzz-devel
+  - fribidi
+  - fribidi-devel
+#  - texinfo
+  - texlive
+  - texlive-tetex
+#  - levien-inconsolata-fonts
+  - perl-Digest-MD5
 
+#For optimal rendering of PDF vignettes and package manuals
+# ( WARNING: neither inconsolata.sty nor zi4.sty found: PDF vignettes and package manuals will not be rendered optimally )
+#https://community.rstudio.com/t/texlive-distribution-on-centos-for-rstudio-server-and-connect/2916
+inconsolata_url: http://mirrors.ctan.org/install/fonts/inconsolata.tds.zip
