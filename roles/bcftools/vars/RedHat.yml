@@ -1,9 +1,5 @@
 ---
 bcftools_os_packages:
-  - autoconf
-  - automake
-  - make
-  - gcc
   - zlib
   - zlib-devel
   - bzip2
