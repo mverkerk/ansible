@@ -106,4 +106,8 @@
         path: "{{ htslib_lib_dest }}/pkgconfig/{{ item.path | basename }}"
         state: link
       with_items: "{{ htslib_lib_pkgconfig.files }}"
+
+    - command: ldconfig
+      become: yes
+
   when: not htslib_installed.stat.exists and htslib_dolink
