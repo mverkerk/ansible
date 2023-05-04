@@ -1,0 +1,62 @@
+---
+- name: "Install bwa depended OS packages"
+  yum:
+    name: "{{ bwa_os_packages }}"
+    state: latest
+  become: yes
+
+# Is it already installed?
+- name: "Check for bwa installation @ {{ bwa_install_dest }}/{{ bwa_prefix }}"
+  stat: path="{{ bwa_install_dest }}/{{ bwa_prefix }}"
+  register: bwa_installed
+
+# Transfer, unpack and compile
+- name: "Transfer, unpack and compile bwa"
+  block:
+    - ansible.builtin.unarchive:
+        src: "files/{{ bwa_prefix }}.{{ bwa_archive }}"
+        dest: /tmp
+        creates: "/tmp/{{ bwa_prefix }}"
+    - community.general.make:
+        chdir: "/tmp/{{ bwa_prefix }}"
+  when: not bwa_installed.stat.exists
+
+- name: "Link bwa parts (binaries, man) to OS"
+  block:
+    - ansible.builtin.file:
+        path: "{{ bwa_install_dest }}/{{ bwa_prefix }}"
+        state: directory
+        mode: '0755'
+    - ansible.builtin.copy:
+        src: "/tmp/{{ bwa_prefix }}/{{ item }}"
+        dest: "{{ bwa_install_dest }}/{{ bwa_prefix }}/{{ item }}"
+        remote_src: true
+        owner: root
+        group: root
+        mode: '0755'
+      with_items: "{{ bwa_binaries + bwa_manuals }}"
+      become: yes
+        
+    - ansible.builtin.file:
+        src: "{{ bwa_install_dest }}/{{ bwa_prefix }}"
+        dest: "{{ bwa_linkdir }}"
+        state: link
+
+    # Link binaries      
+    - ansible.builtin.file:
+        src: "{{ bwa_linkdir }}/{{ item }}"
+        path: "{{ bwa_binary_dest }}/{{ item }}"
+        state: link
+      with_items: "{{ bwa_binaries }}"
+
+    # Link manuals
+    - ansible.builtin.file:
+        src: "{{ bwa_linkdir }}/{{ item }}"
+        path: "{{ bwa_man_dest }}/man{{ item.split('.')[-1]}}/{{ item }}"
+        state: link
+      with_items: "{{ bwa_manuals }}"
+
+    - command: mandb
+      become: yes
+      
+  when: not bwa_installed.stat.exists and bwa_dolink

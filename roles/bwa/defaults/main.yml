@@ -1,0 +1,24 @@
+---
+#
+# Source archive (prefix and archive), looks for (link) in files/ folder of role
+#
+bwa_prefix: bwa-0.7.17
+bwa_archive: tar.bz2
+
+#Installation folder
+bwa_install_dest: /opt/tools/versions
+
+#Separate link dir (for different versions, link to default version)
+bwa_linkdir: /opt/tools/bwa
+
+#Additional configure script flags
+bwa_configure_flags_user: []
+
+#Where to link the binaries to
+bwa_binary_dest: /opt/tools/bin
+
+#Where to link the man files to
+bwa_man_dest: /opt/tools/man
+
+#Do the actual linking?
+bwa_dolink: true

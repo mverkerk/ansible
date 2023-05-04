@@ -1,0 +1,12 @@
+---
+bwa_os_packages:
+  - zlib
+  - zlib-devel
+
+bwa_binaries:
+  - bwa
+  - qualfa2fq.pl
+  - xa2multi.pl
+
+bwa_manuals:
+  - bwa.1
