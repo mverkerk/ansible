@@ -1,0 +1,109 @@
+---
+- name: "Install samtools depended OS packages"
+  yum:
+    name: "{{ samtools_os_packages }}"
+    state: latest
+  become: yes
+
+# Is it already installed?
+- name: "Check for samtools installation @ {{ samtools_install_dest }}/{{ samtools_prefix }}"
+  stat: path="{{ samtools_install_dest }}/{{ samtools_prefix }}"
+  register: samtools_installed
+
+# Transfer, unpack and compile
+- name: "Transfer, unpack and compile samtools"
+  block:
+    - ansible.builtin.unarchive:
+        src: "files/{{ samtools_prefix }}.{{ samtools_archive }}"
+        dest: /tmp
+        creates: /tmp/{{ samtools_prefix }}
+    - command: "./configure --prefix={{ samtools_install_dest }}/{{ samtools_prefix }} {{ samtools_configure_flags | join(' ') }} {{ samtools_configure_flags_user | join(' ') }}"
+      args:
+        chdir: /tmp/{{ samtools_prefix }}
+    - community.general.make:
+        chdir: /tmp/{{ samtools_prefix }}
+    - community.general.make:
+        chdir: /tmp/{{ samtools_prefix }}
+        target: install
+      become: yes
+  when: not samtools_installed.stat.exists
+
+- name: "Link samtools parts (binaries, man and lib) to OS"
+  block:
+    - ansible.builtin.file:
+        src: "{{ samtools_install_dest }}/{{ samtools_prefix }}"
+        dest: "{{ samtools_linkdir }}"
+        state: link
+
+    # Find & link binaries      
+    - ansible.builtin.find:
+        paths: "{{ samtools_linkdir }}/bin"
+      register: samtools_binaries
+      when: samtools_dolink
+    - ansible.builtin.file:
+        src: "{{ item.path }}"
+        path: "{{ samtools_binary_dest }}/{{ item.path | basename }}"
+        state: link
+      with_items: "{{ samtools_binaries.files }}"
+
+    # Find & create man directories and link man files
+    - ansible.builtin.find:
+        paths: "{{ samtools_linkdir }}/share/man"
+        file_type: directory
+      register: samtools_man_dirs
+    - ansible.builtin.file:
+        path: "{{ samtools_man_dest }}/{{ item.path | basename }}"
+        owner: root
+        group: root
+        mode: 0755
+      with_items: "{{ samtools_man_dirs.files }}"
+
+    - ansible.builtin.find:
+        paths: "{{ samtools_linkdir }}/share/man"
+        file_type: file
+        recurse: true
+      register: samtools_man_files
+    - ansible.builtin.file:
+        src: "{{ item.path }}"
+        path: "{{ samtools_man_dest }}/{{ item.path.split('/')[-2:]|join('/') }}"
+        state: link
+      with_items: "{{ samtools_man_files.files }}"
+
+    - command: mandb
+      become: yes
+
+    # Link library files: libs & pkgconfig
+    - ansible.builtin.find:
+        paths: "{{ samtools_linkdir }}/lib"
+        file_type: file
+      register: samtools_lib_files
+    - ansible.builtin.find:
+        paths: "{{ samtools_linkdir }}/lib"
+        file_type: link
+      register: samtools_lib_links
+    - ansible.builtin.file:
+        src: "{{ item.path }}"
+        path: "{{ samtools_lib_dest }}/{{ item.path | basename }}"
+        state: link
+      with_items: "{{ samtools_lib_files.files }}"
+    - ansible.builtin.file:
+        src: "{{ item.path }}"
+        path: "{{ samtools_lib_dest }}/{{ item.path | basename }}"
+        state: link
+      with_items: "{{ samtools_lib_links.files }}"
+
+    - ansible.builtin.file:
+        path: "{{ samtools_lib_dest }}/pkgconfig"
+        owner: root
+        group: root
+        mode: 0755
+    - ansible.builtin.find:
+        paths: "{{ samtools_linkdir }}/lib/pkgconfig"
+        file_type: file
+      register: samtools_lib_pkgconfig
+    - ansible.builtin.file:
+        src: "{{ item.path }}"
+        path: "{{ samtools_lib_dest }}/pkgconfig/{{ item.path | basename }}"
+        state: link
+      with_items: "{{ samtools_lib_pkgconfig.files }}"
+  when: not samtools_installed.stat.exists and samtools_dolink
