@@ -20,8 +20,5 @@ samtools_binary_dest: /opt/tools/bin
 #Where to link the man files to
 samtools_man_dest: /opt/tools/man
 
-#Where to link the lib files to
-samtools_lib_dest: /opt/tools/lib
-
 #Do the actual linking?
 samtools_dolink: true

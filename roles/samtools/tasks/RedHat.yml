@@ -72,38 +72,4 @@
     - command: mandb
       become: yes
 
-    # Link library files: libs & pkgconfig
-    - ansible.builtin.find:
-        paths: "{{ samtools_linkdir }}/lib"
-        file_type: file
-      register: samtools_lib_files
-    - ansible.builtin.find:
-        paths: "{{ samtools_linkdir }}/lib"
-        file_type: link
-      register: samtools_lib_links
-    - ansible.builtin.file:
-        src: "{{ item.path }}"
-        path: "{{ samtools_lib_dest }}/{{ item.path | basename }}"
-        state: link
-      with_items: "{{ samtools_lib_files.files }}"
-    - ansible.builtin.file:
-        src: "{{ item.path }}"
-        path: "{{ samtools_lib_dest }}/{{ item.path | basename }}"
-        state: link
-      with_items: "{{ samtools_lib_links.files }}"
-
-    - ansible.builtin.file:
-        path: "{{ samtools_lib_dest }}/pkgconfig"
-        owner: root
-        group: root
-        mode: 0755
-    - ansible.builtin.find:
-        paths: "{{ samtools_linkdir }}/lib/pkgconfig"
-        file_type: file
-      register: samtools_lib_pkgconfig
-    - ansible.builtin.file:
-        src: "{{ item.path }}"
-        path: "{{ samtools_lib_dest }}/pkgconfig/{{ item.path | basename }}"
-        state: link
-      with_items: "{{ samtools_lib_pkgconfig.files }}"
   when: not samtools_installed.stat.exists and samtools_dolink
