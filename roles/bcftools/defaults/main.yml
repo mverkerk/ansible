@@ -1,0 +1,24 @@
+---
+#
+# Source archive (prefix and archive), looks for (link) in files/ folder of role
+#
+bcftools_prefix: bcftools-1.17
+bcftools_archive: tar.bz2
+
+#Installation folder
+bcftools_install_dest: /opt/tools/versions
+
+#Separate link dir (for different versions, link to default version)
+bcftools_linkdir: /opt/tools/bcftools
+
+#Additional configure script flags
+bcftools_configure_flags_user: []
+
+#Where to link the binaries to
+bcftools_binary_dest: /opt/tools/bin
+
+#Where to link the man files to
+bcftools_man_dest: /opt/tools/man
+
+#Do the actual linking?
+bcftools_dolink: true
