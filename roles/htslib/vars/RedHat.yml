@@ -11,6 +11,9 @@ htslib_os_packages:
   - xz-libs
   - libcurl
   - libcurl-devel
+  - crypto-utils
+  - openssl
+  - openssl-libs
 
 htslib_configure_flags:
   - "--enable-libcurl"
