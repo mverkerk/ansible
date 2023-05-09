@@ -1,0 +1,6 @@
+---
+- name: "Install java packages"
+  yum:
+    name: "{{ java_packages }}"
+    state: latest
+  become: yes

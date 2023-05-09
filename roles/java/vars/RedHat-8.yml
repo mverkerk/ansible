@@ -1,0 +1,4 @@
+---
+java_packages:
+  - java-latest-openjdk
+  - java-latest-openjdk-devel
