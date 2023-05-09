@@ -1,0 +1,45 @@
+This role will compile, install and configure slurm on a CentOS 7 machine or container.
+Tested with:
+- lxc - centos, 7, amd64
+
+* Preparations
+
+Before applaying this role, look at the variables and templates ( * are required ):
+
+defaults/main.yml:
+ - Specify installation location
+ - Link location (used for configuration files)
+ - Config filename (in template folder)
+ - Partition name 
+ - Controller name *
+ - DBD name 
+ - Backup controller name (optional)
+ - Compute node information *
+
+templates/
+  cgroup.conf.j2    
+  slurm.conf.tmp.j2 
+  slurmd.service.j2  
+  slurm.logrotate.j2
+  slurm.conf.j2 *   <- The slurm configuration file - can also be specified in variables (slurm_conf_template)
+  slurmctld.service.j2  
+  slurmdbd.conf.j2  <- The DBD daemon config file - can also be specified in variables (slurm
+  slurmdbd.service.j2  
+  slurm.ld.conf.j2
+  slurm.sh.j2
+
+
+* Firewall
+
+In order to have this role configure your firewall correctly, you will need to install and enable your firewall:
+
+yum install firewalld python-firewall
+systemctl enable firewalld
+systemctl start firewalld
+
+The role will add each node to the trusted zone.
+
+* Dependencies (other scs roles)
+
+  epel, build, munge
+

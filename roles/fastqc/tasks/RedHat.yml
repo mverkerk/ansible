@@ -1,0 +1,79 @@
+---
+- name: "Install fastqc packages"
+  yum:
+    name: "{{ fastqc_packages }}"
+    state: latest
+  become: yes
+
+# Is it already installed?
+- name: "Check for fastqc installation @ {{ fastqc_install_dest }}/{{ fastqc_prefix }}"
+  stat: path="{{ fastqc_install_dest }}/{{ fastqc_prefix }}"
+  register: fastqc_installed
+
+#Transfer, unpack and compile
+#
+# Fixes:
+# build.xml patch (0.12.1) - add htsjdk.jar to build.xml
+# Specify java binary location in fastqc wrapper script
+#
+- name: "Transfer, unpack and compile fastqc"
+  block:
+
+    # Unarchive and compile
+    - ansible.builtin.unarchive:
+        src: "files/{{ fastqc_prefix }}.{{ fastqc_archive }}"
+        dest: "/tmp"
+        creates: "/tmp/{{ fastqc_prefix }}"
+    - ansible.posix.patch:
+        src: "build.xml.v0.12.1.patch"
+        dest: "/tmp/{{ fastqc_prefix }}/build.xml"
+
+    # Use ant to build (with separate JAVA_HOME)
+    - ansible.builtin.shell: 
+        chdir: "/tmp/{{ fastqc_prefix }}/"
+        cmd: ant
+      environment: 
+        JAVA_HOME: "{{ fastqc_java_home }}"
+      when: fastqc_java_home is defined
+
+    # Use ant to build (with regular java)
+    - ansible.builtin.shell: 
+        chdir: "/tmp/{{ fastqc_prefix }}/"
+        cmd: ant
+      when: fastqc_java_home is undefined
+        
+    # Install build
+    - ansible.builtin.file:
+        path: "{{ fastqc_install_dest }}/{{ fastqc_prefix }}"
+        state: directory
+        mode: '0755'
+    - ansible.posix.synchronize:
+        src: "/tmp/{{ fastqc_prefix }}/bin/"
+        dest: "{{ fastqc_install_dest }}/{{ fastqc_prefix }}"
+        owner: false
+      delegate_to: "{{ inventory_hostname }}"      
+
+    #Fix fastqc wrapper script
+    - ansible.builtin.lineinfile:
+        path: "{{ fastqc_install_dest }}/{{ fastqc_prefix }}/fastqc"
+        regexp: "^my \\$java_bin = \"java\";" #Tricky: $ is also end of line in regex - needs double escaping: \\$
+        line: "my $java_bin = \"{{ fastqc_java_home }}/bin/java\";"
+        state: present
+      when: fastqc_java_home is defined
+    - ansible.builtin.file:
+        path: "{{ fastqc_install_dest }}/{{ fastqc_prefix }}/fastqc"
+        mode: '0655'
+
+    # Link folder & binary
+    - ansible.builtin.file:
+        src: "{{ fastqc_install_dest }}/{{ fastqc_prefix }}"
+        dest: "{{ fastqc_linkdir }}"
+        state: link
+      when: fastqc_dolink
+    - file:
+        src: "{{ fastqc_linkdir }}/fastqc"
+        dest: "{{ fastqc_binary_dest }}/fastqc"
+        state: link
+      when: fastqc_dolink
+
+  when: not fastqc_installed.stat.exists

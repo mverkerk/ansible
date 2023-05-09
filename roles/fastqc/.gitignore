@@ -1,0 +1,11 @@
+#
+# slurm source archives
+#
+files/slurm-*
+
+#
+# Temporary files
+#
+*.swp
+*.bak
+

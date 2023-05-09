@@ -1,0 +1,21 @@
+---
+#
+# Source archive (prefix and archive), looks for (link) in files/ folder of role
+#
+fastqc_prefix: FastQC-0.12.1
+fastqc_archive: tar.gz
+
+#Location of Java runtime & compiler
+#fastqc_java_home: /usr/lib/jvm/java
+
+#Installation folder
+fastqc_install_dest: /opt/tools/versions
+
+#Separate link dir (for different versions)
+fastqc_linkdir: /opt/tools/FastQC
+
+#Where to link the binaries to
+fastqc_binary_dest: /opt/tools/bin
+
+#Do the actual linking?
+fastqc_dolink: true

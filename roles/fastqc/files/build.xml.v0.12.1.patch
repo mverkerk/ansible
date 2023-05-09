@@ -1,0 +1,13 @@
+*** FastQC-0.12.1/build.xml	2023-03-01 16:17:32.000000000 +0100
+--- FastQC-0.12.1-new/build.xml	2023-05-08 16:04:49.054826811 +0200
+***************
+*** 14,19 ****
+--- 14,20 ----
+          <pathelement location="jbzip2-0.9.jar"/>
+          <pathelement location="sam-1.103.jar"/>
+          <pathelement location="cisd-jhdf5.jar"/>
++         <pathelement location="htsjdk.jar"/>
+      </path>
+      <target name="init">
+          <mkdir dir="bin"/>
+
