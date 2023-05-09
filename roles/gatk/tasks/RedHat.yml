@@ -21,9 +21,9 @@
         src: "files/{{ gatk_prefix }}.{{ gatk_archive }}"
         dest: "{{ gatk_install_dest }}/"
         creates: "{{ gatk_install_dest }}/{{ gatk_prefix }}"
-    - ansible.posix.patch:
-        src: gatk-4.4.0.0-jre.patch
-        dest: "{{ gatk_install_dest }}/{{ gatk_prefix }}/gatk"
+#    - ansible.posix.patch:
+#        src: gatk-4.4.0.0-jre.patch
+#        dest: "{{ gatk_install_dest }}/{{ gatk_prefix }}/gatk"
     - file:
         src: "{{ gatk_install_dest }}/{{ gatk_prefix }}"
         dest: "{{ gatk_linkdir }}"
