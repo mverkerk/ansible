@@ -60,4 +60,4 @@
         dest: "{{ plink19_binary_dest }}"
         state: link
       when: plink19_dolink
-  when: not plink19_installed.stat.exist
+  when: not plink19_installed.stat.exists
