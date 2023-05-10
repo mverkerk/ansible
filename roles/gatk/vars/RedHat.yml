@@ -1,4 +1,3 @@
 ---
-gatk_os_packages:
-  - java-17-openjdk
-
+gatk_os_packages: []
+gatk_bash_completion_folder: /etc/bash_completion.d
