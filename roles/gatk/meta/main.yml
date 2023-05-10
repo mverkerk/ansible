@@ -1,4 +1,5 @@
 ---
 dependencies:
+  - { role: java }   # This role name lingers on in the ansible-playbook output log (instead of epel / build / gatk - I think results are ok!)
   - { role: epel }
   - { role: build }
