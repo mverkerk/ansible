@@ -1,8 +1,8 @@
 ---
 - name: gather os specific variables
-  ansible.builtin.include_vars: "{{ lookup('ansible.builtin.first_found', fastqc_vars_params) }}"
+  ansible.builtin.include_vars: "{{ lookup('ansible.builtin.first_found', java_vars_params) }}"
   vars:
-    fastqc_vars_params:
+    java_vars_params:
       files:
         - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
         - "{{ ansible_distribution }}.yml"
@@ -10,9 +10,9 @@
         - 'vars'
 
 - name: include os specific tasks
-  ansible.builtin.include_tasks: "{{ lookup('ansible.builtin.first_found', fastqc_tasks_params) }}"
+  ansible.builtin.include_tasks: "{{ lookup('ansible.builtin.first_found', java_tasks_params) }}"
   vars:
-    fastqc_tasks_params:
+    java_tasks_params:
       files:
         - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
         - "{{ ansible_distribution }}.yml"
