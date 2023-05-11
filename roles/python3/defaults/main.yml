@@ -1,30 +1,30 @@
 ---
 #Source prefix
-python_prefix: Python-3.10.2
+python3_prefix: Python-3.11.3
 
 #Source archive ext
-python_archive: tar.xz
+python3_archive: tar.xz
 
 #Configure flags add empty list as default ([])
-python_configure_flags_user: []
+python3_configure_flags_user: []
 
 #Install desination (prefix) on destination machine
-python_install_dest: /opt/software/versions
+python3_install_dest: /opt/software/versions
 
 #One instalation (provide host name) - in cluster situations with central nfs storage of software / tools
-#python_one_installation: host1
+#python3_one_installation: host1
 
 #Link location where install destination is linked to and configuration and script files are pointed at
-python_linkdir: /opt/software/python3
+python3_linkdir: /opt/software/python3
 
 #Do the link (for safe installations)
-python_dolink: true
+python3_dolink: true
 
 #Name of profile.d file (without extension path and .sh/.csh)
-python_profile_d_file: python3
+python3_profile_d_file: python3
 
 #Name of pip tool - usually pip or pipx, where x is the python major version nr
-python_pip: pip
+python3_pip: pip3
 
 #List of Python packages to be installed with pip (and their OS dependencies)
 #
@@ -33,20 +33,20 @@ python_pip: pip
 #
 # empty list as default: []
 #
-python_packages_os_dependencies: []
-python_packages: []
+python3_packages_os_dependencies: []
+python3_packages: []
 
 #
 #Python library locations
 #
 
 #Conf file (without .conf)
-python_lib_conf_file: python3
+python3_lib_conf_file: python3
 
 #Lib location(s)
-python_lib:
+python3_lib:
  - /opt/software/python3/lib
 
 #Common user and group id
-r_uid: root
-r_gid: root
+python3_uid: root
+python3_gid: root

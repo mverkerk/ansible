@@ -1,0 +1,109 @@
+---
+#- name: Include build role
+#  include_role:
+#    name: build
+
+# Preparations
+- name: "Install Python depended packages"
+  apt:
+    name: "{{ python3_os_packages }}"
+    state: latest
+  become: true
+
+# Compilation & Installing
+- name: Check for Python installation @ {{ python3_install_dest }}
+  stat: path={{ python3_install_dest }}/{{ python3_prefix }}
+  register: python3_installed
+
+- name: "Copy and extract the Python src package, configure, make and install Python.."
+  block:
+    - unarchive:
+        src: "files/{{ python3_prefix }}.{{ python3_archive }}"
+        dest: /tmp
+    - command: "./configure --prefix={{ python3_install_dest }}/{{ python3_prefix }} {{ python3_configure_flags | join(' ') }} {{ python3_configure_flags_user | join(' ') }}"
+      args:
+        chdir: /tmp/{{ python3_prefix }}
+    - make:
+        chdir: /tmp/{{ python3_prefix }}
+    - make:
+        chdir: /tmp/{{ python3_prefix }}
+        target: install
+  when: not python3_installed.stat.exists and ( python3_one_installation is not defined or inventory_hostname == python3_one_installation )
+
+- name: "Check if link exists.."
+  stat: "path={{ python3_linkdir }}"
+  register: python3_linked
+
+- name: "Create link.."
+  file:
+    src: "{{ python3_install_dest}}/{{ python3_prefix }}"
+    dest: "{{ python3_linkdir }}"
+    state: link
+  ignore_errors: yes        #Taking a small risk here - this config should allow overlapping links and different links per node
+  when: python3_dolink and not python3_linked.stat.exists
+
+# Configuring Python man directories
+
+- name: "Set python MANDATORY_MANPATH"
+  lineinfile:
+    path: /etc/manpath.config
+    regexp: 'MANDATORY_MANPATH                       {{ python3_linkdir }}/share/man'
+    insertafter: '^MANDATORY_MANPATH'
+    line: 'MANDATORY_MANPATH                       {{ python3_linkdir }}/share/man'
+    state: present
+  become: true
+
+- name: "Set python bin MANPATH_MAP"
+  lineinfile:
+    path: /etc/manpath.config
+    regexp: 'MANPATH_MAP     {{ python3_linkdir }}/bin          {{ python3_linkdir }}/share/man'
+    insertafter: '^MANPATH_MAP'
+    line: 'MANPATH_MAP     {{ python3_linkdir }}/bin          {{ python3_linkdir }}/share/man'
+    state: present
+  become: true
+
+- name: "Run mandb to reconfigure man databases"
+  command: mandb
+
+# Set Python settings with file in profile.d)
+- name: "Create profile.d files with PATH info"
+  template:
+    src: python3.sh.Debian.j2
+    dest: "/etc/profile.d/{{ python3_profile_d_file }}.sh"
+    owner: root
+    group: root
+    mode: 0644
+  become: true
+
+# Set Python lib dirs
+- name: "Create ld.so.conf.d file with lib info"
+  template:
+    src: python.conf.j2
+    dest: "/etc/ld.so.conf.d/{{ python3_lib_conf_file }}.conf"
+    owner: root
+    group: root
+    mode: 0644
+  become: true
+
+#Make sure we are working with the newest version of seuptools / pip / virtualenv
+- name: "Update pip"
+  command: "{{ python3_install_dest }}/{{ python3_prefix }}/bin/{{ python3_pip }} install --upgrade pip"
+  when: python3_one_installation is not defined or inventory_hostname == python3_one_installation
+- name: "Install setuptools and virtualenv"
+  command: "{{ python3_install_dest }}/{{ python3_prefix }}/bin/{{ python3_pip }} install setuptools virtualenv"
+  when: python3_one_installation is not defined or inventory_hostname == python3_one_installation
+
+- name: "Install OS packages for additional python libraries"
+  apt:
+    name: "{{ python3_packages_os_dependencies }}"
+    state: latest
+  become: true
+
+- name: "Install additional python libraries"
+  block:
+    - command: "{{ python3_install_dest }}/{{ python3_prefix }}/bin/{{ python3_pip }} install {{ item }}"
+      loop: "{{ python3_packages }}"
+      ignore_errors: yes
+      register: instpythonpackages
+    - copy: content={{ instpythonpackages }} dest=/tmp/{{ python3_prefix }}-inst.packages.log
+  when: python3_packages is defined and ( python3_one_installation is not defined or inventory_hostname == python3_one_installation )
