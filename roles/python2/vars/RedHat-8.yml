@@ -1,0 +1,26 @@
+---
+packages:
+  - libffi
+  - libffi-devel
+  - man-db
+  - ncurses
+  - ncurses-devel
+  - openssl
+  - openssl-devel
+  - sqlite
+  - sqlite-devel
+  - tcl
+  - tcl-devel
+  - tk
+  - tk-devel
+  - valgrind
+  - valgrind-devel
+  - xz
+  - xz-devel
+  - zlib
+  - zlib-devel
+
+python_configure_flags:
+  - "--enable-optimizations"
+  - "--enable-loadable-sqlite-extensions"
+  - "--with-ensurepip"
