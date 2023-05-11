@@ -1,5 +1,9 @@
 ---
+- name: Enable RHSM repository
+  community.general.rhsm_repository:
+    name: "{{ epel_repos }}"
+
 - name: Install the epel rpm from a remote repo
   ansible.builtin.yum:
-    name: "{{ epel_package_url }}"
+    name: "{{ epel_package_name }}"
     state: present

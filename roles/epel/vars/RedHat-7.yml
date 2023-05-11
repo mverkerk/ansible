@@ -1,2 +1,7 @@
 ---
-epel_packagename: epel-release
+epel_repos:
+  - "rhel-*-optional-rpms"
+  - "rhel-*-extras-rpms"
+  - "rhel-ha-for-rhel-*-server-rpms"
+
+epel_package_name: epel-release
