@@ -20,7 +20,7 @@ packages:
   - zlib
   - zlib-devel
 
-python_configure_flags:
+python2_configure_flags:
   - "--enable-optimizations"
   - "--enable-loadable-sqlite-extensions"
   - "--with-ensurepip"

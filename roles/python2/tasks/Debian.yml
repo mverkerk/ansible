@@ -1,7 +1,4 @@
 ---
-- name: Include build role
-  include_role:
-    name: build
 
 # Preparations
 - name: "Install Python depended packages"
@@ -11,58 +8,58 @@
   become: true
 
 # Compilation & Installing
-- name: Check for Python installation @ {{ python_install_dest }}
-  stat: path={{ python_install_dest }}/{{ python_prefix }}
-  register: python_installed
+- name: Check for Python installation @ {{ python2_install_dest }}
+  stat: path={{ python2_install_dest }}/{{ python2_prefix }}
+  register: python2_installed
 
 - name: "Copy and extract the Python src package, configure, make and install Python.."
   block:
     - unarchive:
-        src: "files/{{ python_prefix }}.{{ python_archive }}"
+        src: "files/{{ python2_prefix }}.{{ python2_archive }}"
         dest: /tmp
-      when: python_one_installation is not defined or inventory_hostname == python_one_installation
-    - command: "./configure --prefix={{ python_install_dest }}/{{ python_prefix }} {{ python_configure_flags | join(' ') }} {{ python_configure_flags_user | join(' ') }}"
+      when: python2_one_installation is not defined or inventory_hostname == python2_one_installation
+    - command: "./configure --prefix={{ python2_install_dest }}/{{ python2_prefix }} {{ python2_configure_flags | join(' ') }} {{ python2_configure_flags_user | join(' ') }}"
       args:
-        chdir: /tmp/{{ python_prefix }}
-      when: python_one_installation is not defined or inventory_hostname == python_one_installation
+        chdir: /tmp/{{ python2_prefix }}
+      when: python2_one_installation is not defined or inventory_hostname == python2_one_installation
     - make:
-        chdir: /tmp/{{ python_prefix }}
-      when: python_one_installation is not defined or inventory_hostname == python_one_installation
+        chdir: /tmp/{{ python2_prefix }}
+      when: python2_one_installation is not defined or inventory_hostname == python2_one_installation
     - make:
-        chdir: /tmp/{{ python_prefix }}
+        chdir: /tmp/{{ python2_prefix }}
         target: install
-      when: python_one_installation is not defined or inventory_hostname == python_one_installation
-  when: not python_installed.stat.exists
+      when: python2_one_installation is not defined or inventory_hostname == python2_one_installation
+  when: not python2_installed.stat.exists
 
 - name: "Check if link exists.."
-  stat: "path={{ python_linkdir }}"
-  register: python_linked
+  stat: "path={{ python2_linkdir }}"
+  register: python2_linked
 
 - name: "Create link.."
   file:
-    src: "{{ python_install_dest}}/{{ python_prefix }}"
-    dest: "{{ python_linkdir }}"
+    src: "{{ python2_install_dest}}/{{ python2_prefix }}"
+    dest: "{{ python2_linkdir }}"
     state: link
   ignore_errors: yes        #Taking a small risk here - this config should allow overlapping links and different links per node
-  when: python_dolink and not python_linked.stat.exists
+  when: python2_dolink and not python2_linked.stat.exists
 
 # Configuring Python man directories
 
 - name: "Set python MANDATORY_MANPATH"
   lineinfile:
     path: /etc/manpath.config
-    regexp: 'MANDATORY_MANPATH                       {{ python_linkdir }}/share/man'
+    regexp: 'MANDATORY_MANPATH                       {{ python2_linkdir }}/share/man'
     insertafter: '^MANDATORY_MANPATH'
-    line: 'MANDATORY_MANPATH                       {{ python_linkdir }}/share/man'
+    line: 'MANDATORY_MANPATH                       {{ python2_linkdir }}/share/man'
     state: present
   become: true
 
 - name: "Set python bin MANPATH_MAP"
   lineinfile:
     path: /etc/manpath.config
-    regexp: 'MANPATH_MAP     {{ python_linkdir }}/bin          {{ python_linkdir }}/share/man'
+    regexp: 'MANPATH_MAP     {{ python2_linkdir }}/bin          {{ python2_linkdir }}/share/man'
     insertafter: '^MANPATH_MAP'
-    line: 'MANPATH_MAP     {{ python_linkdir }}/bin          {{ python_linkdir }}/share/man'
+    line: 'MANPATH_MAP     {{ python2_linkdir }}/bin          {{ python2_linkdir }}/share/man'
     state: present
   become: true
   
@@ -72,8 +69,8 @@
 # Set Python settings with file in profile.d)
 - name: "Create profile.d files with PATH info"
   template:
-    src: python.sh.Debian.j2
-    dest: "/etc/profile.d/{{ python_profile_d_file }}.sh"
+    src: python2.sh.Debian.j2
+    dest: "/etc/profile.d/{{ python2_profile_d_file }}.sh"
     owner: root
     group: root
     mode: 0644
@@ -82,8 +79,8 @@
 # Set Python lib dirs
 - name: "Create ld.so.conf.d file with lib info"
   template:
-    src: python.conf.j2
-    dest: "/etc/ld.so.conf.d/{{ python_lib_conf_file }}.conf"
+    src: python2.conf.j2
+    dest: "/etc/ld.so.conf.d/{{ python2_lib_conf_file }}.conf"
     owner: root
     group: root
     mode: 0644
@@ -91,23 +88,23 @@
 
 #Make sure we are working with the newest version of seuptools / pip / virtualenv
 - name: "Update pip"
-  command: "{{ python_install_dest }}/{{ python_prefix }}/bin/{{ python_pip }} install --upgrade pip"
-  when: python_one_installation is not defined or inventory_hostname == python_one_installation
+  command: "{{ python2_install_dest }}/{{ python2_prefix }}/bin/{{ python2_pip }} install --upgrade pip"
+  when: python2_one_installation is not defined or inventory_hostname == python2_one_installation
 - name: "Install setuptools and virtualenv"
-  command: "{{ python_install_dest }}/{{ python_prefix }}/bin/{{ python_pip }} install setuptools virtualenv"
-  when: python_one_installation is not defined or inventory_hostname == python_one_installation
+  command: "{{ python2_install_dest }}/{{ python2_prefix }}/bin/{{ python2_pip }} install setuptools virtualenv"
+  when: python2_one_installation is not defined or inventory_hostname == python2_one_installation
 
 - name: "Install OS packages for additional python libraries"
   apt:
-    name: "{{ python_packages_os_dependencies }}"
+    name: "{{ python2_packages_os_dependencies }}"
     state: latest
   become: true
   
 - name: "Install additional python libraries"
   block:
-    - command: "{{ python_install_dest }}/{{ python_prefix }}/bin/{{ python_pip }} install {{ item }}"
-      loop: "{{ python_packages }}"
+    - command: "{{ python2_install_dest }}/{{ python2_prefix }}/bin/{{ python2_pip }} install {{ item }}"
+      loop: "{{ python2_packages }}"
       ignore_errors: yes
       register: instpythonpackages
-    - copy: content={{ instpythonpackages }} dest=/tmp/{{ python_prefix }}-inst.packages.log
-  when: python_packages is defined and ( python_one_installation is not defined or inventory_hostname == python_one_installation )
+    - copy: content={{ instpythonpackages }} dest=/tmp/{{ python2_prefix }}-inst.packages.log
+  when: python2_packages is defined and ( python2_one_installation is not defined or inventory_hostname == python2_one_installation )
