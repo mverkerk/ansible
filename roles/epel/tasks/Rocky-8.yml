@@ -1,0 +1,20 @@
+---
+#- name: Enable RHSM repository
+#  community.general.rhsm_repository:
+#    name: "{{ epel_repos }}"
+
+- name: Enable the PowerTools repository
+  community.general.ini_file:
+    dest: /etc/yum.repos.d/Rocky-PowerTools.repo
+    section: powertools
+    option: enabled
+    value: 1
+    owner: root
+    group: root
+    mode: '0644'
+  when: ansible_distribution_major_version == "8"
+
+- name: Install the epel rpm from a remote repo
+  ansible.builtin.yum:
+    name: "{{ epel_package_name }}"
+    state: present

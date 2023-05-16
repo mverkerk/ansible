@@ -1,0 +1,7 @@
+---
+epel_repos:
+  - "powertools"
+
+epel_package_name:
+  - "epel-release"
+
