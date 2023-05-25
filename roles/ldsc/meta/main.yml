@@ -1,0 +1,8 @@
+---
+dependencies: []
+#  - { role: python2 }
+#
+# Python2 is needed but omitted in the dependency list
+# because of the extensive configuration variables of
+# Python2 role - prefarably installed separately. Do
+# specify the Python2 location in 'ldsc_python2_path'.

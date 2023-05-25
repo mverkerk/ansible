@@ -1,0 +1,41 @@
+---
+# Preparations
+- name: "Install LDSC depended OS packages"
+  yum:
+    name: "{{ ldsc_os_packages }}"
+    state: latest
+  become: yes
+  when: ldsc_os_packages is defined
+
+# Is it already installed?
+- name: "Check for ldsc installation @ {{ ldsc_install_dest }}/{{ ldsc_prefix }}"
+  stat: path="{{ ldsc_install_dest }}/{{ ldsc_prefix }}"
+  register: ldsc_installed
+
+#Install deps, transfer, unpack and link
+- name: "Install Python2 packages"
+  block:
+  - ansible.builtin.command: "{{ ldsc_python2_path }}/bin/{{ ldsc_python2_pip }} install {{ item }}"
+    loop: "{{ ldsc_python2_packages }}"
+    register: instpythonpackages
+  - ansible.builtin.copy: content={{ instpythonpackages }} dest=/tmp/{{ ldsc_prefix }}-python2-inst.packages.log
+
+- name: "Transfer, unpack and setup ldsc"
+  block:
+    - ansible.builtin.unarchive:
+        src: "files/{{ ldsc_prefix }}.{{ ldsc_archive }}"
+        dest: "{{ ldsc_install_dest }}/"
+        owner: root
+        creates: "{{ ldsc_install_dest }}/{{ ldsc_prefix }}"
+    - ansible.builtin.file:
+        src: "{{ ldsc_install_dest }}/{{ ldsc_prefix }}"
+        dest: "{{ ldsc_linkdir }}"
+        state: link
+      when: ldsc_dolink
+    - ansible.builtin.file:
+        src: "{{ ldsc_linkdir }}/{{ item }}"
+        dest: "{{ ldsc_binary_dest }}/{{ item }}"
+        state: link
+      loop: "{{ ldsc_binaries }}"
+      when: ldsc_dolink
+  when: not ldsc_installed.stat.exists

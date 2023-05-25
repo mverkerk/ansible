@@ -1,0 +1,28 @@
+---
+#
+# Source archive (prefix and archive), looks for (link) in files/ folder of role
+#
+ldsc_prefix: ldsc-v1.0.1
+ldsc_archive: tar.gz
+
+#Installation folder
+ldsc_install_dest: /opt/tools/versions
+
+#Separate link dir (for different versions)
+ldsc_linkdir: /opt/tools/ldsc
+
+#Binaries
+ldsc_binaries:
+  - ldsc.py
+  - munge_sumstats.py
+  - make_annot.py
+
+#Location of bin folder in PATH
+ldsc_binary_dest: /opt/tools/bin
+
+#Do the actual linking?
+ldsc_dolink: true
+
+#Python2 location (see meta/dependencies)
+ldsc_python2_path: /opt/software/Python2
+ldsc_python2_pip: pip2

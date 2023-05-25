@@ -1,0 +1,9 @@
+---
+ldsc_python2_packages:
+  - bitarray
+  - nose
+  - pandas
+  - pybedtools
+  - numpy
+  - scipy
+
