@@ -1,0 +1,56 @@
+---
+# Preparations
+- name: "Install bedtools depended OS packages"
+  yum:
+    name: "{{ bedtools_os_packages }}"
+    state: latest
+  become: yes
+
+# Is it already installed?
+- name: "Check for bedtools installation @ {{ bedtools_install_dest }}/{{ bedtools_prefix }}"
+  stat: path="{{ bedtools_install_dest }}/{{ bedtools_prefix }}"
+  register: bedtools_installed
+
+#Transfer, unpack and compile
+#
+# Edits Make file to set correct prefix (2.31.0)
+#
+- name: "Transfer, unpack and compile bedtools2"
+  block:
+    - ansible.builtin.unarchive:
+        src: "files/{{ bedtools_prefix }}.{{ bedtools_archive }}"
+        dest: /tmp
+        #at version 2.31.0 the archive contains bedtools2
+        creates: /tmp/bedtools2
+    - ansible.builtin.lineinfile:
+        path: /tmp/bedtools2/Makefile
+        regexp: '^prefix'
+        line: "prefix ?= {{ bedtools_install_dest }}/{{ bedtools_prefix }}"
+        owner: root
+        group: root
+        state: present
+    - community.general.make:
+        chdir: /tmp/bedtools2
+    - make:
+        chdir: /tmp/bedtools2
+        target: install
+      become: yes
+    - file:
+        src: "{{ bedtools_install_dest }}/{{ bedtools_prefix }}"
+        dest: "{{ bedtools_linkdir }}"
+        state: link
+      when: bedtools_dolink
+
+    # Find & link binaries
+    - ansible.builtin.find:
+        paths: "{{ bedtools_linkdir }}/bin"
+      register: bedtools_binaries
+      when: bedtools_dolink
+    - ansible.builtin.file:
+        src: "{{ item.path }}"
+        path: "{{ bedtools_binary_dest }}/{{ item.path | basename }}"
+        state: link
+      with_items: "{{ bedtools_binaries.files }}"
+      when: bedtools_dolink
+
+  when: not bedtools_installed.stat.exists
