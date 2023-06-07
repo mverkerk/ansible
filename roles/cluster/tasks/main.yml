@@ -62,7 +62,7 @@
       group: root
       mode: 0644
     loop: "{{ cluster_paths }}"
-  when: paths is defined
+  when: cluster_paths is defined
 
 - block:
   - name: "Make link for csh users"
