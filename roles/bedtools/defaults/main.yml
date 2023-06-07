@@ -1,0 +1,18 @@
+---
+#
+# Source archive (prefix and archive), looks for (link) in files/ folder of role
+#
+bedtools_prefix: bedtools-2.31.0
+bedtools_archive: tar.gz
+
+#Installation folder
+bedtools_install_dest: /opt/tools/versions
+
+#Separate link dir (for different versions)
+bedtools_linkdir: /opt/tools/bedtools
+
+#Binaries (e.g. linking to location in PATH)
+bedtools_binary_dest: /opt/tools/bin
+
+#Do the actual linking?
+bedtools_dolink: true

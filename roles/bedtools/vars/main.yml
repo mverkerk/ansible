@@ -1,0 +1,6 @@
+---
+bedtools_os_packages:
+  - xz
+  - xz-devel
+  - zlib
+  - zlib-devel
