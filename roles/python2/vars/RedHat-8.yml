@@ -1,5 +1,5 @@
 ---
-packages:
+python2_os_packages:
   - libffi
   - libffi-devel
   - man-db

@@ -1,5 +1,5 @@
 ---
-packages:
+python2_os_packages:
   - bzip2
   - libbz2-dev
   - libffi6
@@ -25,6 +25,6 @@ packages:
   - zlib1g-dev
   - xz-utils
 
-python_configure_flags:
+python2_configure_flags:
   - "--enable-loadable-sqlite-extensions"
   - "--with-ensurepip"
