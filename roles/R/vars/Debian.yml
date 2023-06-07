@@ -1,6 +1,6 @@
 ---
 #Retrieved from Debian
-r_packages:
+r_os_packages:
   - bison
   - ca-certificates-java
   - default-jdk

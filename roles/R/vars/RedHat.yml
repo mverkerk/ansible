@@ -1,5 +1,5 @@
 ---
-r_packages:
+r_os_packages:
   - xorg-x11-server-devel
   - libX11-devel
   - libXt-devel
@@ -48,4 +48,4 @@ r_packages:
 #For optimal rendering of PDF vignettes and package manuals
 # ( WARNING: neither inconsolata.sty nor zi4.sty found: PDF vignettes and package manuals will not be rendered optimally )
 #https://community.rstudio.com/t/texlive-distribution-on-centos-for-rstudio-server-and-connect/2916
-inconsolata_url: http://mirrors.ctan.org/install/fonts/inconsolata.tds.zip
+r_inconsolata_url: http://mirrors.ctan.org/install/fonts/inconsolata.tds.zip
