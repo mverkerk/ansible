@@ -1,7 +1,4 @@
 ---
-- name: Include build role
-  include_role:
-    name: build
 
 # Preparations
 - name: "Install Perl depended packages"
