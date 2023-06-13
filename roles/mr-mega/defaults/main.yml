@@ -1,0 +1,21 @@
+---
+#
+# Source archive (prefix and archive), looks for (link) in files/ folder of role
+#
+mrmega_prefix: MR-MEGA_v0.2
+mrmega_archive: zip
+
+#Installation folder
+mrmega_install_dest: /opt/tools/versions
+
+#Separate link dir (for different versions, link to default version)
+mrmega_linkdir: /opt/tools/MR-MEGA
+
+#Additional configure script flags
+mrmega_configure_flags_user: []
+
+#Where to link the binaries to
+mrmega_binary_dest: /opt/tools/bin
+
+#Do the actual linking?
+mrmega_dolink: true

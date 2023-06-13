@@ -1,0 +1,10 @@
+---
+mrmega_os_packages:
+  - zlib
+  - zlib-devel
+
+mrmega_binaries:
+  - MR-MEGA
+
+mrmega_manuals: []
+
