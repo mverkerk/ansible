@@ -21,7 +21,7 @@ python3_os_packages:
   - zlib-devel
 
 python3_configure_flags:
-  - "--enable-optimizations"
+#  - "--enable-optimizations"
   - "--enable-loadable-sqlite-extensions"
   - "--with-ensurepip"
   - "--with-openssl=/usr/local/openssl11"
