@@ -1,0 +1,73 @@
+---
+# 19-06-2023 MV:
+# Installation of rvtests with Makefile
+
+#
+#
+# Preparations
+- name: "Install rvtests depended OS packages"
+  yum:
+    name: "{{ rvtests_os_packages }}"
+    state: latest
+  become: yes
+
+# Is it already installed?
+- name: "Check for rvtests installation @ {{ rvtests_install_dest }}/{{ rvtests_prefix }}"
+  stat: path="{{ rvtests_install_dest }}/{{ rvtests_prefix }}"
+  register: rvtests_installed
+
+#Transfer, unpack and compile
+#
+# Two changes to rvtests 2.1.0 (Makefile (El8/12-04-2023):
+#
+# - Don't install eigen from internet source prefix (PREFIX / DESTDIR)
+# - Link eigen folder from OS in source directory
+
+- name: "Transfer, unpack and compile rvtests"
+  block:
+    - ansible.builtin.unarchive:
+        src: "files/{{ rvtests_prefix }}.{{ rvtests_archive }}"
+        dest: /tmp
+        creates: /tmp/{{ rvtests_prefix }}
+    - ansible.posix.patch:
+        src: Makefile.lib.2.1.0.patch
+        dest: /tmp/{{ rvtests_prefix }}/Makefile.lib
+    - ansible.builtin.file:
+        src: /usr/include/eigen3
+        dest: /tmp/{{ rvtests_prefix }}/third/eigen
+        state: link
+    - community.general.make:
+        chdir: /tmp/{{ rvtests_prefix }}
+    - ansible.builtin.file:
+        path: "{{ rvtests_install_dest }}/{{ rvtests_prefix }}"
+        state: directory
+        mode: '0755'
+
+    # Copy binaries
+    - ansible.builtin.find:
+        paths: "/tmp/{{ rvtests_prefix }}/excutable/"
+        excludes: '*.d'
+      register: rvtests_binaries
+    - ansible.builtin.copy:
+        src: "{{ item.path }}"
+        dest: "{{ rvtest_install_dest }}/{{ rvtests_prefix}}/{{ item.path | basename }}"
+        remote_src: yes
+        owner: root
+        group: root
+        mode: '0755'
+      with_items: "{{ rvtests_binaries.files }}"
+
+    - ansible.builtin.file:
+        src: "{{ rvtest_install_dest }}/{{ rvtests_prefix}}"
+        dest: "{{ rvtests_linkdir }}"
+        owner: foo
+        group: foo
+        state: link
+
+    - ansible.builtin.file:
+        src: "{{ rvtests_linkdir }}/{{ item.path | basename }}"
+        path: "{{ rvtests_binary_dest }}/{{ item.path | basename }}"
+        state: link
+      with_items: "{{ rvtests_binaries.files }}"
+
+  when: not rvtests_installed.stat.exists

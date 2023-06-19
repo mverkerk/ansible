@@ -1,0 +1,19 @@
+---
+#
+# Source archive (prefix and archive), looks for (link) in files/ folder of role
+#
+rvtests_prefix: rvtests-2.1.0
+rvtests_archive: tar.gz
+
+#Installation folder
+rvtests_install_dest: /opt/tools/versions
+
+#Separate link dir (for different versions)
+rvtests_linkdir: /opt/tools/rvtests
+
+#Binaries (e.g. linking to location in PATH)
+rvtests_binary_source: /opt/tools/rvtests/
+rvtests_binary_dest: /opt/tools/bin
+
+#Do the actual linking?
+rvtests_dolink: true
