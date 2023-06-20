@@ -42,30 +42,50 @@
         path: "{{ rvtests_install_dest }}/{{ rvtests_prefix }}"
         state: directory
         mode: '0755'
+    - ansible.builtin.file:
+        path: "{{ rvtests_install_dest }}/{{ rvtests_prefix }}/bin"
+        state: directory
+        mode: '0755'        
 
-    # Copy binaries
+    # Copy binaries & example, various
     - ansible.builtin.find:
-        paths: "/tmp/{{ rvtests_prefix }}/excutable/"
+        paths: "/tmp/{{ rvtests_prefix }}/executable/"
         excludes: '*.d'
       register: rvtests_binaries
     - ansible.builtin.copy:
         src: "{{ item.path }}"
-        dest: "{{ rvtest_install_dest }}/{{ rvtests_prefix}}/{{ item.path | basename }}"
+        dest: "{{ rvtests_install_dest }}/{{ rvtests_prefix}}/bin/{{ item.path | basename }}"
         remote_src: yes
         owner: root
         group: root
         mode: '0755'
       with_items: "{{ rvtests_binaries.files }}"
+    - ansible.posix.synchronize:
+        src: "/tmp/{{ rvtests_prefix }}/example"
+        dest: "{{ rvtests_install_dest }}/{{ rvtests_prefix}}"
+        owner: false
+      delegate_to: "{{ inventory_hostname }}"
+    - ansible.builtin.copy:
+        src: "/tmp/{{ rvtests_prefix }}/{{ item }}"
+        dest: "{{ rvtests_install_dest }}/{{ rvtests_prefix}}/{{ item }}"
+        remote_src: yes
+        owner: root
+        group: root
+        mode: '0644'
+      with_items:
+        - "ChangeLog"
+        - "README.md"        
 
+    # Create links
     - ansible.builtin.file:
-        src: "{{ rvtest_install_dest }}/{{ rvtests_prefix}}"
+        src: "{{ rvtests_install_dest }}/{{ rvtests_prefix }}"
         dest: "{{ rvtests_linkdir }}"
-        owner: foo
-        group: foo
+        owner: root
+        group: root
         state: link
 
     - ansible.builtin.file:
-        src: "{{ rvtests_linkdir }}/{{ item.path | basename }}"
+        src: "{{ rvtests_linkdir }}/bin/{{ item.path | basename }}"
         path: "{{ rvtests_binary_dest }}/{{ item.path | basename }}"
         state: link
       with_items: "{{ rvtests_binaries.files }}"
