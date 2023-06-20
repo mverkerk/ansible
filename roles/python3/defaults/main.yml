@@ -15,7 +15,7 @@ python3_install_dest: /opt/software/versions
 #python3_one_installation: host1
 
 #Link location where install destination is linked to and configuration and script files are pointed at
-python3_linkdir: /opt/software/python3
+python3_linkdir: /opt/software/Python3
 
 #Do the link (for safe installations)
 python3_dolink: true
