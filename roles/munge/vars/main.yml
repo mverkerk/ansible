@@ -1,4 +1,6 @@
 ---
+slurm_confdir: /etc/slurm
+
 munge_packages:
   - munge
   - munge-devel
