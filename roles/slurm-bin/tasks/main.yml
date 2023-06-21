@@ -1,0 +1,235 @@
+---
+#
+# RHEL8
+#
+- name: "Install slurm depended packages"
+  yum:
+    name: "{{ slurm_packages }}"
+    state: latest
+
+- name: "Install slurm database packages"
+  yum:
+    name: "{{ db_packages }}"
+    state: latest
+  when: ( inventory_hostname == slurm_dbd_machine )
+
+- name: "Make sure database daemon is running"
+  systemd:
+    daemon_reload: yes
+    name: "{{ db_daemon_name }}"
+    enabled: yes
+    state: started
+  when: ( inventory_hostname == slurm_dbd_machine )
+
+# Installing
+#- name: Check for slurm installation @ {{ install_dest }}
+#  stat: path={{ install_dest }}
+#  register: slurm_installed
+
+# Create slurm user and group
+- name: "Create slurm group"
+  group:
+    name: slurm
+    gid: "{{ slurm_gid }}"
+    state: present
+
+- name: "Create slurm user"
+  user:
+    name: slurm
+    uid: "{{ slurm_uid }}"
+    group: slurm
+    create_home: no
+    home: "/var/spool/slurm"
+    shell: /sbin/nologin
+    state: present
+
+# Provide configuration file
+#
+# Please edit the configuration template in the templates folder and specify Nodes in variable file!
+#
+- name: "Copy slurm.conf configuration file"
+  template:
+    src: "{{ slurm_conf_template }}"
+    dest: "{{ slurm_confdir}}/slurm.conf"
+    owner: slurm
+    group: slurm
+    mode: 0644
+
+- name: "Copy slurmdbd.conf configuration fole"
+  template:
+    src: "{{ slurm_dbd_conf_template }}"
+    dest: "{{ slurm_confdir}}/slurmdbd.conf"
+    owner: slurm
+    group: slurm
+    mode: 0600
+  when: ( inventory_hostname == slurm_dbd_machine )
+
+#
+# Create spool, log and run directories
+#
+- name: "Create spool, log and run directories"
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: slurm
+    group: slurm
+    mode: 0755
+  with_items:
+    - /var/spool/slurm
+    - /var/spool/slurmd
+    - /var/spool/slurmctld
+    - /var/run/slurm
+    - /var/log/slurm
+    - /var/spool/slurm-state
+#
+# Create run folder at boot
+#
+- name: "Create slurm.conf in /etc/tmpfiles.d"
+  template:
+    src: slurm.conf.tmp.j2
+    dest: /etc/tmpfiles.d/slurm.conf
+    owner: root
+    group: root
+    mode: 0644
+
+# Initialize log files
+- name: "Initialize / touch log files"
+  file:
+    path: "{{ item }}"
+    state: touch
+    owner: slurm
+    group: slurm
+    mode: 0600
+  with_items:
+    - /var/log/slurm/slurmd.log
+    - /var/log/slurm/slurmdbd.log
+    - /var/log/slurm/slurmctld.log
+    - /var/log/slurm/slurm_jobacct.log
+    - /var/log/slurm/slurm_jobcomp.log
+
+#
+# Create cgroup.conf
+#
+- name: "Create cgroup.conf"
+  template:
+    src: cgroup.conf.j2
+    dest: /etc/slurm/cgroup.conf
+    owner: root
+    group: root
+    mode: 0644
+
+#
+# Obsolete?
+#
+# Create cgroup_allowed_devices_file.conf
+#
+#- name: "Create cgroup_allowed_devices_file.conf"
+#  template:
+#    src: cgroup_allowed_devices_file.conf.j2
+#    dest: /etc/cgroup_allowed_devices_file.conf
+#    owner: root
+#    group: root
+#    mode: 0644
+
+#
+# Obsolete - RPMS include logrotate config!
+#
+# Create slurm logrotate config
+#
+#- name: "Create logrotate slurm.conf"
+#  template:
+#    src: slurm.logrotate.j2
+#    dest: /etc/logrotate.d/slurm
+#    owner: root
+#    group: root
+#    mode: 0644
+
+#
+# Add nodes to /etc/hosts
+#
+- block:
+  - name: "Update /etc/hosts file"
+    lineinfile:
+      dest: /etc/hosts
+      regexp: "^{{ item.IP }}"
+      line: "{{ item.IP }} {{ item.NodeName }}"
+      state: present
+    loop: "{{ slurm_compute_nodes }}"
+  when: slurm_update_hosts_file
+
+#
+# Apply Firewall Rules
+#
+- name: "Check if there is a firewalld.service installed"
+  stat: path=/lib/systemd/system/firewalld.service
+  register: firewalld_available
+
+- block:
+  - name: "Add server segment to firewall's trusted zone and reload firewalld"
+    firewalld:
+      zone: trusted
+      permanent: true
+      source: "{{ firewalld_trusted_zone }}"
+      state: enabled
+  - name: "Reload firewall daemon"
+    command: "firewall-cmd --reload"
+    ignore_errors: yes               # <- in case service is not currently running
+  when: firewalld_available.stat.exists and ( firewalld_trusted_zone is defined )
+
+#
+# Reload daemons, reload, enable and restart services
+#
+- name: "Reload cgconfig daemon"
+  systemd:
+    daemon_reload: yes
+    name: cgconfig
+    enabled: yes
+    state: started
+  when: inventory_hostname in slurm_partitions | join("|")
+
+- name: "Reload slurmd daemon"
+  systemd:
+    daemon_reload: yes
+    name: slurmd
+    enabled: yes
+    state: started
+  when: inventory_hostname in slurm_partitions | join("|")
+
+- name: "Initialize database account"
+  block:
+  - name: "Create slurm@localhost db account"
+    mysql_user:
+      name: "{{ slurm_dbd_storageuser }}"
+      password: "{{ slurm_dbd_storagepass }}"
+      host: localhost
+      priv: 'slurm_acct_db.*:ALL,GRANT'
+      state: present
+  - name: "Create slurm@slurm_nodes db accounts"
+    mysql_user:
+      name: "{{ slurm_dbd_storageuser }}"
+      password: "{{ slurm_dbd_storagepass }}"
+      host: "{{ item.NodeName }}"
+      priv: 'slurm_acct_db.*:ALL,GRANT'
+      state: present
+    loop: "{{ slurm_compute_nodes }}"
+  when: ( ( inventory_hostname == slurm_dbd_machine ) and slurm_dbd_init )
+
+- name: "Reload slurmdbd daemon"
+  systemd:
+    daemon_reload: yes
+    name: slurmdbd
+    enabled: yes
+    state: started
+  when: ( inventory_hostname == slurm_dbd_machine )
+
+- name: "Add cluster to accounting"
+  command: "env sacctmgr -i add cluster {{ slurm_cluster_name }}"
+  when: ( ( inventory_hostname == slurm_dbd_machine ) and slurm_add_cluster_to_accounting )
+
+- name: "Reload slurmctld daemon"
+  systemd:
+    daemon_reload: yes
+    name: slurmctld
+    enabled: yes
+    state: started
+  when: ( ( inventory_hostname == slurm_control_machine ) or ( slurm_backup_controller is defined and inventory_hostname == slurm_backup_controller ) )
