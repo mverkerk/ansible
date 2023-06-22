@@ -19,5 +19,6 @@ slurm_packages:
 slurm_dbd_packages:
   - mariadb
   - mariadb-server
+  - python3-mysqlclient # Ansible requirement to do DB stuff
 
 slurm_db_daemon_name: mariadb

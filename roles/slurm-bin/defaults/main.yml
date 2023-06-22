@@ -57,7 +57,7 @@ slurm_priority_type: priority/basic               # either priority/basic / prio
 
 ############################ End slurm.con #############################################################
 
-#firewalld_trusted_zone: 10.223.26.0/16
+#slurm_firewalld_trusted_zone: 10.223.26.0/16
 
 # The following information can be obtained by running slurmd -C on the node + IP adresses!
 #
@@ -66,6 +66,7 @@ slurm_priority_type: priority/basic               # either priority/basic / prio
 #slurm_compute_nodes:
 #  - { NodeName: Node-01, IP: 192.168.0.1, CPUs: 16, Boards: 1, SocketsPerBoard: 16, CoresPerSocket: 1, ThreadsPerCore: 1, RealMemory: 48300 }
 #  - { NodeName: Node-02, IP: 192.168.0.2, CPUs: 16, Boards: 1, SocketsPerBoard: 16, CoresPerSocket: 1, ThreadsPerCore: 1, RealMemory: 48300 }
+#
 #slurm_partitions
 #  - { PartitionName: debug, Nodes: "Node-01,Node-02", Default: YES, Maxtime: INFINITE, State=: UP }
 

@@ -1,0 +1,10 @@
+--- slurmd.service.ori	2023-06-22 14:42:50.769522763 +0200
++++ slurmd.service.patch	2023-06-22 14:44:14.358069286 +0200
+@@ -1,6 +1,6 @@
+ [Unit]
+ Description=Slurm node daemon
+-After=munge.service network.target remote-fs.target
++After=munge.service network-online.target remote-fs.target
+ #ConditionPathExists=/etc/slurm/slurm.conf
+ 
+ [Service]

@@ -2,23 +2,43 @@
 #
 # RHEL8
 #
-- name: "Install slurm depended packages"
+# Patches for 20.11.9
+# - slurmd and slurmctld services start after network-online
+#
+
+- name: "Install slurm packages"
   yum:
     name: "{{ slurm_packages }}"
     state: latest
 
+- name: "Patch slurmd.service"
+  ansible.posix.patch:
+    src: files/slurmd.service.patch
+    dest: /usr/lib/systemd/system/slurmd.service
+  
+- name: "Patch slurmctld.service"
+  ansible.posix.patch:
+    src: files/slurmctld.service.patch
+    dest: /usr/lib/systemd/system/slurmctld.service
+  
 - name: "Install slurm database packages"
   yum:
-    name: "{{ db_packages }}"
+    name: "{{ slurm_dbd_packages }}"
     state: latest
   when: ( inventory_hostname == slurm_dbd_machine )
 
+- name: "Patch mariadb-server.cnf"
+  ansible.posix.patch:
+    src: files/mariadb-server.cnf.patch
+    dest: /etc/my.cnf.d/mariadb-server.cnf
+  when: ( inventory_hostname == slurm_dbd_machine )
+  
 - name: "Make sure database daemon is running"
   systemd:
     daemon_reload: yes
-    name: "{{ db_daemon_name }}"
+    name: "{{ slurm_db_daemon_name }}"
     enabled: yes
-    state: started
+    state: restarted
   when: ( inventory_hostname == slurm_dbd_machine )
 
 # Installing
@@ -169,12 +189,12 @@
     firewalld:
       zone: trusted
       permanent: true
-      source: "{{ firewalld_trusted_zone }}"
+      source: "{{ slurm_firewalld_trusted_zone }}"
       state: enabled
   - name: "Reload firewall daemon"
     command: "firewall-cmd --reload"
     ignore_errors: yes               # <- in case service is not currently running
-  when: firewalld_available.stat.exists and ( firewalld_trusted_zone is defined )
+  when: firewalld_available.stat.exists and ( slurm_firewalld_trusted_zone is defined )
 
 #
 # Reload daemons, reload, enable and restart services
