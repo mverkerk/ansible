@@ -1,0 +1,37 @@
+---
+# Source Prefix
+mediawiki_prefix: mediawiki-1.40.0
+
+# Source archive suffix
+mediawiki_archive: tar.gz
+
+# Install Destination
+mediawiki_install_dest: /var/www
+
+# Link Location
+mediawiki_linkdir: /var/www/html/wiki
+
+# User
+mediawiki_user: apache
+
+# Database Backend
+mediawiki_db_configure: true
+
+# DB Credentials
+mediawiki_db_login: root
+mediawiki_db_password: ""
+
+# Wiki DB Definitions
+mediawiki_wikidb_name: mediawiki
+mediawiki_wikidb_user: wiki
+mediawiki_wikidb_password: SeCrEt!
+
+#Dump filename (wiki backup)
+#mediawiki_wikidb_dump_file:
+#mediawiki_local_settings:  
+
+# Setup SELinux
+mediawiki_selinux_setup: yes
+
+# Setup Firewall
+mediawiki_firewalld_setup: yes

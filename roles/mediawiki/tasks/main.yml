@@ -1,0 +1,143 @@
+---
+# Preparations (php stream and packages)
+
+# Tested on mediawiki-1.40.0 and EL8
+# - Use module streams for php-8 (mediawiki needs 7.4.3+, el8 supports 7.2)
+# ( interesting approach on modules at https://github.com/ansible/ansible/issues/64852#issuecomment-747086248 )
+#
+
+# Retrieve current php stream
+- name: "Retrieve remote php module file"
+  fetch:
+    src: "/etc/dnf/modules.d/php.module"
+    dest: /tmp/ansible
+  changed_when: false 
+- name: "Read stream from php module"
+  set_fact:
+    current_stream: "{{ lookup( 'ini', 'stream section=php file=/tmp/ansible/{{ inventory_hostname }}/etc/dnf/modules.d/php.module' ) }}"
+
+#(Re)set php stream
+- name: "Reset and install php stream {{ mediawiki_php_stream }}"
+  block:
+    - name: "Reset php stream"
+      ansible.builtin.command: "dnf module reset -y php"
+    - name: "Set php stream to {{ mediawiki_firewalld_setup }}"
+      ansible.builtin.command: "dnf module enable -y php:{{ mediawiki_php_stream }}"
+  when: current_stream != mediawiki_php_stream
+
+# Install packages      
+- name: "Install mediawiki depended packages"
+  ansible.builtin.dnf:
+    name: "{{ mediawiki_os_packages }}"
+    state: latest
+
+- name: "Install mediawiki database depended packages"
+  ansible.builtin.dnf:
+    name: "{{ mediawiki_db_packages }}"
+    state: latest
+  when: mediawiki_db_configure is defined and mediawiki_db_configure
+
+# Compilation & Installing
+- name: Check for MediaWiki installation @ {{ mediawiki_install_dest }}
+  stat: path={{ mediawiki_install_dest }}/{{ mediawiki_prefix }}
+  register: mediawiki_installed
+
+#
+# Transfer, unpack mediawiki / settings, set SELinux context
+#
+- name: "Transfer, unpack and configure MediaWiki"
+  block:
+    - ansible.builtin.user:
+        name: "{{ mediawiki_user }}"
+        create_home: false
+        home: "{{ mediawiki_linkdir }}"
+        shell: /usr/bin/false
+        state: present
+    - ansible.builtin.unarchive:
+        src: "files/{{ mediawiki_prefix }}.{{ mediawiki_archive }}"
+        dest: "{{ mediawiki_install_dest }}"
+        owner: "{{ mediawiki_user }}" 
+        creates: "{{ mediawiki_install_dest }}/{{ mediawiki_prefix }}"
+    - ansible.builtin.file:
+        src: "{{ mediawiki_install_dest }}/{{ mediawiki_prefix }}"
+        dest: "{{ mediawiki_linkdir }}"
+        state: link
+    - ansible.builtin.copy:
+        src: "{{ mediawiki_local_settings }}"
+        dest: "{{ mediawiki_install_dest }}/{{ mediawiki_prefix }}/LocalSettings.php"
+      when: mediawiki_local_settings is defined
+    - community.general.sefcontext:
+        target: "{{ mediawiki_install_dest }}/{{ mediawiki_prefix }}"
+        setype: httpd_sys_content_t
+        state: present
+      when: mediawiki_selinux_setup is defined and mediawiki_selinux_setup
+    - ansible.builtin.command: "restorecon -irv {{ mediawiki_install_dest }}/{{ mediawiki_prefix }}"
+      when: mediawiki_selinux_setup is defined and mediawiki_selinux_setup
+  when: not mediawiki_installed.stat.exists
+
+#
+# Setup Database
+#
+- name: "Setup Database"
+  block:
+    - ansible.builtin.systemd:
+        name: mariadb
+        enabled: true
+        state: started
+    - community.mysql.mysql_db:
+        login_user: "{{ mediawiki_db_login }}"
+        login_password: "{{ mediawiki_db_password }}"
+        name: "{{ mediawiki_wikidb_name }}"
+        state: present
+    - community.mysql.mysql_user:
+        login_user: "{{ mediawiki_db_login }}"
+        login_password: "{{ mediawiki_db_password }}"
+        name: "{{ mediawiki_wikidb_user }}"
+        password: "{{ mediawiki_wikidb_password }}"
+        priv: "{{ mediawiki_wikidb_name }}.*:ALL"
+        host: localhost
+        state: present
+    - ansible.builtin.copy:
+        src: "{{ mediawiki_wikidb_dump_file }}"
+        dest: "/tmp/{{ mediawiki_wikidb_dump_file }}"
+      when: mediawiki_wikidb_dump_file is defined
+    - community.mysql.mysql_db:
+        login_user: "{{ mediawiki_db_login }}"
+        login_password: "{{ mediawiki_db_password }}"
+        name: "{{ mediawiki_wikidb_name }}"
+        state: import
+        target: "/tmp/{{ mediawiki_wikidb_dump_file }}"
+      when: mediawiki_wikidb_dump_file is defined
+  when: not mediawiki_installed.stat.exists and mediawiki_db_configure
+    
+#
+# Setup Web Server
+#
+- name: "Setup HTTPD"
+  block:
+    - ansible.builtin.template:
+        src: httpd-wiki.conf.j2
+        dest: /etc/httpd/conf.d/httpd-wiki.conf
+        owner: root
+        group: root
+        mode: '0644'      
+    - ansible.posix.firewalld:
+        zone: public
+        service: http
+        permanent: true
+        state: enabled
+      when: mediawiki_firewalld_setup is defined and mediawiki_firewalld_setup
+    - ansible.posix.firewalld:
+        zone: public
+        service: https
+        permanent: true
+        state: enabled
+    - ansible.builtin.systemd:
+        name: httpd
+        enabled: true
+        state: started
+      when: mediawiki_firewalld_setup is defined and mediawiki_firewalld_setup        
+  when: not mediawiki_installed.stat.exists
+
+
+ 

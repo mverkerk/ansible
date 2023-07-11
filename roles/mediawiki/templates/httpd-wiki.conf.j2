@@ -1,0 +1,11 @@
+#Alias "/wiki" {{ mediawiki_linkdir }}/index.php
+
+# Enable the rewrite engine
+#RewriteEngine On
+
+# Redirect / to Main Page
+#RewriteRule ^/*$ %{DOCUMENT_ROOT}/wiki/index.php [L]
+
+<Directory "{{ mediawiki_linkdir }}">
+    Options +FollowSymLinks
+</Directory>
