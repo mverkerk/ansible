@@ -12,7 +12,8 @@ samtools_install_dest: /opt/tools/versions
 samtools_linkdir: /opt/tools/samtools
 
 #Additional configure script flags
-samtools_configure_flags_user: []
+samtools_configure_flags_user:
+  - "--with-htslib=/opt/tools/htslib"
 
 #Where to link the binaries to
 samtools_binary_dest: /opt/tools/bin

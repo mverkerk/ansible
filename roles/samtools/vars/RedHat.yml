@@ -6,7 +6,7 @@ samtools_os_packages:
   - bzip2-libs
   - bzip2-devel
   - xz
-  - xz-compat-libs
+  - xz-lzma-compat
   - xz-devel
   - xz-libs
   - libcurl
@@ -19,4 +19,4 @@ samtools_os_packages:
 
 samtools_configure_flags:
   - "--enable-libcurl"
-  - "--with-htslib=/opt/tools/htslib"
+
