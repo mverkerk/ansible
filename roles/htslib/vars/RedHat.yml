@@ -6,12 +6,12 @@ htslib_os_packages:
   - bzip2-libs
   - bzip2-devel
   - xz
-  - xz-compat-libs
+  - xz-lzma-compat
   - xz-devel
   - xz-libs
   - libcurl
   - libcurl-devel
-  - crypto-utils
+#  - crypto-utils
   - openssl
   - openssl-libs
 
