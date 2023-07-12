@@ -12,8 +12,9 @@ bcftools_install_dest: /opt/tools/versions
 bcftools_linkdir: /opt/tools/bcftools
 
 #Additional configure script flags
-bcftools_configure_flags_user: []
-
+bcftools_configure_flags_user:
+  - "--with-htslib=/opt/tools/htslib"
+    
 #Where to link the binaries to
 bcftools_binary_dest: /opt/tools/bin
 
