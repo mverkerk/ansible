@@ -1,0 +1,7 @@
+www-port={{ rstudio_port }}
+{% if rstudio_ssl_port is defined %}
+www-address=localhost
+{% else %}
+www-address={{ rstudio_server }}
+{% endif %}
+rsession-which-r={{ rstudio_r }}

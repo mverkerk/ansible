@@ -1,0 +1,32 @@
+<IfModule mod_ssl.c>
+
+Listen {{ rstudio_server}}:{{ rstudio_ssl_port }} https
+
+<VirtualHost {{ rstudio_server}}:{{ rstudio_ssl_port }}>
+
+        ServerAdmin root@{{ rstudio_server }}
+        ServerName {{ rstudio_server}}
+
+        SSLEngine on
+
+        ErrorLog /var/log/httpd/rstudio-ssl-error.log
+        CustomLog /var/log/httpd/rstudio-ssl-access.log combined
+
+
+        RewriteEngine on
+        # Following lines should open rstudio directly from the url
+
+        RewriteCond %{HTTP:Upgrade} =websocket
+        RewriteRule /(.*)     ws://localhost:{{ rstudio_port }}/$1  [P,L]
+        RewriteCond %{HTTP:Upgrade} !=websocket
+        RewriteRule /(.*)     http://localhost:{{ rstudio_port }}/$1 [P,L]
+        ProxyPass / http://localhost:{{ rstudio_port }}/
+        ProxyPassReverse / http://localhost:{{ rstudio_port }}/
+
+SSLCertificateFile /etc/ssl/certs/{{ rstudio_ssl_crt }}
+{% if rstudio_ssl_key is defined %}
+SSLCertificateKeyFile /etc/ssl/certs/{{ rstudio_ssl_key }}
+{% endif %}
+
+</VirtualHost>
+</IfModule>
