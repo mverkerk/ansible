@@ -134,6 +134,14 @@
         line: "ExecStart=/usr/lib/rstudio-server/bin/rserver --rsession-path=rsession-slurm.sh"
   when: rstudio_wrap_slurm
 
+
+- name: "Make rstudio  / wrapper binaries / scripts runnable for SELinux"
+  community.general.sefcontext:
+    target: '/usr/lib/rstudio-server/bin/'
+    state: present
+  when: rstudio_selinux
+  
+
 #
 # Reload daemons
 #
@@ -146,4 +154,5 @@
   ansible.builtin.systemd:
     name: httpd
     state: restarted
+    enabled: true
   when: rstudio_ssl_port
