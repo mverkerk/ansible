@@ -136,9 +136,14 @@
 
 
 - name: "Make rstudio  / wrapper binaries / scripts runnable for SELinux"
-  community.general.sefcontext:
-    target: '/usr/lib/rstudio-server/bin/'
-    state: present
+  block:
+    - name: "Set context"
+      community.general.sefcontext:
+        target: '/usr/lib/rstudio-server/bin/*'
+        setype: bin_t
+        state: present
+    - name: Apply new SELinux file context to filesystem
+      ansible.builtin.command: restorecon -irv /usr/lib/rstudio-server/bin/     
   when: rstudio_selinux
   
 
