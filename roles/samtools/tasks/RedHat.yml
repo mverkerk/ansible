@@ -35,7 +35,7 @@
         dest: "{{ samtools_linkdir }}"
         state: link
 
-    # Find & link binaries      
+    # Find & link binaries
     - ansible.builtin.find:
         paths: "{{ samtools_linkdir }}/bin"
       register: samtools_binaries
