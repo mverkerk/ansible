@@ -1,4 +1,8 @@
 #!/bin/bash
+#
+# RSession wrapper script to run rstudio over the Slurm scheduler
+#
+default_srun_params=""
 
 USER=`whoami`
 source /etc/profile
@@ -8,6 +12,25 @@ if [ -f /etc/bashrc ]; then
   . /etc/bashrc
 fi
 
-source $HOME/.bashrc
+source ${HOME}/.bashrc
 
-/usr/bin/srun {{ rstudio_srun_flags | join(' ') }} /usr/lib/rstudio-server/bin/rsession $@
+#
+# Look for config files for srun parameters:
+#
+# in order: - ${HOME}/.rsession-srun-params
+#           - /etc/rstudio/rsession-srun-params
+#           - use default_srun_params defined in this script
+#
+srun_params=""
+
+if [[ -e ${HOME}/.rsession-srun-params ]]; 
+then
+  source ${HOME}/.rsession-srun-params
+elif [[ -e /etc/rstudio/rsession-srun-params ]]; 
+then
+  source /etc/rstudio/rsession-srun-params
+else
+  srun_params=${default_srun_params}
+fi
+
+/usr/bin/srun ${srun_params} /usr/lib/rstudio-server/bin/rsession $@
