@@ -132,6 +132,12 @@
         path: "/usr/lib/systemd/system/rstudio-server.service"
         regexp: '^ExecStart='
         line: "ExecStart=/usr/lib/rstudio-server/bin/rserver --rsession-path=rsession-slurm.sh"
+    - name: "Write srun run flags to config file: etc/rstudio/rsession-srun-params"
+      copy:
+        content: "{{ rstudio_srun_flags }}"
+        dest: "/etc/rstudio/rsession-srun-params"
+        mode: '0644'
+      when: rstudio_srun_flags is defined
   when: rstudio_wrap_slurm
 
 
@@ -143,9 +149,9 @@
         setype: bin_t
         state: present
     - name: Apply new SELinux file context to filesystem
-      ansible.builtin.command: restorecon -irv /usr/lib/rstudio-server/bin/     
+      ansible.builtin.command: restorecon -irv /usr/lib/rstudio-server/bin/
   when: rstudio_selinux
-  
+
 
 #
 # Reload daemons
