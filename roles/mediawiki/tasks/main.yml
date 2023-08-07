@@ -11,7 +11,7 @@
   fetch:
     src: "/etc/dnf/modules.d/php.module"
     dest: /tmp/ansible
-  changed_when: false 
+  changed_when: false
 - name: "Read stream from php module"
   set_fact:
     current_stream: "{{ lookup( 'ini', 'stream section=php file=/tmp/ansible/{{ inventory_hostname }}/etc/dnf/modules.d/php.module' ) }}"
@@ -25,7 +25,7 @@
       ansible.builtin.command: "dnf module enable -y php:{{ mediawiki_php_stream }}"
   when: current_stream != mediawiki_php_stream
 
-# Install packages      
+# Install packages
 - name: "Install mediawiki depended packages"
   ansible.builtin.dnf:
     name: "{{ mediawiki_os_packages }}"
@@ -56,7 +56,7 @@
     - ansible.builtin.unarchive:
         src: "files/{{ mediawiki_prefix }}.{{ mediawiki_archive }}"
         dest: "{{ mediawiki_install_dest }}"
-        owner: "{{ mediawiki_user }}" 
+        owner: "{{ mediawiki_user }}"
         creates: "{{ mediawiki_install_dest }}/{{ mediawiki_prefix }}"
     - ansible.builtin.file:
         src: "{{ mediawiki_install_dest }}/{{ mediawiki_prefix }}"
@@ -109,7 +109,7 @@
         target: "/tmp/{{ mediawiki_wikidb_dump_file }}"
       when: mediawiki_wikidb_dump_file is defined
   when: not mediawiki_installed.stat.exists and mediawiki_db_configure
-    
+
 #
 # Setup Web Server
 #
@@ -120,7 +120,7 @@
         dest: /etc/httpd/conf.d/httpd-wiki.conf
         owner: root
         group: root
-        mode: '0644'      
+        mode: '0644'
     - ansible.posix.firewalld:
         zone: public
         service: http
@@ -136,8 +136,8 @@
         name: httpd
         enabled: true
         state: started
-      when: mediawiki_firewalld_setup is defined and mediawiki_firewalld_setup        
+      when: mediawiki_firewalld_setup is defined and mediawiki_firewalld_setup
   when: not mediawiki_installed.stat.exists
 
 
- 
+
