@@ -29,3 +29,14 @@ python3_configure_flags:
 # ^- Centos 7 requires openssl 1.1.1. RH7 Provides them via additional openssl11 packages:
 #    Install openssl11 and openssl11-devel packages and link lib and include
 #    to a local folder and point Python configure script to it.
+# 
+# cd /usr/local/openssl11
+# ln -s /usr/lib64/openssl11 lib
+# ln -s /usr/include/openssl11 include
+
+
+# Other workaround, run:
+#
+# sed -i 's/PKG_CONFIG openssl /PKG_CONFIG openssl11 /g' configure
+#
+# https://stackoverflow.com/questions/69371800/how-to-link-python3-to-use-openssl11-or-latest-version-of-openssl-1-1-1-on-c
