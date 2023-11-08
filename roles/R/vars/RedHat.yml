@@ -35,6 +35,8 @@ r_os_packages:
   - libxml2-devel
   - pango
   - pango-devel
+  - openssl
+  - openssl-devel
   - pcre2
   - pcre2-devel
   - harfbuzz

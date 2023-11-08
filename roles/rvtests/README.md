@@ -1,1 +1,1 @@
-This role will download and install cog-genomics's plink 2.0.
+This role will download and install rvtests

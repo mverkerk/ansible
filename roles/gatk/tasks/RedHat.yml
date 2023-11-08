@@ -34,7 +34,7 @@
       when: gatk_dolink
     - file:
         src: "{{ gatk_linkdir }}/gatk-completion.sh"
-        dest: "{{ gatk_bash_completion_folder }}/gatk-completion.sh"                  
+        dest: "{{ gatk_bash_completion_folder }}/gatk-completion.sh"
         state: link
-      when: gatk_dolink      
+      when: gatk_dolink
   when: not gatk_installed.stat.exists
