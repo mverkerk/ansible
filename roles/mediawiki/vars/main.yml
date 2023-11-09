@@ -1,0 +1,24 @@
+---
+mediawiki_php_stream: 8.0
+
+mediawiki_os_packages:
+  - httpd
+  - gd
+  - gd-devel
+  - php
+  - php-cli
+  - php-intl
+  - php-json
+  - php-xml
+  - php-mbstring
+  - php-gd
+  - php-pecl-apcu
+  - php-mysqlnd
+  - git
+  - python3-policycoreutils
+  - python3-setools
+
+mediawiki_db_packages:
+  - mariadb
+  - mariadb-server
+  - python3-PyMySQL

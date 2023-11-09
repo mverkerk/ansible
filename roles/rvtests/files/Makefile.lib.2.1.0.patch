@@ -1,0 +1,13 @@
+--- rvtests-2.1.0/Makefile.lib	2019-02-06 08:15:40.000000000 +0100
++++ rvtests-2.1.0-patched/Makefile.lib	2023-06-19 16:59:08.000000000 +0200
+@@ -14,8 +14,8 @@
+ ## third-party lib
+ $(TABIX_INC) $(TABIX_LIB):
+ 	$(MAKE) $(MAKEFILE) -C $(ROOT)/third tabix
+-$(EIGEN_INC) $(EIGEN_LIB):
+-	$(MAKE) $(MAKEFILE) -C $(ROOT)/third eigen
++#$(EIGEN_INC) $(EIGEN_LIB):
++#	$(MAKE) $(MAKEFILE) -C $(ROOT)/third eigen
+ $(PCRE_INC) $(PCRE_LIB):
+ 	$(MAKE) $(MAKEFILE) -C $(ROOT)/third pcre
+ $(GSL_INC) $(GSL_LIB):

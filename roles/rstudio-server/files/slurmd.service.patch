@@ -1,0 +1,17 @@
+*** /usr/lib/systemd/system/slurmd.service	2021-06-23 14:37:15.890078007 +0200
+--- /usr/lib/systemd/system/slurmd.service.orig	2021-05-28 10:42:26.000000000 +0200
+***************
+*** 1,6 ****
+  [Unit]
+  Description=Slurm node daemon
+! After=munge.service network-online.target remote-fs.target
+  #ConditionPathExists=/etc/slurm/slurm.conf
+  
+  [Service]
+--- 1,6 ----
+  [Unit]
+  Description=Slurm node daemon
+! After=munge.service network.target remote-fs.target
+  #ConditionPathExists=/etc/slurm/slurm.conf
+  
+  [Service]

@@ -35,7 +35,7 @@
         dest: "{{ htslib_linkdir }}"
         state: link
 
-    # Find & link binaries      
+    # Find & link binaries
     - ansible.builtin.find:
         paths: "{{ htslib_linkdir }}/bin"
       register: htslib_binaries
@@ -73,6 +73,14 @@
       become: yes
 
     # Link library files: libs & pkgconfig
+    - ansible.builtin.file:
+        path: "{{ htslib_lib_dest }}"
+        state: directory
+        mode: '0755'
+    - ansible.builtin.file:
+        path: "{{ htslib_lib_dest }}/pkgconfig"
+        state: directory
+        mode: '0755'
     - ansible.builtin.find:
         paths: "{{ htslib_linkdir }}/lib"
         file_type: file

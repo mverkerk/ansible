@@ -1,0 +1,12 @@
+###
+#
+# Slurm cgroup support configuration file
+#
+# See man slurm.conf and man cgroup.conf for further
+# information on cgroup configuration parameters
+#--
+CgroupAutomount=yes
+
+ConstrainCores=yes      # Limit to requested amount CPU
+ConstrainRAMSpace=yes   # Limit to requested amount RAM
+AllowedSwapSpace=0      # Not allow swap space (slow)

@@ -1,0 +1,43 @@
+---
+
+# Is it already installed?
+- name: "Check for picard installation @ {{ picard_install_dest }}/{{ picard_prefix }}"
+  stat: path="{{ picard_install_dest }}/{{ picard_prefix }}"
+  register: picard_installed
+
+#Transfer, setup picard
+#
+#
+- name: "Transfer, unpack and setup picard"
+  block:
+    - ansible.builtin.file:
+        path: "{{ picard_install_dest }}/{{ picard_prefix }}"
+        state: directory
+        mode: '0755'
+    - ansible.builtin.copy:
+        src: "files/{{ picard_prefix }}.jar"
+        dest: "{{ picard_install_dest }}/{{ picard_prefix }}/picard.jar"
+        owner: root
+        group: root
+        mode: '0755'
+    - ansible.builtin.file:
+        src: "{{ picard_install_dest }}/{{ picard_prefix }}"
+        dest: "{{ picard_linkdir }}"
+        state: link
+      when: picard_dolink
+    - ansible.builtin.file:
+        src: "{{ picard_linkdir }}/picard.jar"
+        dest: "{{ picard_binary_dest }}/picard.jar"
+        state: link
+      when: picard_dolink
+    - ansible.builtin.template:
+        src: "{{ picard_profile_d_file }}.sh.j2"
+        dest: "/etc/profile.d/{{ picard_profile_d_file }}.sh"
+        owner: root
+        group: root
+        mode: '0755'
+    - ansible.builtin.file:
+        src: "/etc/profile.d/{{ picard_profile_d_file }}.sh"
+        dest: "/etc/profile.d/{{ picard_profile_d_file }}.csh"
+        state: link
+  when: not picard_installed.stat.exists

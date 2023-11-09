@@ -1,12 +1,8 @@
 ---
-- name: Include build role
-  include_role:
-    name: build
-
 # Preparations
 - name: "Install R depended packages"
   yum:
-    name: "{{ r_packages }}"
+    name: "{{ r_os_packages }}"
     state: latest
   become: yes
 
@@ -14,7 +10,7 @@
 - name: "Setup inconsolata.sty"
   block:
   - ansible.builtin.get_url:
-      url: "{{ inconsolata_url }}"
+      url: "{{ r_inconsolata_url }}"
       dest: /tmp/inconsolata.tds.zip
       mode: '0700'
   - ansible.builtin.file:

@@ -1,0 +1,34 @@
+---
+#
+# Source archive (prefix and archive), looks for (link) in files/ folder of role
+#
+metal_prefix: METAL-2020-05-05
+metal_archive: tar.gz
+
+#Installation folder
+metal_install_dest: /opt/tools/versions
+
+#Separate link dir (for different versions, link to default version)
+metal_linkdir: /opt/tools/metal
+
+#Additional configure script flags
+metal_configure_flags_user: []
+
+#Install files
+metal_install_files:
+  - "build/bin/metal"
+  - "ChangeLog"
+  - "LICENSE.twister"
+  - "README.md"
+
+#Executable
+metal_binary: metal
+
+#Where to link the binaries to
+metal_binary_dest: /opt/tools/bin
+
+#Where to link the man files to
+metal_man_dest: /opt/tools/man
+
+#Do the actual linking?
+metal_dolink: true

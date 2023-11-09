@@ -1,0 +1,72 @@
+---
+#Slurm common user and group id
+slurm_uid: 900
+slurm_gid: 900
+
+########################################################################################################
+# slurm.conf configuration file: a template with partition name and node configuration as variables    #
+########################################################################################################
+
+#
+# General
+#
+
+slurm_conf_template: slurm.conf.j2
+#slurm_cluster_name: debug
+#slurm_control_machine: test-control
+#slurm_backup_controller: ct1
+
+#slurm_update_hosts_file: true
+
+#
+# Accounting
+#
+slurm_dbd_conf_template: slurmdbd.conf.j2
+#slurm_dbd_machine: test-control
+#slurm_dbd_storageuser: user
+#slurm_dbd_storagepass: password
+#slurm_accounting_storage_enforce: limits
+#slurm_add_cluster_to_accounting: true        # Run 'sacctmgr add cluster "clustername"'
+#slurm_dbd_init: yes                          # Create DB and account
+
+#
+# Scheduling
+#
+slurm_defmempercpu: 1024
+
+#
+# Job Priority
+#
+#type is either basic (FIFO) or multifactor
+slurm_priority_type: priority/basic               # either priority/basic / priority/multifactor
+#slurm_priority_decay_half_life:
+#slurm_priority_calc_period:
+#slurm_priority_usage_reset_period:
+#slurm_priority_favor_small:
+#slurm_priority_max_age:
+
+#Multifactor parameters
+#slurm_priority_weight_age:
+#slurm_priority_weight_assoc:
+#slurm_priority_weight_fairshare:
+#slurm_priority_weight_job_size:
+#slurm_priority_weight_partition:
+#slurm_priority_weight_qos:
+#slurm_priority_weight_tres:
+#slurm_priority_flags:
+
+############################ End slurm.con #############################################################
+
+#slurm_firewalld_trusted_zone: 10.223.26.0/16
+
+# The following information can be obtained by running slurmd -C on the node + IP adresses!
+#
+# NB It is adviced to reduce the amount of memory for the OS
+#
+#slurm_compute_nodes:
+#  - { NodeName: Node-01, IP: 192.168.0.1, CPUs: 16, Boards: 1, SocketsPerBoard: 16, CoresPerSocket: 1, ThreadsPerCore: 1, RealMemory: 48300 }
+#  - { NodeName: Node-02, IP: 192.168.0.2, CPUs: 16, Boards: 1, SocketsPerBoard: 16, CoresPerSocket: 1, ThreadsPerCore: 1, RealMemory: 48300 }
+#
+#slurm_partitions
+#  - { PartitionName: debug, Nodes: "Node-01,Node-02", Default: YES, Maxtime: INFINITE, State=: UP }
+

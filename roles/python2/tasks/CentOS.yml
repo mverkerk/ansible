@@ -3,7 +3,7 @@
 # Preparations
 - name: "Install Python depended packages"
   yum:
-    name: "{{ packages }}"
+    name: "{{ python2_os_packages }}"
     state: latest
   become: true
 

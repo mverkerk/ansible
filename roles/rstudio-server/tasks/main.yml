@@ -1,0 +1,169 @@
+---
+#
+# Install OS deps
+- name: "Install rstudio-server depended OS packages"
+  yum:
+    name: "{{ rstudio_os_packages }}"
+    state: latest
+  become: yes
+
+- name: "Install rstudio-server depended OS packages for SSL proxy"
+  yum:
+    name: "{{ rstudio_ssl_proxy_os_packages }}"
+    state: latest
+  become: yes
+  when: rstudio_ssl_port is defined
+
+# Is rstudio already installed?
+#- name: "Check for rstudio installation"
+#  ansible.builtin.dnf:
+#    list: "{{ rstudio_rpm }}"
+#  register: rstudio_installed_version
+
+- name: "Get rpm package facts to check rstudio-server installed version"
+  package_facts:
+    manager: "auto"
+
+- name: "show version"
+  debug: var=ansible_facts.packages['rstudio-server'][0].version
+  when: ansible_facts.packages['rstudio-server'] is defined
+
+# Install rstudio
+- name: "Install & configure rstudio-server"
+  block:
+    - name: "Transfer RPM to server"
+      ansible.builtin.copy:
+        src: "files/{{rstudio_rpm}}-rhel-{{ rstudio_rpm_version }}-x86_64.rpm"
+        dest: "/tmp/{{rstudio_rpm}}-rhel-{{ rstudio_rpm_version }}-x86_64.rpm"
+    - name: "Install RPM"
+      ansible.builtin.dnf:
+        name: "/tmp/{{rstudio_rpm}}-rhel-{{ rstudio_rpm_version }}-x86_64.rpm"
+        state: present
+        disable_gpg_check: true
+    - name: "Make rstudio-server binaries the right SELinux context"
+      community.general.sefcontext:
+        target: "/usr/lib/rstudio-server/bin/"
+        setype: bin_t
+        state: present
+      when: rstudio_selinux
+    - name: "Setup rserver.conf"
+      ansible.builtin.template:
+        src: "templates/rserver.conf.j2"
+        dest: "/etc/rstudio/rserver.conf"
+  when: "'rstudio-server' not in ansible_facts.packages or ansible_facts.packages['rstudio-server'][0].version != rstudio_rpm_version"
+
+# Configure httpd (SSL Proxy)
+- name: "Configure httpd"
+  block:
+    - name: "Copy CRT (or PEM) file"
+      ansible.builtin.copy:
+        src: "{{ rstudio_ssl_crt }}"
+        dest: "/etc/ssl/certs/{{ rstudio_ssl_crt }}"
+        mode: '0600'
+        owner: root
+        group: root
+    - name: "Copy key file"
+      ansible.builtin.copy:
+        src: "{{ rstudio_ssl_key }}"
+        dest: "/etc/ssl/certs/{{ rstudio_ssl_key }}"
+        mode: '0600'
+        owner: root
+        group: root
+      when: rstudio_ssl_key is defined
+    - name: "Setup httpd SSL proxy config"
+      ansible.builtin.template:
+        src: "templates/rstudio_ssl_proxy.conf.j2"
+        dest: "/etc/httpd/conf.d/rstudio_ssl_proxy.conf"
+    - name: "Allow HTTPD scripts and modules to connect to network (SELinux)"
+      ansible.posix.seboolean:
+        name: httpd_can_network_connect
+        state: true
+        persistent: true
+      when: rstudio_selinux
+    - name: "Allow HTTPD to act as a relay (SELinux)"
+      ansible.posix.seboolean:
+        name: httpd_can_network_relay
+        state: true
+        persistent: true
+      when: rstudio_selinux
+    - name: "Alow httpd to listen to {{ rstudio_ssl_port }}"
+      community.general.seport:
+        ports: "{{ rstudio_ssl_port }}"
+        proto: tcp
+        setype: http_port_t
+        state: present
+      when: rstudio_selinux
+  when: rstudio_ssl_port is defined
+
+#
+# Setup firewalld
+#
+- name: "Check if there is a firewalld.service installed"
+  stat: path=/lib/systemd/system/firewalld.service
+  register: firewalld_available
+
+- block:
+  - name: "Allow access to port"
+    firewalld:
+      port: "{{ rstudio_ssl_port if (rstudio_ssl_port is defined) else rstudio_port }}/tcp"
+      zone: public
+      permanent: true
+      state: enabled
+  - name: "Reload firewall daemon"
+    command: "firewall-cmd --reload"
+    ignore_errors: yes               # <- in case service is not currently running
+  when: firewalld_available.stat.exists
+
+
+#
+# Slurm integration
+#
+- name: "Configure rsession to run with Slurm scheduler"
+  block:
+    - name: "Setup wrapper script"
+      ansible.builtin.template:
+        src: "templates/rsession-slurm.sh.j2"
+        dest: "/usr/lib/rstudio-server/bin/rsession-slurm.sh"
+        mode: '0755'
+        owner: root
+        group: root
+    - name: "Adjust systemd script to use wrapper script"
+      ansible.builtin.lineinfile:
+        path: "/usr/lib/systemd/system/rstudio-server.service"
+        regexp: '^ExecStart='
+        line: "ExecStart=/usr/lib/rstudio-server/bin/rserver --rsession-path=rsession-slurm.sh"
+    - name: "Write srun run flags to config file: etc/rstudio/rsession-srun-params"
+      copy:
+        content: "{{ rstudio_srun_flags }}"
+        dest: "/etc/rstudio/rsession-srun-params"
+        mode: '0644'
+      when: rstudio_srun_flags is defined
+  when: rstudio_wrap_slurm
+
+
+- name: "Make rstudio  / wrapper binaries / scripts runnable for SELinux"
+  block:
+    - name: "Set context"
+      community.general.sefcontext:
+        target: '/usr/lib/rstudio-server/bin/*'
+        setype: bin_t
+        state: present
+    - name: Apply new SELinux file context to filesystem
+      ansible.builtin.command: restorecon -irv /usr/lib/rstudio-server/bin/
+  when: rstudio_selinux
+
+
+#
+# Reload daemons
+#
+- name: "Restart rstudio.server"
+  ansible.builtin.systemd:
+    name: rstudio-server
+    state: restarted
+    daemon_reload: true
+- name: "Restart httpd.server"
+  ansible.builtin.systemd:
+    name: httpd
+    state: restarted
+    enabled: true
+  when: rstudio_ssl_port

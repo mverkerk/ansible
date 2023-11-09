@@ -1,0 +1,62 @@
+---
+# Metal (cmake, make / install)
+#
+# Preparations
+- name: "Install metal depended OS packages"
+  yum:
+    name: "{{ metal_os_packages }}"
+    state: latest
+  become: yes
+
+# Is it already installed?
+- name: "Check for metal installation @ {{ metal_install_dest }}/{{ metal_prefix }}"
+  stat: path="{{ metal_install_dest }}/{{ metal_prefix }}"
+  register: metal_installed
+
+#Transfer, unpack and build
+- name: "Transfer, unpack and build metal"
+  block:
+    - ansible.builtin.unarchive:
+        src: "files/{{ metal_prefix }}.{{ metal_archive }}"
+        dest: /tmp
+        owner: root
+        group: root        
+        creates: /tmp/{{ metal_prefix }}
+    - ansible.builtin.file:
+        path: "/tmp/{{ metal_prefix }}/build"
+        state: directory
+        owner: root
+        group: root
+    - ansible.builtin.shell: "cmake -DCMAKE_BUILD_TYPE=Release .."
+      args:
+        chdir: "/tmp/{{ metal_prefix }}/build"
+      become: yes
+    - community.general.make:
+        chdir: "/tmp/{{ metal_prefix }}/build"
+    - community.general.make:
+        chdir: "/tmp/{{ metal_prefix }}/build"
+        target: install
+      become: yes
+    - ansible.builtin.file:
+        path: "{{ metal_install_dest }}/{{ metal_prefix }}"
+        state: directory
+        recurse: true
+        owner: root
+        group: root
+    - ansible.builtin.copy:
+        src: "/tmp/{{ metal_prefix }}/{{ item }}"
+        dest: "{{ metal_install_dest }}/{{ metal_prefix }}"
+        mode: preserve
+        remote_src: yes
+      loop: "{{ metal_install_files }}"       
+    - file:
+        src: "{{ metal_install_dest }}/{{ metal_prefix }}"
+        dest: "{{ metal_linkdir }}"
+        state: link
+      when: metal_dolink
+    - file:
+        src: "{{ metal_linkdir }}/{{ metal_binary }}"
+        dest: "{{ metal_binary_dest }}/{{ metal_binary }}"
+        state: link
+      when: metal_dolink
+  when: not metal_installed.stat.exists

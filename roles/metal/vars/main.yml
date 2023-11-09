@@ -1,0 +1,6 @@
+---
+metal_os_packages:
+  - cmake
+  - compat-openssl10
+  - zlib
+  - zlib-devel

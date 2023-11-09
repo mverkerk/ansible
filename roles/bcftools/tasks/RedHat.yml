@@ -34,8 +34,7 @@
         src: "{{ bcftools_install_dest }}/{{ bcftools_prefix }}"
         dest: "{{ bcftools_linkdir }}"
         state: link
-
-    # Find & link binaries      
+    # Find & link binaries
     - ansible.builtin.find:
         paths: "{{ bcftools_linkdir }}/bin"
       register: bcftools_binaries
@@ -45,7 +44,6 @@
         path: "{{ bcftools_binary_dest }}/{{ item.path | basename }}"
         state: link
       with_items: "{{ bcftools_binaries.files }}"
-
     # Find & create man directories and link man files
     - ansible.builtin.find:
         paths: "{{ bcftools_linkdir }}/share/man"

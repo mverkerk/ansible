@@ -1,12 +1,8 @@
 ---
-- name: Include build role
-  include_role:
-    name: build
-
 # Preparations
 - name: "Install R depended packages"
   apt:
-    name: "{{ r_packages }}"
+    name: "{{ r_os_packages }}"
     state: latest
   become: yes
 

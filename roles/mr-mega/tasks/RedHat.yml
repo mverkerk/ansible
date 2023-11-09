@@ -1,0 +1,67 @@
+---
+- name: "Install MR-MEGA depended OS packages"
+  yum:
+    name: "{{ mrmega_os_packages }}"
+    state: latest
+  become: yes
+
+# Is it already installed?
+- name: "Check for MR-MEGA installation @ {{ mrmega_install_dest }}/{{ mrmega_prefix }}"
+  stat: path="{{ mrmega_install_dest }}/{{ mrmega_prefix }}"
+  register: mrmega_installed
+
+# Transfer, unpack and compile
+- name: "Create temp src directory"
+  file:
+    path: "/tmp/{{ mrmega_prefix }}"
+    state: directory
+
+- name: "Transfer, unpack and compile mrmega"
+  block:
+    - ansible.builtin.unarchive:
+        src: "files/{{ mrmega_prefix }}.{{ mrmega_archive }}"
+        dest: "/tmp/{{ mrmega_prefix }}"
+        owner: root
+    - community.general.make:
+        chdir: "/tmp/{{ mrmega_prefix }}"
+  when: not mrmega_installed.stat.exists
+
+- name: "Link MR-MEGA parts to OS"
+  block:
+    - ansible.builtin.file:
+        path: "{{ mrmega_install_dest }}/{{ mrmega_prefix }}"
+        state: directory
+        mode: '0755'
+    - ansible.builtin.copy:
+        src: "/tmp/{{ mrmega_prefix }}/{{ item }}"
+        dest: "{{ mrmega_install_dest }}/{{ mrmega_prefix }}/{{ item }}"
+        remote_src: true
+        owner: root
+        group: root
+        mode: '0755'
+      with_items: "{{ mrmega_binaries + mrmega_manuals }}"
+      become: yes
+        
+    - ansible.builtin.file:
+        src: "{{ mrmega_install_dest }}/{{ mrmega_prefix }}"
+        dest: "{{ mrmega_linkdir }}"
+        state: link
+
+    # Link binaries      
+    - ansible.builtin.file:
+        src: "{{ mrmega_linkdir }}/{{ item }}"
+        path: "{{ mrmega_binary_dest }}/{{ item }}"
+        state: link
+      with_items: "{{ mrmega_binaries }}"
+
+    # Link manuals
+    - ansible.builtin.file:
+        src: "{{ mrmega_linkdir }}/{{ item }}"
+        path: "{{ mrmega_man_dest }}/man{{ item.split('.')[-1]}}/{{ item }}"
+        state: link
+      with_items: "{{ mrmega_manuals }}"
+
+    - command: mandb
+      become: yes
+      
+  when: not mrmega_installed.stat.exists and mrmega_dolink

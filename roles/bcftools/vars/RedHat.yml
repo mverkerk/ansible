@@ -6,7 +6,7 @@ bcftools_os_packages:
   - bzip2-libs
   - bzip2-devel
   - xz
-  - xz-compat-libs
+  - xz-lzma-compat
   - xz-devel
   - xz-libs
   - libcurl
@@ -25,7 +25,7 @@ bcftools_os_packages:
   - perl-ExtUtils-Embed
 
 bcftools_configure_flags:
-  - "--enable-perl-filters"
+#  - "--enable-perl-filters" # <- Causes problem on RHEL8 - manual woraround: https://github.com/samtools/bcftools/issues/1322
   - "--enable-libgsl"
   - "--with-cblas"
-  - "--with-htslib=/opt/tools/htslib"
+

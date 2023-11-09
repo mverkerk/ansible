@@ -7,14 +7,14 @@
         - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
         - "{{ ansible_distribution }}.yml"
       paths:
-        - 'vars'
+        - '{{ role_path }}/vars'
 
 - name: include os specific tasks
   ansible.builtin.include_tasks: "{{ lookup('ansible.builtin.first_found', bcftools_tasks_params) }}"
   vars:
     bcftools_tasks_params:
-      files:      
+      files:
         - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
         - "{{ ansible_distribution }}.yml"
       paths:
-        - 'tasks'
+        - '{{ role_path }}/tasks'

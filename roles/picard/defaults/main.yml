@@ -1,0 +1,20 @@
+---
+#
+# Prefix ( of the jar file )
+#
+picard_prefix: picard-3.0.0
+
+#Installation folder
+picard_install_dest: /opt/tools/versions
+
+#Separate link dir (for different versions, link to default version)
+picard_linkdir: /opt/tools/picard
+
+#Where to link the binaries to
+picard_binary_dest: /opt/tools/bin
+
+#Do the actual linking?
+picard_dolink: true
+
+#Name of profile.d file (without extension path and .sh/.csh)
+picard_profile_d_file: picard

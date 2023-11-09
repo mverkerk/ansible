@@ -1,0 +1,6 @@
+---
+rvtests_os_packages:
+  - eigen3-devel
+  - compat-libpthread-nonshared
+  - glibc-static
+  - libstdc++-static

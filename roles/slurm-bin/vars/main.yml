@@ -1,0 +1,24 @@
+---
+# system user that runs slurm
+slurm_user: slurm
+
+# Slurm RPMs
+slurm_packages:
+  - slurm
+  - slurm-slurmd
+  - slurm-slurmctld
+  - slurm-slurmdbd
+  - slurm-gui
+  - slurm-doc
+  - libcgroup
+  - libcgroup-tools
+
+#
+# This role is configured for mysql or mariadb databases
+#
+slurm_dbd_packages:
+  - mariadb
+  - mariadb-server
+  - python3-mysqlclient # Ansible requirement to do DB stuff
+
+slurm_db_daemon_name: mariadb

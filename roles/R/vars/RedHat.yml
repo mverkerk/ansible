@@ -1,5 +1,5 @@
 ---
-r_packages:
+r_os_packages:
   - xorg-x11-server-devel
   - libX11-devel
   - libXt-devel
@@ -33,6 +33,10 @@ r_packages:
   - gcc-gfortran
   - libxml2
   - libxml2-devel
+  - pango
+  - pango-devel
+  - openssl
+  - openssl-devel
   - pcre2
   - pcre2-devel
   - harfbuzz
@@ -42,10 +46,27 @@ r_packages:
   - texinfo
   - texlive
   - texlive-tetex
+  - liberation-fonts-common
+  - liberation-fonts
+  - liberation-mono-fonts
+  - liberation-narrow-fonts
+  - liberation-sans-fonts
+  - liberation-serif-fonts
+  - xorg-x11-fonts-ISO8859-1-100dpi
+  - xorg-x11-fonts-ISO8859-14-100dpi
+  - xorg-x11-fonts-ISO8859-14-75dpi
+  - xorg-x11-fonts-ISO8859-15-100dpi
+  - xorg-x11-fonts-ISO8859-15-75dpi
+  - xorg-x11-fonts-ISO8859-1-75dpi
+  - xorg-x11-fonts-ISO8859-2-100dpi
+  - xorg-x11-fonts-ISO8859-2-75dpi
+  - xorg-x11-fonts-ISO8859-9-100dpi
+  - xorg-x11-fonts-ISO8859-9-75dpi
+
 #  - levien-inconsolata-fonts
   - perl-Digest-MD5
 
 #For optimal rendering of PDF vignettes and package manuals
 # ( WARNING: neither inconsolata.sty nor zi4.sty found: PDF vignettes and package manuals will not be rendered optimally )
 #https://community.rstudio.com/t/texlive-distribution-on-centos-for-rstudio-server-and-connect/2916
-inconsolata_url: http://mirrors.ctan.org/install/fonts/inconsolata.tds.zip
+r_inconsolata_url: http://mirrors.ctan.org/install/fonts/inconsolata.tds.zip

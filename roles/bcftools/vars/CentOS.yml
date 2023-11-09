@@ -1,0 +1,30 @@
+---
+bcftools_os_packages:
+  - zlib
+  - zlib-devel
+  - bzip2
+  - bzip2-libs
+  - bzip2-devel
+  - xz
+#  - xz-compat-libs
+  - xz-devel
+  - xz-libs
+  - libcurl
+  - libcurl-devel
+  - openssl
+  - openssl-devel
+  - ncurses
+  - ncurses-base
+  - ncurses-libs
+  - ncurses-devel
+  - gsl
+  - gsl-devel
+  - perl
+  - perl-libs
+  - perl-Data-Dumper
+  - perl-ExtUtils-Embed
+
+bcftools_configure_flags:
+  - "--enable-perl-filters"
+  - "--enable-libgsl"
+  - "--with-cblas"

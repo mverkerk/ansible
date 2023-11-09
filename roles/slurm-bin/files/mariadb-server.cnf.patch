@@ -1,0 +1,12 @@
+--- mariadb-server.cnf.ori	2023-06-22 13:55:14.627846068 +0200
++++ mariadb-server.cnf.patched	2023-06-22 13:54:01.015357044 +0200
+@@ -18,6 +18,9 @@
+ socket=/var/lib/mysql/mysql.sock
+ log-error=/var/log/mariadb/mariadb.log
+ pid-file=/run/mariadb/mariadb.pid
++innodb_buffer_pool_size=1024M
++innodb_log_file_size=64M
++innodb_lock_wait_timeout=900
+ 
+ 
+ #
