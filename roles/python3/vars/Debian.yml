@@ -28,3 +28,5 @@ python3_os_packages:
 python3_configure_flags:
   - "--enable-loadable-sqlite-extensions"
   - "--with-ensurepip"
+  - "--enable-optimizations"
+  
