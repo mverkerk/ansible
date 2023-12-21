@@ -2,7 +2,7 @@
 #
 # Source archive (prefix and archive), looks for (link) in files/ folder of role
 #
-samtools_prefix: samtools-1.17
+samtools_prefix: samtools-1.19
 samtools_archive: tar.bz2
 
 #Installation folder
