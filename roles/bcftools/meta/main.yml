@@ -1,5 +1,5 @@
 ---
 dependencies:
-  #- { role: epel }
+  - { role: epel }
   - { role: build }
   - { role: htslib }
