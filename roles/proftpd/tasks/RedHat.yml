@@ -1,0 +1,85 @@
+---
+- name: "Install proftpd depended OS packages"
+  yum:
+    name: "{{ proftpd_os_packages }}"
+    state: latest
+  become: yes
+
+# Is it already installed?
+- name: "Check for proftpd installation @ {{ proftpd_install_dest }}/{{ proftpd_prefix }}"
+  stat: path="{{ proftpd_install_dest }}/{{ proftpd_prefix }}"
+  register: proftpd_installed
+
+# Transfer, unpack and compile
+- name: "Transfer, unpack and compile proftpd"
+  block:
+    - ansible.builtin.unarchive:
+        src: "files/{{ proftpd_prefix }}.{{ proftpd_archive }}"
+        dest: /tmp
+        creates: "/tmp/{{ proftpd_prefix }}"
+    - ansible.builtin.unarchive:
+        src: "files/{{ proftpd_mod_vroot_prefix }}.{{ proftpd_mod_vroot_archive }}"
+        dest: "/tmp/{{ proftpd_prefix }}/contrib"
+        creates: "/tmp/{{ proftpd_prefix }}/contrib/{{ proftpd_mod_vroot_prefix }}"
+    - ansible.builtin.file:
+        src: "/tmp/{{ proftpd_prefix }}/contrib/{{ proftpd_mod_vroot_prefix }}"
+        path: "/tmp/{{ proftpd_prefix }}/contrib/mod_vroot"
+        state: link
+    - command: "./configure --prefix={{ proftpd_install_dest }}/{{ proftpd_prefix }} --sysconfdir={{ proftpd_sysconfdir }} {{ proftpd_configure_flags | join(' ') }} {{ proftpd_configure_flags_user | join(' ') }} --with-modules={{ proftpd_modules | join(':') }} --with-shared={{ proftpd_shared_modules | join(':') }}" 
+      args:
+        chdir: /tmp/{{ proftpd_prefix }}
+    - community.general.make:
+        chdir: /tmp/{{ proftpd_prefix }}
+    - community.general.make:
+        chdir: /tmp/{{ proftpd_prefix }}
+        target: install
+      become: yes
+  when: not proftpd_installed.stat.exists
+
+- name: "Link proftpd to OS"
+  block:
+    - ansible.builtin.file:
+        src: "{{ samtools_install_dest }}/{{ samtools_prefix }}"
+        dest: "{{ samtools_linkdir }}"
+        state: link  
+  when: not proftpd_installed.stat.exists and proftpd_dolink  
+
+# Set proftpd paths (create file in profile.d)
+- name: "Create profile.d files with PATH info"
+  template:
+    src: proftpd.sh.j2
+    dest: /etc/profile.d/proftpd.sh
+    owner: root
+    group: root
+    mode: 0644
+  become: yes
+- name: "Make link for csh users"
+  file:
+    src: /etc/profile.d/proftpd.sh
+    dest: /etc/profile.d/proftpd.csh
+    state: link
+  become: yes
+
+# Set proftpd manpaths (create file in profile.d)
+- name: "Set proftpd MANDATORY_MANPATH"
+  lineinfile:
+    path: /etc/man_db.conf
+    regexp: 'MANDATORY_MANPATH                     {{ proftpd_linkdir }}/share/man'
+    insertafter: '^MANDATORY_MANPATH'
+    line: 'MANDATORY_MANPATH                       {{ proftpd_linkdir }}/share/man'
+    state: present
+  become: yes
+
+- name: "Set proftpd bin MANPATH_MAP"
+  lineinfile:
+    path: /etc/man_db.conf
+    regexp: 'MANPATH_MAP     {{ proftpd_linkdir }}/bin          {{ proftpd_linkdir }}/share/man'
+    insertafter: '^MANPATH_MAP'
+    line: 'MANPATH_MAP     {{ proftpd_linkdir }}/bin          {{ proftpd_linkdir }}/share/man'
+    state: present
+  become: yes
+
+- name: "Run mandb to reconfigure man databases"
+  command: mandb
+  become: yes
+

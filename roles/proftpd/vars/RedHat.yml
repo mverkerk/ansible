@@ -1,0 +1,55 @@
+---
+#
+# OS needed RPM  packages
+#
+proftpd_os_packages:
+  - pam
+  - pam-devel
+  - libcap
+  - libcap-devel
+  - ncurses
+  - ncurses-c++-libs
+  - ncurses-libs
+  - ncurses-compat-libs
+  - ncurses-devel
+  - openssl
+  - openssl-devel  
+  - openssl-libs
+  - compat-openssl10 
+  - openssl3
+  - openssl3-devel
+    
+#
+# Configure flags
+#
+proftpd_configure_flags:
+  - "--enable-openssl"
+  - "--enable-dso"
+  - "--enable-ctrls"
+  - "--enable-memcache"
+  - "--enable-nls"
+  
+#
+# Internal Proftpd Modules
+#  
+proftpd_modules:
+  - "mod_ident"
+  - "mod_readme"
+  - "mod_tls"
+
+#
+# DSO Proftpd Modules
+#
+proftpd_shared_modules:
+  - "mod_vroot"    # <- mod_vroot requires additional configuration!
+  - "mod_sftp"
+  - "mod_ctrls"
+  - "mod_ctrls_admin"
+  - "mod_sftp_pam"
+  - "mod_qos"
+  - "mod_dynmasq"
+  - "mod_quotatab"
+  - "mod_ratio"
+  - "mod_auth_pam"
+  - "mod_delay"
+  

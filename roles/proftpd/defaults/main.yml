@@ -1,0 +1,29 @@
+---
+#
+# Source archive (prefix and archive), looks for (link) in files/ folder of role
+#
+proftpd_prefix: proftpd-1.3.8b
+proftpd_archive: tar.gz
+
+proftpd_mod_vroot_prefix: proftpd-mod_vroot-0.9.11
+proftpd_mod_vroot_archive: tar.gz
+
+#Installation folder
+proftpd_install_dest: /opt
+
+#Separate link dir (for different versions, link to default version)
+proftpd_linkdir: /opt/proftpd
+
+#Config dir
+proftpd_sysconfdir: /etc/proftpd
+
+#Configuration Files
+proftpd_config_files: []
+
+
+#Do the actual linking?
+proftpd_dolink: true
+
+
+#Additional configure script flags
+proftpd_configure_flags_user: []
