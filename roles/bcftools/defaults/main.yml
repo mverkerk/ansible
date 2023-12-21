@@ -2,7 +2,7 @@
 #
 # Source archive (prefix and archive), looks for (link) in files/ folder of role
 #
-bcftools_prefix: bcftools-1.17
+bcftools_prefix: bcftools-1.19
 bcftools_archive: tar.bz2
 
 #Installation folder
@@ -14,7 +14,6 @@ bcftools_linkdir: /opt/tools/bcftools
 #Additional configure script flags
 bcftools_configure_flags_user:
   - "--with-htslib=/opt/tools/htslib"
-
 
 #Where to link the binaries to
 bcftools_binary_dest: /opt/tools/bin
