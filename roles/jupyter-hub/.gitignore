@@ -1,0 +1,18 @@
+#
+# R / packages source archives
+#
+files/*.tar.bz2
+files/*.tar.gz
+files/*.tar.xz
+
+#
+# Temporary files
+#
+*.swp
+*.bak
+
+#
+# Emacs
+#
+~*
+\#*\#

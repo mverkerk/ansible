@@ -1,0 +1,19 @@
+---
+jupyterhub_os_packages:
+  - nodejs
+  - npm
+  - sqlite-devel
+  - sqlite-libs
+  - selinux-policy-devel
+
+jupyterhub_python3_packages:
+  - wheel
+  - jupyterhub
+  - jupyterlab
+  - ipywidgets
+  - sudospawner
+
+jupyterhub_R_packages:
+  - repr
+  - IRdisplay
+  - IRkernel

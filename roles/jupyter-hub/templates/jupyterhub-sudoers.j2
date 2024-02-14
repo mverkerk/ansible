@@ -1,0 +1,10 @@
+#
+# JupyterHub sudo config
+#
+# Users in JN user group may use sudo to become JN daemon user and 
+# the daemon user may start (spawn) notebook as a Jupyter user
+# without using password.
+
+Cmnd_Alias JUPYTER_CMD = {{ jupyterhub_install_dir }}/bin/sudospawner
+%{{ jupyterhub_users_group }} ALL=({{ jupyterhub_daemon_user }}) /usr/bin/sudo
+{{ jupyterhub_daemon_user }} ALL=(%{{ jupyterhub_users_group }}) NOPASSWD:JUPYTER_CMD

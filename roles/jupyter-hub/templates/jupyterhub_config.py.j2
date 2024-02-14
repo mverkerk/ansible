@@ -1,0 +1,19 @@
+#
+# JupyterHub Config Template
+#  
+c.JupyterHub.cookie_secret_file = '{{ jupyterhub_install_dir }}/jupyterhub_cookie_secret'
+c.JupyterHub.db_url = 'sqlite://{{ jupyterhub_install_dir }}/var/db/jupyterhub.sqlite'
+
+c.ConfigurableHTTPProxy.pid_file = '{{ jupyterhub_install_dir }}/var/run/jupyterhub-proxy.pid'
+c.JupyterHub.pid_file = '{{ jupyterhub_install_dir }}/var/run/jupyterhub.pid'
+
+c.JupyterHub.port = {{ jupyterhub_port }}
+
+c.JupyterHub.spawner_class = 'sudospawner.SudoSpawner'
+
+{% if jupyterhub_ssl_group is defined and jupyterhub_ssl_group != '' %}
+c.JupyterHub.ssl_cert = '{{ jupyterhub_ssl_cert }}'
+c.JupyterHub.ssl_key = '{{ jupyterhub_ssl_key }}'
+{% endif %}
+
+c.Authenticator.allowed_groups = { '{{ jupyterhub_users_group }}' }

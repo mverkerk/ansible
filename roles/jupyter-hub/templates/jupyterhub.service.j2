@@ -1,0 +1,15 @@
+[Unit]
+Description=JupyterHub
+After=syslog.target network.target
+
+[Service]
+User=rhea
+Environment="PATH=/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:{{ jupyterhub_install_dir }}/bin"
+ExecStart={{ jupyterhub_install_dir }}/bin/jupyterhub -f {{ jupyterhub_install_dir }}/etc/jupyterhub/jupyterhub_config.py 
+Restart=on-failure
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=jupyterhub
+
+[Install]
+WantedBy=multi-user.target

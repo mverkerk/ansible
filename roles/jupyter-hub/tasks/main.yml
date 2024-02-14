@@ -1,0 +1,281 @@
+---
+#
+# Install OS packages
+#
+- name: "Install OS packages" 
+  ansible.builtin.dnf:
+    name: "{{ jupyterhub_os_packages }}" 
+    state: latest
+
+#Create users group
+- name: "Create JN users-group."
+  ansible.builtin.group:
+    name: "{{ jupyterhub_users_group }}"    
+    state: present
+- name: "Add users to JN user-group" 
+  ansible.builtin.user:
+    name: "{{ item }}" 
+    groups: "{{ jupyterhub_users_group }}"
+    append: yes
+  with_items: "{{ jupyter_users }}" 
+    
+#Create JN daemon group & user
+- name: "Create JN daemon-group."
+  ansible.builtin.group:
+    name: "{{ jupyterhub_daemon_group }}"    
+    state: present
+- name: "Add user {{jupyterhub_daemon_user}} to run JN" 
+  ansible.builtin.user: 
+    name: "{{ jupyterhub_daemon_user }}"
+    group: "{{ jupyterhub_daemon_group}}"
+    home: "{{ jupyterhub_install_dir }}" 
+    create_home: true
+    shell: /bin/false
+    state: present
+    system: true
+    
+# Setup /etc/shadow
+# 
+# JN needs access to /etc/shadow
+#
+# Solution is to make /etc/shadow readable 
+# by a 'shadow' group, where the JN daemon
+# user is a member
+- name: "Create {{ jupyterhub_shadow_group }} group for /etc/shadow and add JN user" 
+  block:
+    - name: "Create group {{ jupyterhub_shadow_group }}"
+      ansible.builtin.group:
+        name: "{{ jupyterhub_shadow_group }}"
+        state: present
+    - name: "Add JN user {{ jupyterhub_daemon_user }} to group" 
+      ansible.builtin.user:
+        name: "{{ jupyterhub_daemon_user }}" 
+        groups: "{{ jupyterhub_shadow_group }}"
+        append: yes 
+    - name: "Set group {{ jupyterhub_shadow_group }} on /etc/shadow"
+      ansible.builtin.file:
+        path: /etc/shadow
+        group: "{{ jupyterhub_shadow_group }}"
+        mode: g+r
+  when: jupyterhub_shadow_group is defined
+
+#
+# JN needs access to certificate files (same as httpd / other SSL services)
+# 
+# Solution: add ssl group and make certs accessible for JN user
+- name: "Create {{ jupyterhub_ssl_group }} for ssl key and cert file and add JN user" 
+  block:
+    - name: "Create group {{ jupyterhub_ssl_group }} for SSL certificates" 
+      ansible.builtin.group:
+        name: "{{ jupyterhub_ssl_group }}"
+        state: present
+    - name: "Add JN user {{ jupyterhub_daemon_user }} to group" 
+      ansible.builtin.user:
+        name: "{{ jupyterhub_daemon_user }}" 
+        groups: "{{ jupyterhub_ssl_group }}"
+        append: yes 
+    - name: "Set group {{ jupyterhub_ssl_group }} on {{ jupyterhub_ssl_cert }}"
+      ansible.builtin.file:
+        path: "{{ jupyterhub_ssl_cert }}" 
+        group: "{{ jupyterhub_ssl_group }}"
+        mode: g+r
+    - name: "Set group {{ jupyterhub_ssl_group }} on {{ jupyterhub_ssl_key }}"
+      ansible.builtin.file:
+        path: "{{ jupyterhub_ssl_key }}" 
+        group: "{{ jupyterhub_ssl_group }}"
+        mode: g+r
+  when: jupyterhub_ssl_group is defined and jupyterhub_ssl_group != ''
+  
+#
+# Create virtual environment with Jupyterhub 
+#
+- name: "Create JN Python virtual environment with Jupyterhub packages"
+  ansible.builtin.pip:
+    name: "{{ jupyterhub_python3_packages }}" 
+    virtualenv: "{{ jupyterhub_install_dir }}" 
+    virtualenv_command: "{{ jupyterhub_python3 }}/bin/python3 -m venv" 
+
+#
+# Install proxy NPM tools
+#
+- name: "Install NPM configurable-http-proxy package" 
+  community.general.npm:
+    name: configurable-http-proxy
+    global: true
+    state: latest
+#
+# Create JN directory structure
+#
+- name: "Create JN directories" 
+  ansible.builtin.file:
+    path: "{{ jupyterhub_install_dir }}/{{ item }}/"
+    state: directory
+    owner: "{{ jupyterhub_daemon_user }}"
+    group: "{{ jupyterhub_daemon_group }}"
+  loop:
+    - etc
+    - etc/jupyterhub
+    - etc/systemd
+    - var
+    - var/db
+    - var/run
+
+#
+# Create JN configuration
+#   
+#- name: "Create JN configuration" 
+#  ansible.builtin.command:
+#    cmd: "{{ jupyterhub_install_dir }}/bin/jupyterhub --generate-config"
+#    chdir: "{{ jupyterhub_install_dir }}/etc/jupyterhub"
+#    creates:  "{{ jupyterhub_install_dir }}/etc/jupyterhub/jupyterhub_config.py"
+
+# From template
+- name: "Copy JN configuration settings from template"
+  ansible.builtin.template:
+    src: jupyterhub_config.py.j2 
+    dest: "{{ jupyterhub_install_dir }}/etc/jupyterhub/jupyterhub_config.py"
+    owner: "{{ jupyterhub_daemon_user }}"
+    group: "{{ jupyterhub_daemon_group }}"
+    mode: u=rw,g=rw
+
+#
+# Setup sudo settings (add template to /etc/sudoers.d)
+#
+#- name: "Make sure includedir is uncommented"       # includedir is NOT a comment!
+#  ansible.builtin.lineinfile:
+#    path: /etc/sudoers
+#    regexp: '#includedir /etc/sudoers.d'
+#    line: 'includedir /etc/sudoers.d'
+#    validate: '/usr/sbin/visudo -cf %s'
+- name: "Add JN template" 
+  ansible.builtin.template:
+    src: jupyterhub-sudoers.j2
+    dest: /etc/sudoers.d/jupyterhub-sudoers
+    owner: root
+    group: root
+    mode: u=r,g=r
+
+#
+# Compile and install sudo_exec_selinux module is SELinux is enforcing
+#
+- block:
+  - name: "Copy SELinux module to tmp folder" 
+    ansible.builtin.copy:
+      src: files/sudo_exec_selinux.te
+      dest: /tmp/sudo_exec_selinux.te
+  - name: "Compile SELinux policy module"
+    ansible.builtin.command: 
+      cmd: "checkmodule -M -m -o sudo_exec_selinux.mod sudo_exec_selinux.te" 
+      chdir: /tmp
+      creates: /tmp/sudo_exec_selinux.mod
+  - name: "Make SELinux policy module"
+    ansible.builtin.command:
+      cmd: "semodule_package -o sudo_exec_selinux.pp -m sudo_exec_selinux.mod"
+      chdir: /tmp
+      creates: /tmp/sudo_exec_selinux.pp
+  - name: "Install SELinux policy module"
+    ansible.builtin.command:
+      cmd: "semodule -i sudo_exec_selinux.pp" 
+      chdir: /tmp
+  when: ansible_facts.selinux.status == 'enabled'
+
+#
+# Reset ownership in JupyterHub directory
+#  
+- name: "Recursively change ownership of a directory"
+  ansible.builtin.file:
+    path: "{{ jupyterhub_install_dir }}"
+    state: directory
+    recurse: yes
+    owner: "{{ jupyterhub_daemon_user }}"
+    group: "{{ jupyterhub_daemon_group }}"
+
+#
+# Reset ownership in JupyterHub directory
+#  
+- block:
+  - name: "Reapply SELinux file context to filesystem" 
+    ansible.builtin.command: "restorecon -irv {{ jupyterhub_install_dir }}" 
+  when: ansible_facts.selinux.status == 'enabled'
+
+#
+# Apply Firewall Rule
+#
+- name: "Check if there is a firewalld.service installed"
+  stat: path=/lib/systemd/system/firewalld.service
+  register: firewalld_available
+
+- block:
+  - name: "Add server segment to firewall's trusted zone and reload firewalld"
+    ansible.posix.firewalld:
+      zone: public
+      port: "{{ jupyterhub_port }}/tcp" 
+      permanent: true
+      state: enabled
+  - name: "Reload firewall daemon"
+    ansible.builtin.command: "firewall-cmd --reload"
+    ignore_errors: yes               # <- in case service is not currently running
+  when: firewalld_available.stat.exists 
+
+#
+# Setup JN logrotate config
+# 
+- name: "Create logrotate jupyterhub.conf"
+  ansible.builtin.template:
+    src: jupyterhub.logrotate.j2
+    dest: /etc/logrotate.d/jupyterhub
+    owner: root
+    group: root
+    mode: u=rw,g=r,o=r
+
+#
+# Setup JN syslog config
+#
+- name: "Create log directory" 
+  ansible.builtin.file:
+    path: "/var/log/jupyterhub"
+    state: directory
+    owner: root
+    group: root
+- name: "Create rsyslog jupyterhub config"
+  template:
+    src: jupyterhub_syslog.conf.j2
+    dest: /etc/rsyslog.d/jupyterhub.conf
+    owner: root
+    group: root
+    mode: u=rw,g=r,o=r
+    
+#
+# Setup JN systemd service, enabe and start
+#
+- name: "Create jupyterhub systemd service"
+  ansible.builtin.template:
+    src: jupyterhub.service.j2
+    dest: "{{ jupyterhub_install_dir }}/etc/systemd/jupyterhub.service" 
+    owner: "{{ jupyterhub_daemon_user }}"
+    group: "{{ jupyterhub_daemon_group }}"
+    mode: u=rw,g=r,o=r
+- name: "Link jupyterhub to system's service dir"
+  ansible.builtin.file:
+    src: "{{ jupyterhub_install_dir }}/etc/systemd/jupyterhub.service" 
+    dest: /etc/systemd/system/jupyterhub.service
+    owner: root
+    group: root
+    state: link
+- name: "Reload JN daemon"
+  systemd:
+    daemon_reload: yes
+    name: jupyterhub
+    enabled: yes
+    state: started    
+
+#
+# Install R packages for JN R kernel
+#
+- block:
+  - name: "Install R packages from (source)" 
+    ansible.builtin.command: "{{ jupyterhub_r_dir }}/bin/Rscript -e 'install.packages(\"{{ item }}\", repos=\"{{ jupyterhub_r_rpos }}\", type=\"source\");'"
+    loop: "{{ jupyterhub_R_packages }}"
+  - name: "Install kernel" 
+    ansible.builtin.command: "{{ jupyterhub_r_dir }}/bin/Rscript -e 'IRkernel::installspec(user = FALSE)'"
+  when: jupyterhub_R_packages is defined
