@@ -6,4 +6,5 @@
 - name: Install the epel rpm from a remote repo
   ansible.builtin.yum:
     name: "{{ epel_package_name }}"
+    disable_gpg_check: true
     state: present
