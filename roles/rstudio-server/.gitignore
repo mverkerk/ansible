@@ -4,6 +4,7 @@
 files/*.tar.bz2
 files/*.tar.gz
 files/*.tar.xz
+files/*.rpm
 
 #
 # Temporary files
