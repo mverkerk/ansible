@@ -3,7 +3,7 @@
 # Source archive (prefix and archive), looks for (link) in files/ folder of role
 #
 bwa_prefix: bwa-mem2-v2.2.1
-bwa_archive: tar.bz2
+bwa_archive: tar.gz
 
 #Installation folder
 bwa_install_dest: /opt/tools/versions
