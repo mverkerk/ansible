@@ -93,7 +93,11 @@
   ansible.builtin.pip:
     name: "{{ jupyterhub_python3_packages }}" 
     virtualenv: "{{ jupyterhub_install_dir }}" 
-    virtualenv_command: "{{ jupyterhub_python3 }}/bin/python3 -m venv" 
+    virtualenv_command: "{{ jupyterhub_python3 }}/bin/python3 -m venv"
+- name: "Grant access to folder"
+  ansible.builtin.file:
+    name: "{{ jupyterhub_install_dir }}" 
+    mode: u+rx,g+rx,o+rx
 
 #
 # Install proxy NPM tools
@@ -189,6 +193,7 @@
     recurse: yes
     owner: "{{ jupyterhub_daemon_user }}"
     group: "{{ jupyterhub_daemon_group }}"
+    
 
 #
 # Reset ownership in JupyterHub directory
