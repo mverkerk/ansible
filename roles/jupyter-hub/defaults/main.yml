@@ -6,9 +6,9 @@ jupyterhub_users_group: jupyterhub
 jupyter_users: []
 
 #User and group that run juputerhubs - add users to group for permission.
-#The rhea user has spwaning (sudo) permissions.
-jupyterhub_daemon_user: rhea
-jupyterhub_daemon_group: rhea
+#This user has spawning (sudo) permissions.
+jupyterhub_daemon_user: jpyh
+jupyterhub_daemon_group: jpyh
 
 #Installation directory (for JN Python venv)
 jupyterhub_install_dir: /opt/jupyterhub
