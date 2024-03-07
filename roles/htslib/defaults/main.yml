@@ -2,7 +2,7 @@
 #
 # Source archive (prefix and archive), looks for (link) in files/ folder of role
 #
-htslib_prefix: htslib-1.19
+htslib_prefix: htslib-1.19.1
 htslib_archive: tar.bz2
 
 #Installation folder
