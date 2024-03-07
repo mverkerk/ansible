@@ -1,1 +1,3 @@
-FastWC role
+FastQC role
+
+Note: Setup correct 'fastqc_java_home' variable when having compile errors.

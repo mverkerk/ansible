@@ -18,7 +18,6 @@
 #
 - name: "Transfer, unpack and compile fastqc"
   block:
-
     # Unarchive and compile
     - ansible.builtin.unarchive:
         src: "files/{{ fastqc_prefix }}.{{ fastqc_archive }}"
