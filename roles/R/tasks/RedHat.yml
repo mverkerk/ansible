@@ -1,7 +1,7 @@
 ---
 # Preparations
 - name: "Install R depended packages"
-  yum:
+  ansible.builtin.dnf:
     name: "{{ r_os_packages }}"
     state: latest
   become: yes
@@ -114,9 +114,9 @@
 # Preparations
 - name: "Install R package depended OS packages"
   yum:
-    name: "{{ r_os_packages }}"
+    name: "{{ r_os_cran_packages }}"
     state: latest
-  when: r_os_packages is defined
+  when: r_os_cran_packages is defined
   become: yes
 
 #Install BiocManager

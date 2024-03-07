@@ -28,7 +28,7 @@ r_rpos: "https://mirror.lyrahosting.com/CRAN/"
 #r_one_installation: hostname
 
 #OS Dependencies for packages (RPMs)
-#r_os_packages: []
+#r_os_cran_packages: []
 
 #List of bioconductor and CRAN packages
 #r_packages: []
