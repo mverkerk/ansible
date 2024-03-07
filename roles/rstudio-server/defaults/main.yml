@@ -1,4 +1,3 @@
-
 ---
 #
 # rstudio-rpm
@@ -10,6 +9,7 @@ rstudio_server: server.domain.tld
 rstudio_port: 8787
 
 rstudio_ssl_port: 8788
+rstudio_ssl_copy: false
 rstudio_ssl_crt: keyfile.pem
 #rstudio_ssl_key: keyfile.key
 
@@ -23,6 +23,9 @@ rstudio_r: /usr/bin/R
 rstudio_wrap_slurm: true
 rstudio_srun_flags:
   - "--qos=limited-test-rstudio"
+
+#SSSD Pam Authentication (replace /etc/pam.d/rstudio config file)
+rstudio_sssd_pam: true
 
 #SELinux (settings)
 rstudio_selinux: true

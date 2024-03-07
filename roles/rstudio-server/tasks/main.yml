@@ -62,6 +62,7 @@
         mode: '0600'
         owner: root
         group: root
+      when: rstudio_ssl_copy and rstudio_ssl_key is defined
     - name: "Copy key file"
       ansible.builtin.copy:
         src: "{{ rstudio_ssl_key }}"
@@ -69,7 +70,7 @@
         mode: '0600'
         owner: root
         group: root
-      when: rstudio_ssl_key is defined
+      when: rstudio_ssl_copy and rstudio_ssl_key is defined
     - name: "Setup httpd SSL proxy config"
       ansible.builtin.template:
         src: "templates/rstudio_ssl_proxy.conf.j2"
@@ -134,7 +135,7 @@
         line: "ExecStart=/usr/lib/rstudio-server/bin/rserver --rsession-path=rsession-slurm.sh"
     - name: "Write srun run flags to config file: etc/rstudio/rsession-srun-params"
       copy:
-        content: "{{ rstudio_srun_flags }}"
+        content: "srun_params='{{ rstudio_srun_flags }}'"
         dest: "/etc/rstudio/rsession-srun-params"
         mode: '0644'
       when: rstudio_srun_flags is defined
@@ -152,6 +153,15 @@
       ansible.builtin.command: restorecon -irv /usr/lib/rstudio-server/bin/
   when: rstudio_selinux
 
+#
+# SSSD Pam authentication
+# 
+- block:
+  - name: "Update /etc/pam.d/rstudio" 
+    ansible.builtin.copy:
+      src: "files/rstudio.pam"
+      dest: "/etc/pam.d/rstudio" 
+  when: rstudio_sssd_pam         
 
 #
 # Reload daemons
