@@ -2,7 +2,7 @@
 #
 # Prefix ( of the jar file )
 #
-picard_prefix: picard-3.0.0
+picard_prefix: picard-3.1.1
 
 #Installation folder
 picard_install_dest: /opt/tools/versions
