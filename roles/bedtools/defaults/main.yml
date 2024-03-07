@@ -2,7 +2,7 @@
 #
 # Source archive (prefix and archive), looks for (link) in files/ folder of role
 #
-bedtools_prefix: bedtools-2.31.0
+bedtools_prefix: bedtools-2.31.1
 bedtools_archive: tar.gz
 
 #Installation folder
