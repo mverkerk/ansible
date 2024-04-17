@@ -1,5 +1,7 @@
 ---
 python2_os_packages:
+  - libdb
+  - libdb-devel
   - libffi
   - libffi-devel
   - man-db

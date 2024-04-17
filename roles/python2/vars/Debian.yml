@@ -1,5 +1,6 @@
 ---
 python2_os_packages:
+  - libdb-dev
   - bzip2
   - libbz2-dev
   - libffi6
