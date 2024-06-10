@@ -282,5 +282,5 @@
     ansible.builtin.command: "{{ jupyterhub_r_dir }}/bin/Rscript -e 'install.packages(\"{{ item }}\", repos=\"{{ jupyterhub_r_rpos }}\", type=\"source\");'"
     loop: "{{ jupyterhub_R_packages }}"
   - name: "Install kernel" 
-    ansible.builtin.command: "{{ jupyterhub_r_dir }}/bin/Rscript -e 'IRkernel::installspec(user = FALSE)'"
+    ansible.builtin.command: "source {{ jupyterhub_install_dir }}/bin/activate;{{ jupyterhub_r_dir }}/bin/Rscript -e 'IRkernel::installspec(user = FALSE)'"
   when: jupyterhub_R_packages is defined
