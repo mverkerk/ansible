@@ -1,11 +1,16 @@
 ---
 r_os_packages:
+  - bzip2
+  - bzip2-devel
+  - bzip2-libs
+  - libcurl
+  - libcurl-devel
   - xorg-x11-server-devel
   - libX11-devel
   - libXt-devel
   - readline-devel
-  - bzip2-devel
   - xz-devel
+  - curl
   - curl-devel
   - cairo
   - cairo-devel
