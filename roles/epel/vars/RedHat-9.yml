@@ -1,0 +1,5 @@
+---
+epel_repos:
+  - "codeready-builder-for-rhel-9-{{ ansible_architecture }}-rpms"
+
+epel_package_name: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm"
