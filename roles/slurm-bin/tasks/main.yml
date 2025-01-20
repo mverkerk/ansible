@@ -11,15 +11,17 @@
     name: "{{ slurm_packages }}"
     state: latest
 
-- name: "Patch slurmd.service"
-  ansible.posix.patch:
-    src: files/slurmd.service.patch
-    dest: /usr/lib/systemd/system/slurmd.service
-  
-- name: "Patch slurmctld.service"
-  ansible.posix.patch:
-    src: files/slurmctld.service.patch
-    dest: /usr/lib/systemd/system/slurmctld.service
+# Patch not necessary: already waits for network-online  
+#- name: "Patch slurmd.service"
+#  ansible.posix.patch:
+#    src: files/slurmd.service.patch
+#    dest: /usr/lib/systemd/system/slurmd.service
+
+# Patch not necessary: already waits for network-online  
+#- name: "Patch slurmctld.service"
+#  ansible.posix.patch:
+#    src: files/slurmctld.service.patch
+#    dest: /usr/lib/systemd/system/slurmctld.service
   
 - name: "Install slurm database packages"
   yum:

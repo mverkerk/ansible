@@ -10,8 +10,9 @@ slurm_packages:
   - slurm-slurmdbd
   - slurm-gui
   - slurm-doc
-  - libcgroup
-  - libcgroup-tools
+  - slurm-contribs
+#  - libcgroup             #cgroups v9.5 Integrated since RHEL9
+#  - libcgroup-tools
 
 #
 # This role is configured for mysql or mariadb databases
