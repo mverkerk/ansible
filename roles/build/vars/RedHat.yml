@@ -1,4 +1,6 @@
 ---
+build_repo: devel
+
 build_packages:
   - autoconf
   - automake

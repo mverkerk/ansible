@@ -1,4 +1,9 @@
 ---
+- name: "Enable build repo"
+  community.general.dnf_config_manager:
+    name: {{ build_repo }}
+    state: enabled
+  
 - name: "Install build packages"
   yum:
     name: "{{ build_packages }}"
