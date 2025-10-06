@@ -4,6 +4,7 @@ packages:
 #  - libcgroup-devel
   - libcgroup-tools
   - libcgroup-pam
+  - dbus-devel  
   - hdf5
   - hdf5-devel
   - hdf5-mpich
