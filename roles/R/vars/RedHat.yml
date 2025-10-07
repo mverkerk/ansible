@@ -67,7 +67,10 @@ r_os_packages:
   - xorg-x11-fonts-ISO8859-2-75dpi
   - xorg-x11-fonts-ISO8859-9-100dpi
   - xorg-x11-fonts-ISO8859-9-75dpi
-
+  - openblas
+  - openblas-devel
+  - lapack
+  - lapack-devel
 #  - levien-inconsolata-fonts
   - perl-Digest-MD5
 
