@@ -1,6 +1,24 @@
 ---
 #Retrieved from Debian
 r_os_packages:
+#
+# Recent Ubuntu Packages 
+#
+  - gfortran
+  - xorg-x11-server-dev
+  - libX11-dev
+  - libXt-dev
+  - xorg-dev
+  - libbzip2-dev
+  - libcurl4-openssl-dev
+  - texinfo
+  - texlive
+  - texlive-fonts-extra
+  - xfonts-base
+  - xfonts-100dpi
+  - xfonts-75dpi 
+  - xfonts-cyrillic
+#
   - bison
   - ca-certificates-java
   - default-jdk
