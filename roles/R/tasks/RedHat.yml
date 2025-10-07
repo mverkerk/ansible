@@ -50,7 +50,7 @@
     - unarchive:
         src: "files/{{ r_prefix }}.{{ r_archive }}"
         dest: /tmp
-    - command: "./configure --prefix={{ r_install_dest }}/{{ r_prefix }} {{ r_configure_flags | join(' ') }}"
+    - command: "./configure{% if r_cflags %} CFLAGS='{{ r_cflags }}'{% endif %}{% if r_cxxflags %} CXXFLAGS='{{ r_cxxflags }}'{% endif %} --prefix={{ r_install_dest }}/{{ r_prefix }} {{ r_configure_flags | join(' ') }}"
       args:
         chdir: /tmp/{{ r_prefix }}
     - make:

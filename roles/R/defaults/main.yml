@@ -23,6 +23,7 @@ r_configure_flags:
 
 #Configure alternative compile flags
 r_cflags: '-march=native -g -O2 '
+r_cxxflags: '-march=native -g -O2 '
 
 #Install desination (prefix) on destination machine
 r_install_dest: /opt
