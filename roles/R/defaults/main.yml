@@ -1,17 +1,28 @@
 ---
 #Source prefix
-r_prefix: R-4.4.1
+r_prefix: R-4.5.1
 
 #Source archive ext
 r_archive: tar.gz
 
 #Configure flags (2do: add in tasks - when needed!) add empty list as default ([])
 r_configure_flags:
+ - "--enable-year2038"
  - "--with-x=yes"
  - "--with-cairo=yes"
  - "--with-libpng=yes"
+ - "--with-jpeglib=yes"
+ - "--with-libtiff=yes"
  - "--enable-R-shlib"
  - "--enable-memory-profiling"
+ - "--with-readline"
+ - "--with-blas"
+ - "--with-lapack" 
+
+# - "--enable-BLAS-shlib"  # use with-blas and with-lapack to use openblas library (fastests)
+
+#Configure alternative compile flags
+r_cflags: '-march=native -g -O2 '
 
 #Install desination (prefix) on destination machine
 r_install_dest: /opt
