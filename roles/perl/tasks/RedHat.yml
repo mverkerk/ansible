@@ -75,7 +75,7 @@
 # Set Perl settings with file in profile.d)
 - name: "Create profile.d files with PATH info"
   template:
-    src: perl.sh.CentOS.j2
+    src: "perl.sh.{{ ansible_distribution }}.j2"
     dest: /etc/profile.d/perl.sh
     owner: root
     group: root
