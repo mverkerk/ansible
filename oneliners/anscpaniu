@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+#
+# One liner to install specific perl package on hosts set
+# 
+# 2do: user and state specification via opt flags
+
+function usage() {
+  local RET=${1};
+  echo -e "Usage: ${0} [-h] host_collection python_package";
+  echo -e "-h		     show this text";
+  echo -e "host_collection   the specified identifier in the ansible hosts file";
+  echo -e "python_package       the package to be installed";
+  exit ${RET}
+}
+
+while getopts "h" opt;
+do
+  case ${opt} in 
+    h)
+      usage 0;
+      ;;
+  esac
+done
+
+if [ $# -ne 2 ]
+then
+  echo -e "Please provide ansible host collection name and package!"
+  usage 1;
+fi
+
+hostcoll=$1
+package=$2
+
+ansible ${hostcoll} -m cpanm -a "name=${package} " -u root
