@@ -2,7 +2,7 @@
 #
 # Binary archive (prefix and archive), looks for (link) in files/ folder of role
 #
-gatk_prefix: gatk-4.4.0.0
+gatk_prefix: gatk-4.6.2.0
 gatk_archive: zip
 
 #Installation folder

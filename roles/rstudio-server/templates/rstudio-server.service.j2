@@ -10,7 +10,7 @@ Wants=network-online.target
 [Service]
 Type=forking
 PIDFile=/run/rstudio-server.pid
-ExecStart=/usr/lib/rstudio-server/bin/rserver --rsession-path=rsession-slurm.sh
+ExecStart=/usr/lib/rstudio-server/bin/rserver --rsession-path=/usr/lib/rstudio-server/bin/rsession-slurm.sh
 #ExecStart=/usr/lib/rstudio-server/bin/rserver
 ExecReload=/usr/bin/kill -HUP $MAINPID
 Restart=on-failure

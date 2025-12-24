@@ -29,6 +29,7 @@
     - ansible.posix.patch:
         src: Makefile.patch
         dest: /tmp/{{ plink_prefix }}/Makefile
+        ignore_whitespace: true
     - ansible.posix.patch:
         src: elf.cpp.patch
         dest: /tmp/{{ plink_prefix }}/elf.cpp        

@@ -1,6 +1,6 @@
---- plink-1.07-src/Makefile	2009-10-10 18:00:20.000000000 +0200
-+++ plink-1.07-patched/Makefile	2023-04-13 15:09:06.741668455 +0200
-@@ -23,11 +23,11 @@
+--- Makefile.ori	2025-10-09 13:32:01.272635224 +0200
++++ Makefile	2025-10-09 13:33:46.436996010 +0200
+@@ -23,18 +23,18 @@
  
  # Leave blank after "=" to disable; put "= 1" to enable
  WITH_R_PLUGINS = 1
@@ -14,6 +14,14 @@
  
  # Put C++ compiler here; Windows has it's own specific version
  CXX_UNIX = g++
+ CXX_WIN = c:\bin\mingw\bin\mingw32-g++.exe
+ 
+ # Any other compiler flags here ( -Wall, -g, etc)
+-CXXFLAGS = 
++CXXFLAGS = -std=gnu++14
+ 
+ # Misc
+ LIB_LAPACK = /usr/lib/liblapack.so.3
 @@ -44,7 +44,7 @@
  # Do not edit below this line
  # --------------------------------------------------------------------

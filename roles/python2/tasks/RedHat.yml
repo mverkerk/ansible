@@ -66,7 +66,7 @@
 # Set Python settings with file in profile.d)
 - name: "Create profile.d files with PATH info"
   template:
-    src: python2.sh.RedHat.j2
+    src: python2.sh.{{ ansible_distribution }}.j2
     dest: "/etc/profile.d/{{ python2_profile_d_file }}.sh"
     owner: root
     group: root

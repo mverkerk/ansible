@@ -1,1 +1,11 @@
-RedHat.yml
+---
+- name: "Enable build repo"
+  community.general.dnf_config_manager:
+    name: "{{ build_repo }}"
+    state: enabled
+
+- name: "Install build packages"
+  dnf:
+    name: "{{ build_packages }}"
+    state: latest
+  become: yes

@@ -1,0 +1,60 @@
+---
+# 11-04-2023 MV:
+# Installation of static plink 2.0 according to situation
+# with plink-ng-2.00a3.7 - Makefile in build_dynamic folder
+#
+#
+# Preparations
+- name: "Install plink depended OS packages"
+  yum:
+    name: "{{ plink2_os_packages }}"
+    state: latest
+  become: yes
+
+# Is it already installed?
+- name: "Check for plink installation @ {{ plink2_install_dest }}/{{ plink2_prefix }}/bin/plink2"
+  stat: path="{{ plink2_install_dest }}/{{ plink2_prefix }}/bin/plink2"
+  register: plink2_installed
+
+#Transfer, unpack and compile
+#
+# Two changes to plink Makefile (El7/12-04-2023):
+#
+# - Install prefix (PREFIX / DESTDIR)
+# - Use gslcblas instead of cblas
+#
+- name: "Transfer, unpack and compile plink"
+  block:
+    - ansible.builtin.unarchive:
+        src: "files/{{ plink2_prefix }}.{{ plink2_archive }}"
+        dest: /tmp
+        creates: /tmp/{{ plink2_prefix }}
+    - ansible.builtin.lineinfile:
+        path: /tmp/{{ plink2_prefix }}/2.0/build_dynamic/Makefile
+        regexp: '^  BLASFLAGS=-llapack -lblas -lcblas -latlas'
+        line: "  BLASFLAGS=-L/usr/lib64/atlas -llapack -lblas -lgslcblas -lsatlas"
+        state: present
+    - community.general.make:
+        chdir: /tmp/{{ plink2_prefix }}/2.0/build_dynamic
+    - ansible.builtin.file:
+        path: "{{ plink2_install_dest }}/{{ plink2_prefix }}/bin"
+        state: directory
+        recurse: true
+        owner: root
+        group: root
+    - ansible.builtin.copy:
+        src: /tmp/{{ plink2_prefix }}/2.0/build_dynamic/plink2
+        dest: "{{ plink2_install_dest }}/{{ plink2_prefix }}/bin/plink2"
+        mode: '755'
+        remote_src: yes
+    - file:
+        src: "{{ plink2_install_dest }}/{{ plink2_prefix }}"
+        dest: "{{ plink2_linkdir }}"
+        state: link
+      when: plink2_dolink
+    - file:
+        src: "{{ plink2_binary_source }}"
+        dest: "{{ plink2_binary_dest }}"
+        state: link
+      when: plink2_dolink
+  when: not plink2_installed.stat.exists

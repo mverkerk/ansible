@@ -13,7 +13,6 @@
 
 #Transfer, unpack and compile
 #
-# Edits Make file to set correct prefix (2.31.0)
 #
 - name: "Transfer, unpack and compile bedtools2"
   block:
@@ -21,18 +20,19 @@
         src: "files/{{ bedtools_prefix }}.{{ bedtools_archive }}"
         dest: /tmp
         #at version 2.31.0 the archive contains bedtools2
-        creates: /tmp/bedtools2
+        #2.31.1 contains bedtools2-2.31.1 again (29/01)
+        creates: /tmp/{{ bedtools_prefix }}
     - ansible.builtin.lineinfile:
-        path: /tmp/bedtools2/Makefile
+        path: /tmp/{{ bedtools_prefix }}/Makefile
         regexp: '^prefix'
         line: "prefix ?= {{ bedtools_install_dest }}/{{ bedtools_prefix }}"
         owner: root
         group: root
         state: present
     - community.general.make:
-        chdir: /tmp/bedtools2
+        chdir: /tmp/{{ bedtools_prefix }}
     - make:
-        chdir: /tmp/bedtools2
+        chdir: /tmp/{{ bedtools_prefix }}
         target: install
       become: yes
     - file:

@@ -1,6 +1,6 @@
 ---
 #Source prefix
-perl_prefix: perl-5.34.0
+perl_prefix: perl-5.42.0
 
 #Source archive ext
 perl_archive: tar.gz

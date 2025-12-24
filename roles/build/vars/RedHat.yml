@@ -1,6 +1,4 @@
 ---
-build_repo: devel
-
 build_packages:
   - autoconf
   - automake
@@ -17,4 +15,4 @@ build_packages:
   - redhat-rpm-config
   - rpm-build
   - rpm-sign
-
+  - python3-dnf

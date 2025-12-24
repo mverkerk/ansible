@@ -1,6 +1,6 @@
 ---
 #Source prefix
-python3_prefix: Python-3.11.3
+python3_prefix: Python-3.14.0
 
 #Source archive ext
 python3_archive: tar.xz

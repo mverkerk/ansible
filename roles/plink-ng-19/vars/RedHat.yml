@@ -4,3 +4,6 @@ plink19_os_packages:
   - atlas-devel
   - gsl
   - gsl-devel
+  - libzstd
+  - libzstd-devel
+  
