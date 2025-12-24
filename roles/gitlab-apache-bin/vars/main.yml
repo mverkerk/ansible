@@ -1,0 +1,10 @@
+---
+gitlab_packages:
+  - curl
+  - policycoreutils 
+  - openssh-clients
+  - openssh-server 
+  - perl
+  - postfix
+  - yum-utils
+

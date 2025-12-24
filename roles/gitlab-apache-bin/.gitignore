@@ -1,0 +1,15 @@
+#
+# R / packages source archives
+#
+files/*.tar.bz2
+files/*.tar.gz
+files/*.tar.xz
+files/*.jar
+files/*.rpm
+
+#
+# Temporary files
+#
+*.swp
+*.bak
+
