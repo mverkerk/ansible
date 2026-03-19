@@ -66,10 +66,10 @@ MinJobAge=300
 #
 # SCHEDULING
 SchedulerType=sched/backfill
-SelectType=select/cons_res
+SelectType=select/cons_tres
 SelectTypeParameters=CR_Core_Memory
 DefMemPerCPU={{ slurm_defmempercpu }}
-#EnforcePartLimits=NO
+EnforcePartLimits=ALL
 #DisableRootJobs=NO
 #FirstJobId=1
 #SchedulerTimeSlice=30
@@ -117,7 +117,7 @@ AccountingStorageType=accounting_storage/slurmdbd
 #AccountingStoreJobComment=YES #Deprecated
 AccountingStoreFlags=job_comment
 AccountingStorageEnforce={{ slurm_accounting_storage_enforce }}
-JobAcctGatherType=jobacct_gather/linux
+JobAcctGatherType=jobacct_gather/cgroup
 JobAcctGatherFrequency=30
 {% else %}
 AccountingStorageType=accounting_storage/none
