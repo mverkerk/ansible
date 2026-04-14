@@ -6,7 +6,7 @@
 {# Jinja2 Macro's #}
 {# Conditional Parameter macro that shows only when parameter is defined #}
 {% macro cp(key, value) -%}
-    {% if value is defined %}{{ key }}={{ value }}{% endif %}
+    {% if value is not none %}{{ key }}={{ value }}{% endif %}
 {%- endmacro %}
 {# End of macro's #}
 
