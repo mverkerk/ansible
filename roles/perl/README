@@ -13,3 +13,13 @@ In order to get a list of installed packages:
  for l in `cpan -l | cut -f1`;do echo "     - \"${l}\"" >> perl.list;done
   
   ^- I needed to sort | uniq the output file..
+
+Another way to transfer installed packages is via CPAN:
+
+1. on the source machine, run: "perl -MCPAN -eautobundle", creating
+~/.cpan/Bundle/Snapshot_YYYY_DD_NN.pm
+
+2. move this file to target machine's  ~/.cpan/Bundle
+
+3. On the target machine, run: "cpan Bundle::Snapshot_YYYY_MM_DD_NN" to 
+install
