@@ -176,4 +176,4 @@
     name: httpd
     state: restarted
     enabled: true
-  when: rstudio_ssl_port
+  when: rstudio_ssl_port is defined

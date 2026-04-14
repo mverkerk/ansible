@@ -3,7 +3,7 @@
 # rstudio-rpm
 #
 rstudio_rpm: rstudio-server
-rstudio_rpm_version: 2024.12.0-467
+rstudio_rpm_version: 2026.01.2-418
 
 rstudio_server: server.domain.tld
 rstudio_port: 8787
